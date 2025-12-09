@@ -1,0 +1,677 @@
+<!-- pengaturan.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/pengaturan.css">
+</head>
+
+<body class="kurikulum-page">
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header Admin -->
+            <div class="admin-header">
+                <div>
+                    <p class="subtitle">Panel Admin</p>
+                    <h2>Pengaturan Sistem</h2>
+                </div>
+                <img src="https://placehold.co/50x50/white/1e3a8a?text=AD" alt="Admin" class="profile-pic">
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="radius">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Radius</span>
+                </button>
+                <button class="tab-btn" data-tab="toleransi">
+                    <i class="fas fa-clock"></i>
+                    <span>Toleransi</span>
+                </button>
+                <button class="tab-btn" data-tab="jadwal">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Jadwal</span>
+                </button>
+                <button class="tab-btn" data-tab="kurikulum">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Kurikulum</span>
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content-container">
+                <!-- Radius Tab -->
+                <div class="tab-content active" id="radius-tab">
+                    <div class="settings-section">
+                        <h3>Pengaturan Radius Lokasi</h3>
+                        <p class="section-desc">Atur jarak maksimum untuk presensi</p>
+
+                        <div class="setting-card">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Radius Sekolah</h4>
+                                    <p>Jarak maksimum dari lokasi sekolah</p>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="radius-input-group">
+                                        <input type="number" id="radiusValue" value="100" min="10" max="500">
+                                        <span>meter</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="map-preview">
+                            <h4>Preview Lokasi</h4>
+                            <div class="map-container">
+                                <div class="map-placeholder">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                    <p>Peta Sekolah</p>
+                                    <div class="radius-circle" id="radiusPreview"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="coordinate-settings">
+                            <h4>Koordinat Lokasi Sekolah</h4>
+                            <div class="coordinate-inputs">
+                                <div class="form-group">
+                                    <label for="latitude">Latitude</label>
+                                    <input type="text" id="latitude" value="-7.250445" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="longitude">Longitude</label>
+                                    <input type="text" id="longitude" value="112.768945" readonly>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline btn-sm" id="updateLocationBtn">
+                                <i class="fas fa-location-crosshairs"></i> Perbarui Lokasi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toleransi Tab -->
+                <div class="tab-content" id="toleransi-tab">
+                    <div class="settings-section">
+                        <h3>Pengaturan Jam Toleransi</h3>
+                        <p class="section-desc">Atur batas waktu toleransi keterlambatan</p>
+
+                        <div class="setting-card">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Jam Masuk</h4>
+                                    <p>Waktu standar masuk kerja</p>
+                                </div>
+                                <div class="setting-control">
+                                    <input type="time" id="jamMasuk" value="07:00">
+                                </div>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Toleransi Keterlambatan</h4>
+                                    <p>Batas waktu toleransi keterlambatan (menit)</p>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="toleransi-input-group">
+                                        <input type="number" id="toleransiValue" value="15" min="0" max="60">
+                                        <span>menit</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Jam Pulang</h4>
+                                    <p>Waktu standar pulang kerja</p>
+                                </div>
+                                <div class="setting-control">
+                                    <input type="time" id="jamPulang" value="15:00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="time-preview">
+                            <h4>Preview Jam Kerja</h4>
+                            <div class="time-display">
+                                <div class="time-block">
+                                    <span class="time-label">Masuk</span>
+                                    <span class="time-value" id="previewMasuk">07:00</span>
+                                </div>
+                                <div class="time-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="time-block">
+                                    <span class="time-label">Batas Toleransi</span>
+                                    <span class="time-value" id="previewToleransi">07:15</span>
+                                </div>
+                                <div class="time-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="time-block">
+                                    <span class="time-label">Pulang</span>
+                                    <span class="time-value" id="previewPulang">15:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jadwal Tab -->
+                <div class="tab-content" id="jadwal-tab">
+                    <div class="settings-section">
+                        <h3>Manajemen Jadwal</h3>
+                        <p class="section-desc">Kelola jadwal mengajar guru</p>
+
+                        <div class="schedule-controls">
+                            <button class="btn btn-primary" id="addScheduleBtn">
+                                <i class="fas fa-plus"></i> Tambah Jadwal
+                            </button>
+                            <div class="filter-group">
+                                <select id="filterPeriod">
+                                    <option value="">Semua Periode</option>
+                                    <option value="2024-2025" selected>2024/2025 - Semester Ganjil (Aktif)</option>
+                                    <option value="2023-2024-genap">2023/2024 - Semester Genap</option>
+                                    <option value="2023-2024-ganjil">2023/2024 - Semester Ganjil</option>
+                                    <option value="2022-2023-genap">2022/2023 - Semester Genap</option>
+                                    <option value="2022-2023-ganjil">2022/2023 - Semester Ganjil</option>
+                                </select>
+                                <select id="filterTeacher">
+                                    <option value="">Semua Guru</option>
+                                    <option value="1">Budi Santoso</option>
+                                    <option value="2">Siti Aminah</option>
+                                    <option value="3">Ahmad Dahlan</option>
+                                </select>
+                                <select id="filterDay">
+                                    <option value="">Semua Hari</option>
+                                    <option value="senin">Senin</option>
+                                    <option value="selasa">Selasa</option>
+                                    <option value="rabu">Rabu</option>
+                                    <option value="kamis">Kamis</option>
+                                    <option value="jumat">Jumat</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="schedule-list" id="scheduleList">
+                            <!-- Schedule Item 1 -->
+                            <div class="schedule-item">
+                                <div class="schedule-header">
+                                    <div class="schedule-teacher">
+                                        <img src="https://placehold.co/40x40" alt="Guru">
+                                        <div>
+                                            <h4>Budi Santoso</h4>
+                                            <p>Matematika</p>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-actions">
+                                        <button class="action-btn edit" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="action-btn delete" title="Hapus">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="schedule-details">
+                                    <div class="schedule-day">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <span>Senin, Rabu, Jumat</span>
+                                    </div>
+                                    <div class="schedule-time">
+                                        <i class="fas fa-clock"></i>
+                                        <span>07:00 - 09:00</span>
+                                    </div>
+                                    <div class="schedule-class">
+                                        <i class="fas fa-school"></i>
+                                        <span>Kelas XII-A, XII-B</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Schedule Item 2 -->
+                            <div class="schedule-item">
+                                <div class="schedule-header">
+                                    <div class="schedule-teacher">
+                                        <img src="https://placehold.co/40x40" alt="Guru">
+                                        <div>
+                                            <h4>Siti Aminah</h4>
+                                            <p>Bahasa Indonesia</p>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-actions">
+                                        <button class="action-btn edit" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="action-btn delete" title="Hapus">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="schedule-details">
+                                    <div class="schedule-day">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <span>Selasa, Kamis</span>
+                                    </div>
+                                    <div class="schedule-time">
+                                        <i class="fas fa-clock"></i>
+                                        <span>09:00 - 11:00</span>
+                                    </div>
+                                    <div class="schedule-class">
+                                        <i class="fas fa-school"></i>
+                                        <span>Kelas X-A, X-B</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Schedule Item 3 -->
+                            <div class="schedule-item">
+                                <div class="schedule-header">
+                                    <div class="schedule-teacher">
+                                        <img src="https://placehold.co/40x40" alt="Guru">
+                                        <div>
+                                            <h4>Ahmad Dahlan</h4>
+                                            <p>Fisika</p>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-actions">
+                                        <button class="action-btn edit" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="action-btn delete" title="Hapus">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="schedule-details">
+                                    <div class="schedule-day">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <span>Senin, Selasa, Rabu, Kamis, Jumat</span>
+                                    </div>
+                                    <div class="schedule-time">
+                                        <i class="fas fa-clock"></i>
+                                        <span>11:00 - 13:00</span>
+                                    </div>
+                                    <div class="schedule-class">
+                                        <i class="fas fa-school"></i>
+                                        <span>Kelas XI-A, XI-B</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kurikulum Tab -->
+            <div class="tab-content" id="kurikulum-tab">
+                <div class="settings-section">
+                    <h3>Konfigurasi Periode Kurikulum</h3>
+                    <p class="section-desc">Kelola periode akademik dan salin jadwal dari tahun sebelumnya</p>
+
+                    <div class="period-management">
+                        <div class="current-period">
+                            <h4>Periode Aktif</h4>
+                            <div class="period-card active">
+                                <div class="period-info">
+                                    <h5>Tahun Ajaran 2024/2025</h5>
+                                    <p>Semester Ganjil</p>
+                                    <p class="period-date">Juli 2024 - Januari 2025</p>
+                                </div>
+                                <div class="period-status">
+                                    <span class="status-badge active">Aktif</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="period-actions">
+                            <button class="btn btn-primary" id="newPeriodBtn">
+                                <i class="fas fa-plus"></i> Tahun Ajaran Baru
+                            </button>
+                            <button class="btn btn-outline" id="copyScheduleBtn">
+                                <i class="fas fa-copy"></i> Salin Jadwal
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="period-list">
+                        <h4>Daftar Periode</h4>
+
+                        <!-- Period Item 1 -->
+                        <div class="period-item">
+                            <div class="period-header">
+                                <div class="period-info">
+                                    <h5>Tahun Ajaran 2023/2024</h5>
+                                    <p>Semester Genap</p>
+                                    <p class="period-date">Januari 2024 - Juni 2024</p>
+                                </div>
+                                <div class="period-actions">
+                                    <button class="action-btn view" title="Lihat Jadwal">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn copy" title="Salin Jadwal">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="period-details">
+                                <div class="period-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Guru</span>
+                                        <span class="stat-value">45</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Jadwal</span>
+                                        <span class="stat-value">180</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Kelas</span>
+                                        <span class="stat-value">15</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Period Item 2 -->
+                        <div class="period-item">
+                            <div class="period-header">
+                                <div class="period-info">
+                                    <h5>Tahun Ajaran 2023/2024</h5>
+                                    <p>Semester Ganjil</p>
+                                    <p class="period-date">Juli 2023 - Desember 2023</p>
+                                </div>
+                                <div class="period-actions">
+                                    <button class="action-btn view" title="Lihat Jadwal">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn copy" title="Salin Jadwal">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="period-details">
+                                <div class="period-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Guru</span>
+                                        <span class="stat-value">42</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Jadwal</span>
+                                        <span class="stat-value">168</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Kelas</span>
+                                        <span class="stat-value">14</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 80px;"></div> <!-- Spacer -->
+        </div>
+
+        <!-- Bottom Nav KHUSUS ADMIN -->
+        <div class="bottom-nav">
+            <!-- 1. Home -->
+            <a href="dashboard-admin.html" class="nav-item">
+                <i class="fas fa-chart-pie"></i>
+                <span class="nav-label">Dash</span>
+            </a>
+
+            <!-- 2. Monitoring Guru -->
+            <a href="manajemen-guru.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span class="nav-label">Guru</span>
+            </a>
+
+            <!-- 3. Izin (Center) -->
+            <a href="approval-izin.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span class="nav-label">Izin</span>
+            </a>
+
+            <!-- 4. Laporan -->
+            <a href="laporan.html" class="nav-item">
+                <i class="fas fa-file-invoice"></i>
+                <span class="nav-label">Rekap</span>
+            </a>
+
+            <!-- 5. Pengaturan -->
+            <a href="pengaturan.html" class="nav-item active">
+                <i class="fas fa-cog"></i>
+                <span class="nav-label">Set</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Add/Edit Schedule Modal -->
+    <div class="modal" id="scheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Jadwal</h3>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleForm">
+                    <div class="form-group">
+                        <label for="teacherSelect">Guru</label>
+                        <select id="teacherSelect" required>
+                            <option value="">Pilih Guru</option>
+                            <option value="1">Budi Santoso - Matematika</option>
+                            <option value="2">Siti Aminah - Bahasa Indonesia</option>
+                            <option value="3">Ahmad Dahlan - Fisika</option>
+                            <option value="4">Dewi Sartika - Kimia</option>
+                            <option value="5">Eko Prasetyo - Teknik Komputer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hari Mengajar</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="hari" value="senin">
+                                <span>Senin</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="hari" value="selasa">
+                                <span>Selasa</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="hari" value="rabu">
+                                <span>Rabu</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="hari" value="kamis">
+                                <span>Kamis</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="hari" value="jumat">
+                                <span>Jumat</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jamMulai">Jam Mulai</label>
+                            <input type="time" id="jamMulai" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jamSelesai">Jam Selesai</label>
+                            <input type="time" id="jamSelesai" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="kelas">Kelas</label>
+                        <input type="text" id="kelas" placeholder="Contoh: XII-A, XII-B" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ruangan">Ruangan</label>
+                        <input type="text" id="ruangan" placeholder="Contoh: Lab Komputer">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelBtn">Batal</button>
+                <button type="submit" form="scheduleForm" class="btn btn-primary">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Konfirmasi Hapus</h3>
+                <button class="close-btn" id="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus jadwal ini?</p>
+                <p><strong id="deleteScheduleInfo"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelDeleteBtn">Batal</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Period Modal -->
+    <div class="modal" id="newPeriodModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tahun Ajaran Baru</h3>
+                <button class="close-btn" id="closeNewPeriodModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newPeriodForm">
+                    <div class="form-group">
+                        <label for="tahunAjaran">Tahun Ajaran</label>
+                        <input type="text" id="tahunAjaran" placeholder="Contoh: 2025/2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="semester">Semester</label>
+                        <select id="semester" required>
+                            <option value="">Pilih Semester</option>
+                            <option value="ganjil">Semester Ganjil</option>
+                            <option value="genap">Semester Genap</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tanggalMulai">Tanggal Mulai</label>
+                            <input type="date" id="tanggalMulai" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggalSelesai">Tanggal Selesai</label>
+                            <input type="date" id="tanggalSelesai" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="copyFromPrevious">
+                            <span>Salin jadwal dari periode sebelumnya</span>
+                        </label>
+                    </div>
+                    <div class="form-group" id="copyOptions" style="display: none;">
+                        <label for="selectPeriod">Pilih Periode Sumber</label>
+                        <select id="selectPeriod">
+                            <option value="">Pilih Periode</option>
+                            <option value="2023-2024-genap">2023/2024 - Semester Genap</option>
+                            <option value="2023-2024-ganjil">2023/2024 - Semester Ganjil</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelNewPeriodBtn">Batal</button>
+                <button type="submit" form="newPeriodForm" class="btn btn-primary">Buat Periode</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Schedule Modal -->
+    <div class="modal" id="copyScheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Salin Jadwal</h3>
+                <button class="close-btn" id="closeCopyScheduleModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="copyScheduleForm">
+                    <div class="form-group">
+                        <label for="sourcePeriod">Periode Sumber</label>
+                        <select id="sourcePeriod" required>
+                            <option value="">Pilih Periode Sumber</option>
+                            <option value="2023-2024-genap">2023/2024 - Semester Genap</option>
+                            <option value="2023-2024-ganjil">2023/2024 - Semester Ganjil</option>
+                            <option value="2022-2023-genap">2022/2023 - Semester Genap</option>
+                            <option value="2022-2023-ganjil">2022/2023 - Semester Ganjil</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetPeriod">Periode Target</label>
+                        <select id="targetPeriod" required>
+                            <option value="">Pilih Periode Target</option>
+                            <option value="2024-2025">2024/2025 - Semester Ganjil (Aktif)</option>
+                        </select>
+                    </div>
+                    <div class="copy-options">
+                        <h4>Opsi Salin</h4>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="copyTeachers" checked>
+                                <span>Data Guru</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="copySchedule" checked>
+                                <span>Jadwal Mengajar</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="copyClasses" checked>
+                                <span>Data Kelas</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="copySubjects" checked>
+                                <span>Mata Pelajaran</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="overwriteExisting">
+                            <span>Timpa data yang sudah ada</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelCopyBtn">Batal</button>
+                <button type="submit" form="copyScheduleForm" class="btn btn-primary">
+                    <i class="fas fa-copy"></i> Salin Jadwal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/pengaturan.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

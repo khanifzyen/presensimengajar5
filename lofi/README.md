@@ -12,6 +12,8 @@ EduPresence adalah aplikasi presensi mobile untuk guru yang dirancang dengan tam
 - **Profil Guru**: Mengelola data profil guru
 - **Manajemen Guru**: Kelola data guru lengkap (Admin)
 - **Jadwal Guru**: Atur dan kelola jadwal mengajar guru (Admin)
+- **Approval Izin**: Sistem approval untuk pengajuan izin guru (Admin)
+- **Laporan Presensi**: Rekapitulasi dan laporan presensi lengkap (Admin)
 
 ## Perbaikan Mobile Terbaru
 
@@ -45,6 +47,8 @@ lofi/
 ├── dashboard-admin.html # Dashboard admin dengan monitoring lengkap
 ├── manajemen-guru.html # Halaman manajemen data guru (Admin)
 ├── jadwal-guru.html   # Halaman manajemen jadwal guru (Admin)
+├── approval-izin.html # Halaman approval izin (Admin)
+├── laporan.html       # Halaman laporan dan rekap presensi (Admin)
 ├── presensi.html       # Halaman proses presensi
 ├── profil.html         # Halaman profil guru
 ├── riwayat.html        # Halaman riwayat presensi
@@ -58,6 +62,8 @@ lofi/
 │   ├── dashboard.css   # CSS khusus dashboard
 │   ├── admin.css       # CSS khusus dashboard admin
 │   ├── manajemen-guru.css # CSS khusus manajemen guru dan jadwal
+│   ├── approval-izin.css # CSS khusus approval izin
+│   ├── laporan.css       # CSS khusus laporan dan rekap presensi
 │   ├── presensi.css    # CSS khusus presensi
 │   ├── profil.css      # CSS khusus profil
 │   ├── riwayat.css     # CSS khusus riwayat
@@ -74,6 +80,8 @@ lofi/
     ├── dashboard-admin.js # JavaScript fungsionalitas dashboard admin
     ├── manajemen-guru.js # JavaScript fungsionalitas manajemen guru
     ├── jadwal-guru.js   # JavaScript fungsionalitas jadwal guru
+    ├── approval-izin.js # JavaScript fungsionalitas approval izin
+    ├── laporan.js       # JavaScript fungsionalitas laporan dan rekap presensi
     ├── presensi.js     # JavaScript fungsionalitas presensi
     └── onboarding.js   # JavaScript fungsionalitas onboarding
 ```
@@ -132,8 +140,26 @@ lofi/
 - **Export/Print**: Export jadwal ke CSV dan fungsi print
 - **Statistik Jadwal**: Monitor jam mengajar, jumlah kelas, dan hari aktif
 
+### Approval Izin
+- **Dashboard Izin**: Monitor pengajuan izin dengan statistik lengkap
+- **Filter & Search**: Filter izin berdasarkan status, jenis, dan periode
+- **Detail Review**: Lihat detail lengkap pengajuan izin dengan dokumen
+- **Quick Actions**: Approve/reject dengan satu klik
+- **Batch Actions**: Approve multiple izin sekaligus
+- **Export Data**: Export data izin ke Excel dan PDF
+
+### Laporan Presensi
+- **Filter Lanjutan**: Filter presensi berdasarkan periode, guru, mata pelajaran, dan status
+- **Ringkasan Visual**: Kartu statistik dengan visualisasi data
+- **Tabel Detail**: Tabel presensi dengan informasi lengkap
+- **Export Options**: Export ke Excel, PDF, dan Print
+- **Responsive Design**: Tampilan optimal di desktop dan mobile
+
 ## Update Terakhir
 - Desember 2025:
   - Perbaikan responsive design dan navigasi mobile
   - Tambah fitur manajemen guru dan jadwal untuk admin
   - Enhanced admin dashboard dengan monitoring lengkap
+  - Tambah sistem approval izin untuk admin
+  - Tambah halaman laporan dan rekap presensi lengkap
+  - Perbaikan filter accordion dan tombol export yang responsif

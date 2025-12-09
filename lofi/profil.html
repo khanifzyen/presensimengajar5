@@ -1,0 +1,70 @@
+<!-- profil.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Saya</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profil.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <img src="https://placehold.co/100x100/white/1e3a8a?text=BS" alt="Foto Profil">
+                <h2>Budi Santoso, S.Pd</h2>
+                <p>NIP. 19850101 201001 1 001</p>
+                <div class="badge-role">Guru Pengajar</div>
+            </div>
+
+            <!-- Menu List -->
+            <div class="menu-list">
+                <a href="edit-profil.html" class="menu-item">
+                    <div class="icon-box"><i class="fas fa-user-edit"></i></div>
+                    <span>Edit Profil</span>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </a>
+                <a href="ubah-kata-sandi.html" class="menu-item">
+                    <div class="icon-box"><i class="fas fa-lock"></i></div>
+                    <span>Ubah Kata Sandi</span>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </a>
+                <a href="panduan.html" class="menu-item">
+                    <div class="icon-box"><i class="fas fa-question-circle"></i></div>
+                    <span>Bantuan</span>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </a>
+                <a href="tentang-aplikasi.html" class="menu-item">
+                    <div class="icon-box"><i class="fas fa-info-circle"></i></div>
+                    <span>Tentang Aplikasi</span>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </a>
+            </div>
+
+            <!-- Logout Button -->
+            <div class="logout-container">
+                <button class="btn btn-outline-danger" onclick="window.location.href='login.html'">
+                    <i class="fas fa-sign-out-alt"></i> Keluar
+                </button>
+                <p class="app-ver">EduPresence v1.0.0</p>
+            </div>
+
+            <!-- Bottom Nav -->
+            <div class="bottom-nav">
+                <a href="dashboard-guru.html"><i class="fas fa-home"></i></a>
+                <a href="riwayat.html"><i class="fas fa-calendar-alt"></i></a>
+                <a href="presensi.html" class="plus-btn"><i class="fas fa-camera"></i></a>
+                <a href="izin.html"><i class="fas fa-file-alt"></i></a>
+                <a href="profil.html" class="active"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+    </div>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

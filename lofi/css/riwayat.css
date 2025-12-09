@@ -1,0 +1,127 @@
+/* css/riwayat.css */
+.page-header {
+    background: var(--primary);
+    color: white;
+    padding: 40px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.month-selector {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 20px;
+    margin-top: -30px;
+}
+
+.stat-box {
+    background: white;
+    border-radius: 12px;
+    padding: 15px 5px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.stat-box h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.stat-box span {
+    font-size: 12px;
+    color: var(--grey-dark);
+}
+
+.stat-box.success h3 {
+    color: var(--success);
+}
+
+.stat-box.warning h3 {
+    color: var(--warning);
+}
+
+.stat-box.info h3 {
+    color: var(--secondary);
+}
+
+.stat-box.danger h3 {
+    color: var(--danger);
+}
+
+.history-list {
+    padding: 0 20px 80px;
+}
+
+.history-item {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-left: 5px solid transparent;
+}
+
+.status-success {
+    border-left-color: var(--success);
+}
+
+.status-warning {
+    border-left-color: var(--warning);
+}
+
+.status-info {
+    border-left-color: var(--secondary);
+}
+
+.date-box {
+    text-align: center;
+    margin-right: 15px;
+    min-width: 35px;
+}
+
+.date-box .day {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+.date-box .dow {
+    font-size: 10px;
+    color: var(--grey-dark);
+}
+
+.info-box {
+    flex: 1;
+}
+
+.time-range {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 3px;
+}
+
+.notes {
+    font-size: 12px;
+    color: var(--grey-dark);
+}
+
+.action-arrow {
+    color: #ccc;
+    font-size: 12px;
+}
+
+/* Bottom navigation styles moved to style.css for consistency */

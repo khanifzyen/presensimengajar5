@@ -1,0 +1,67 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPresence - Welcome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/onboarding.css">
+</head>
+
+<body>
+    <div class="mobile-frame page-transition">
+        <!-- Splash Screen -->
+        <div id="splash-screen">
+            <div class="splash-content">
+                <i class="fas fa-school fa-4x" style="color: white; margin-bottom: 20px;"></i>
+                <h1>EduPresence</h1>
+                <p class="version">v1.0.0</p>
+                <div class="loader"></div>
+            </div>
+        </div>
+
+        <!-- Onboarding Screen (Hidden initially) -->
+        <div id="onboarding-screen" class="hidden">
+            <div class="skip-btn" onclick="goToLogin()">Lewati</div>
+
+            <div class="slider-container">
+                <!-- Slide 1 -->
+                <div class="slide active">
+                    <img src="https://placehold.co/300x250/e0e7ff/1e3a8a?text=Ilustrasi+Presensi" alt="Presensi">
+                    <h2>Presensi Fleksibel</h2>
+                    <p>Satu aplikasi untuk presensi mengajar dan kehadiran kerja harian Anda.</p>
+                </div>
+                <!-- Slide 2 -->
+                <div class="slide">
+                    <img src="https://placehold.co/300x250/e0e7ff/1e3a8a?text=Lokasi+%26+Foto" alt="Lokasi">
+                    <h2>Validasi Akurat</h2>
+                    <p>Check-in hanya bisa dilakukan dalam radius sekolah dengan verifikasi foto wajah.</p>
+                </div>
+                <!-- Slide 3 -->
+                <div class="slide">
+                    <img src="https://placehold.co/300x250/e0e7ff/1e3a8a?text=Izin+%26+Laporan" alt="Izin">
+                    <h2>Pantau Izin</h2>
+                    <p>Ajukan izin sakit atau cuti langsung kepada Admin dan pantau performa Anda.</p>
+                </div>
+            </div>
+
+            <div class="footer-nav">
+                <div class="dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextSlide()">Lanjut <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/onboarding.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

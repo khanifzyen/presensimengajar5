@@ -1,0 +1,113 @@
+<!-- dashboard-guru.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Guru</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header -->
+            <div class="dash-header">
+                <div class="profile-info">
+                    <img src="https://placehold.co/50x50/white/1e3a8a?text=BG" alt="Profil" class="profile-pic">
+                    <div>
+                        <p class="greeting">Halo, Selamat Pagi</p>
+                        <h3 class="username">Budi Santoso, S.Pd</h3>
+                    </div>
+                </div>
+                <div class="notif-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="dot-red"></span>
+                </div>
+            </div>
+
+            <!-- Content Body -->
+            <div class="dash-body">
+
+                <!-- Section 1: Time Card -->
+                <div class="card time-card">
+                    <div id="clock" class="digital-clock">07:15:30</div>
+                    <div class="date">Senin, 10 Desember 2025</div>
+                    <div class="divider"></div>
+                    <div class="stats-row">
+                        <div>
+                            <span>Jam Ajar</span>
+                            <strong>05:30</strong>
+                        </div>
+                        <div>
+                            <span>Status</span>
+                            <strong class="text-success">Tepat Waktu</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Action Card (Kondisi: Kategori Pengajaran) -->
+                <div class="section-title">Status Saat Ini</div>
+                <div class="card action-card">
+                    <div class="class-info">
+                        <h4>Matematika Wajib</h4>
+                        <p>Kelas XII IPA 1 • 07:00 - 08:30</p>
+                    </div>
+                    <!-- Simulasi tombol check-out karena jam sudah 07:15 -->
+                    <button class="btn btn-danger-outline">
+                        <i class="fas fa-sign-out-alt"></i> CHECK-OUT KELAS
+                    </button>
+                    <p class="status-hint">Sedang berlangsung...</p>
+                </div>
+
+                <!-- Section 3: Timeline -->
+                <div class="section-title">Jadwal Hari Ini</div>
+                <div class="timeline">
+                    <!-- Item 1 (Done) -->
+                    <div class="timeline-item done">
+                        <div class="time">07:00</div>
+                        <div class="details">
+                            <h4>Matematika - XII IPA 1</h4>
+                            <span class="badge success">Hadir (07:05)</span>
+                        </div>
+                    </div>
+                    <!-- Item 2 (Upcoming) -->
+                    <div class="timeline-item">
+                        <div class="time">09:00</div>
+                        <div class="details">
+                            <h4>Fisika - X RPL 2</h4>
+                            <span class="badge gray">Menunggu</span>
+                        </div>
+                        <button class="btn-sm">Check-In</button>
+                    </div>
+                    <!-- Item 3 -->
+                    <div class="timeline-item">
+                        <div class="time">13:00</div>
+                        <div class="details">
+                            <h4>Piket Perpustakaan</h4>
+                            <span class="badge gray">Menunggu</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Nav -->
+            <div class="bottom-nav">
+                <a href="dashboard-guru.html" class="active"><i class="fas fa-home"></i></a>
+                <a href="riwayat.html"><i class="fas fa-calendar-alt"></i></a>
+                <a href="presensi.html" class="plus-btn"><i class="fas fa-camera"></i></a>
+                <a href="izin.html"><i class="fas fa-file-alt"></i></a>
+                <a href="profil.html"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+<!-- ubah-kata-sandi.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubah Kata Sandi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/ubah-kata-sandi.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header -->
+            <div class="page-header">
+                <a href="profil.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h2>Ubah Kata Sandi</h2>
+                <div style="width: 24px;"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Password Change Form -->
+            <form id="changePasswordForm" onsubmit="event.preventDefault(); changePassword();">
+                <div class="password-container">
+                    <!-- Current Password -->
+                    <div class="form-group">
+                        <label>Kata Sandi Saat Ini</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="currentPassword" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword('currentPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- New Password -->
+                    <div class="form-group">
+                        <label>Kata Sandi Baru</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="newPassword" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword('newPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill"></div>
+                            </div>
+                            <span class="strength-text">Kekuatan kata sandi</span>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label>Konfirmasi Kata Sandi Baru</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="confirmPassword" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Password Requirements -->
+                    <div class="requirements">
+                        <h4>Persyaratan Kata Sandi:</h4>
+                        <ul>
+                            <li id="length-check" class="requirement">
+                                <i class="fas fa-circle"></i> Minimal 8 karakter
+                            </li>
+                            <li id="uppercase-check" class="requirement">
+                                <i class="fas fa-circle"></i> Minimal 1 huruf besar
+                            </li>
+                            <li id="lowercase-check" class="requirement">
+                                <i class="fas fa-circle"></i> Minimal 1 huruf kecil
+                            </li>
+                            <li id="number-check" class="requirement">
+                                <i class="fas fa-circle"></i> Minimal 1 angka
+                            </li>
+                            <li id="match-check" class="requirement">
+                                <i class="fas fa-circle"></i> Kata sandi cocok
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div style="height: 20px;"></div>
+                    <button type="submit" class="btn btn-primary">UBAH KATA SANDI</button>
+                    <div style="height: 100px;"></div> <!-- Spacer for bottom nav -->
+                </div>
+            </form>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="check-animation">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3>Kata Sandi Diubah!</h3>
+                <p>Kata sandi Anda telah berhasil diperbarui.</p>
+                <button class="btn btn-primary mt-20" onclick="closeModal()">OKE</button>
+            </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+            <a href="dashboard-guru.html"><i class="fas fa-home"></i></a>
+            <a href="riwayat.html"><i class="fas fa-calendar-alt"></i></a>
+            <a href="presensi.html" class="plus-btn"><i class="fas fa-camera"></i></a>
+            <a href="izin.html"><i class="fas fa-file-alt"></i></a>
+            <a href="profil.html" class="active"><i class="fas fa-user"></i></a>
+        </div>
+    </div>
+
+    <script src="js/ubah-kata-sandi.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

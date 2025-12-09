@@ -1,0 +1,419 @@
+/* css/izin.css */
+.page-header {
+    background: white;
+    padding: 25px 20px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+
+.page-header h2 {
+    font-size: 18px;
+    color: var(--primary);
+}
+
+/* Tab Switcher */
+.tab-container {
+    display: flex;
+    padding: 15px 20px;
+    background: white;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #eee;
+    background: var(--grey-light);
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--grey-dark);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.tab-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.content-section {
+    padding: 0 20px;
+    animation: fadeIn 0.3s;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: white;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary);
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--grey-dark);
+    pointer-events: none;
+    font-size: 12px;
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+    background: #eff6ff;
+}
+
+.upload-area i {
+    font-size: 24px;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.upload-area p {
+    font-size: 12px;
+    color: var(--grey-dark);
+}
+
+/* History Cards */
+.history-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border-left: 5px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.history-card.pending {
+    border-left-color: var(--warning);
+}
+
+.history-card.approved {
+    border-left-color: var(--success);
+}
+
+.history-card.rejected {
+    border-left-color: var(--danger);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.type {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.badge-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.card-date {
+    font-size: 12px;
+    color: var(--grey-dark);
+    margin-bottom: 5px;
+}
+
+.reason {
+    font-size: 13px;
+    color: var(--text-main);
+    line-height: 1.4;
+}
+
+/* Modal Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal Specific */
+.modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    /* Default hidden */
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal:not(.hidden) {
+    display: flex;
+    /* Show when not hidden */
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 85%;
+    animation: popIn 0.3s;
+}
+
+.check-animation {
+    width: 60px;
+    height: 60px;
+    background: var(--secondary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 20px;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Mobile optimizations for izin page */
+@media (max-width: 767px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .form-row .form-group {
+        margin-bottom: 15px;
+    }
+
+    .upload-area {
+        padding: 20px;
+    }
+
+    .tab-btn {
+        font-size: 14px;
+        padding: 12px 8px;
+    }
+
+    .history-card {
+        margin-bottom: 12px;
+        padding: 12px;
+    }
+
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .check-animation {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+}
+
+/* Touch optimizations */
+.upload-area:hover,
+.tab-btn:hover {
+    transform: scale(1.02);
+}
+
+.tab-btn:active {
+    transform: scale(0.98);
+}
+
+/* Better focus states for accessibility */
+input:focus,
+select:focus,
+textarea:focus {
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+/* File upload improvements */
+#fileInput {
+    display: none;
+}
+
+.upload-area {
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-area:active {
+    background: #dbeafe;
+    border-color: var(--primary);
+}
+
+/* Smooth transitions for tab switching */
+.content-section {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.content-section.hidden {
+    opacity: 0;
+    transform: translateX(20px);
+    display: none;
+}
+
+/* Ripple effect */
+.tab-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Valid field indicator */
+label.valid::after {
+    content: ' ✓';
+    color: var(--success);
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+/* Enhanced upload area */
+.upload-area {
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading state for form submission */
+.btn.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spinner 0.8s linear infinite;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}

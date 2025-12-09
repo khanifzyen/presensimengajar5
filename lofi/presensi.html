@@ -1,0 +1,89 @@
+<!-- presensi.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proses Presensi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/presensi.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header -->
+            <div class="page-header">
+                <a href="dashboard-guru.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h2>Konfirmasi Presensi</h2>
+                <div style="width: 24px;"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Section 1: Map -->
+            <div class="map-container">
+                <!-- Placeholder Map Image -->
+                <img src="https://placehold.co/400x300/e0e7ff/1e3a8a?text=Peta+Lokasi" alt="Map">
+                <div class="map-overlay">
+                    <div class="radius-circle"></div>
+                    <div class="user-pin"><i class="fas fa-map-marker-alt"></i></div>
+                </div>
+            </div>
+
+            <!-- Section 2: Location Status -->
+            <div class="location-status">
+                <div id="status-icon" class="status-icon loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                </div>
+                <div class="status-text">
+                    <h4 id="status-title">Mencari Lokasi...</h4>
+                    <p id="status-desc">Sedang memindai GPS</p>
+                </div>
+            </div>
+
+            <!-- Section 3: Camera -->
+            <div class="camera-section">
+                <div class="camera-preview">
+                    <i class="fas fa-camera"></i>
+                    <p>Wajah harus terlihat jelas</p>
+                </div>
+            </div>
+
+            <!-- Section 4: Button -->
+            <div class="action-footer">
+                <button id="btn-submit" class="btn btn-disabled" onclick="submitPresensi()" disabled>
+                    KIRIM PRESENSI
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="check-animation">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3>Presensi Berhasil!</h3>
+                <p>Selamat mengajar, Pak Budi.</p>
+                <p class="time-stamp">07:05:12</p>
+                <button class="btn btn-primary" onclick="window.location.href='dashboard-guru.html'">KEMBALI KE
+                    HOME</button>
+            </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+            <a href="dashboard-guru.html"><i class="fas fa-home"></i></a>
+            <a href="riwayat.html"><i class="fas fa-calendar-alt"></i></a>
+            <a href="presensi.html" class="plus-btn active"><i class="fas fa-camera"></i></a>
+            <a href="izin.html"><i class="fas fa-file-alt"></i></a>
+            <a href="profil.html"><i class="fas fa-user"></i></a>
+        </div>
+    </div>
+
+    <script src="js/presensi.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

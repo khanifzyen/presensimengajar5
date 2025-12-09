@@ -1,0 +1,50 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPresence - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content login-container page-transition">
+            <div class="login-header">
+                <i class="fas fa-school logo-icon"></i>
+                <h1>Selamat Datang</h1>
+                <p>Silakan masuk dengan akun guru Anda</p>
+            </div>
+
+            <form class="login-form" onsubmit="event.preventDefault(); window.location.href='dashboard-guru.html';">
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" placeholder="NIP atau Email" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" placeholder="Kata Sandi" required>
+                    <i class="fas fa-eye toggle-password"></i>
+                </div>
+
+                <div class="forgot-pass">
+                    <a href="#">Lupa Kata Sandi?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary">MASUK</button>
+            </form>
+
+            <div class="login-footer">
+                <p>v1.0.0 &copy; EduPresence</p>
+            </div>
+        </div>
+    </div>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

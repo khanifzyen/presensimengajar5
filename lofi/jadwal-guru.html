@@ -1,0 +1,466 @@
+<!-- jadwal-guru.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Guru</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/manajemen-guru.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header Admin -->
+            <div class="admin-header">
+                <div>
+                    <p class="subtitle">Panel Admin</p>
+                    <h2>Jadwal Guru</h2>
+                </div>
+                <img src="https://placehold.co/50x50/white/1e3a8a?text=AD" alt="Admin" class="profile-pic">
+            </div>
+
+            <!-- Teacher Selector -->
+            <div class="teacher-selector">
+                <label for="selectTeacher">Pilih Guru:</label>
+                <select id="selectTeacher" class="teacher-select">
+                    <option value="">-- Pilih Guru --</option>
+                    <option value="1">Budi Santoso, S.Pd - Matematika</option>
+                    <option value="2">Siti Aminah, S.Pd - Bahasa Indonesia</option>
+                    <option value="3">Dewi Sartika, S.Pd - Kimia</option>
+                    <option value="4">Eko Prasetyo, S.Kom - Teknik Komputer</option>
+                    <option value="5">Ahmad Fauzi, S.Pd - Fisika</option>
+                </select>
+            </div>
+
+            <!-- Week Selector -->
+            <div class="week-selector">
+                <button class="week-nav" id="prevWeek">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="week-info">
+                    <h3 id="weekRange">Senin, 9 Des - Sabtu, 14 Des 2024</h3>
+                </div>
+                <button class="week-nav" id="nextWeek">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Schedule Statistics -->
+            <div class="schedule-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalHours">24</span>
+                    <span class="stat-label">Jam/Minggu</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalClasses">18</span>
+                    <span class="stat-label">Kelas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalDays">5</span>
+                    <span class="stat-label">Hari</span>
+                </div>
+            </div>
+
+            <!-- Schedule Table -->
+            <div class="schedule-container">
+                <div class="schedule-header">
+                    <div class="day-column">Hari</div>
+                    <div class="time-column">Jam</div>
+                    <div class="class-column">Kelas</div>
+                    <div class="actions-column">Aksi</div>
+                </div>
+
+                <div class="schedule-body" id="scheduleBody">
+                    <!-- Monday Schedule -->
+                    <div class="schedule-day">
+                        <div class="day-header">
+                            <span class="day-name">Senin</span>
+                            <span class="day-date">9 Des</span>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">07:00-08:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">XII IPA 1</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">09:00-10:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">XI IPA 2</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="add-schedule-row">
+                            <button class="add-schedule-btn" data-day="senin">
+                                <i class="fas fa-plus"></i> Tambah Jadwal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tuesday Schedule -->
+                    <div class="schedule-day">
+                        <div class="day-header">
+                            <span class="day-name">Selasa</span>
+                            <span class="day-date">10 Des</span>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">07:00-08:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">XII IPS 1</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">13:00-14:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">X IPA 3</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="add-schedule-row">
+                            <button class="add-schedule-btn" data-day="selasa">
+                                <i class="fas fa-plus"></i> Tambah Jadwal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Wednesday Schedule -->
+                    <div class="schedule-day">
+                        <div class="day-header">
+                            <span class="day-name">Rabu</span>
+                            <span class="day-date">11 Des</span>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">08:00-09:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">XI IPS 2</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="add-schedule-row">
+                            <button class="add-schedule-btn" data-day="rabu">
+                                <i class="fas fa-plus"></i> Tambah Jadwal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Thursday Schedule -->
+                    <div class="schedule-day">
+                        <div class="day-header">
+                            <span class="day-name">Kamis</span>
+                            <span class="day-date">12 Des</span>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">07:00-08:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">XII IPA 2</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">10:00-11:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">X IPS 1</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="add-schedule-row">
+                            <button class="add-schedule-btn" data-day="kamis">
+                                <i class="fas fa-plus"></i> Tambah Jadwal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Friday Schedule -->
+                    <div class="schedule-day">
+                        <div class="day-header">
+                            <span class="day-name">Jumat</span>
+                            <span class="day-date">13 Des</span>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">07:00-08:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">XI IPA 1</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="time-slot">13:00-14:30</div>
+                            <div class="class-info">
+                                <span class="class-name">Matematika</span>
+                                <span class="class-room">XII IPS 2</span>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="action-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="add-schedule-row">
+                            <button class="add-schedule-btn" data-day="jumat">
+                                <i class="fas fa-plus"></i> Tambah Jadwal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Saturday Schedule -->
+                    <div class="schedule-day">
+                        <div class="day-header">
+                            <span class="day-name">Sabtu</span>
+                            <span class="day-date">14 Des</span>
+                        </div>
+
+                        <div class="no-schedule">
+                            <i class="fas fa-calendar-times"></i>
+                            <p>Belum ada jadwal</p>
+                        </div>
+
+                        <div class="add-schedule-row">
+                            <button class="add-schedule-btn" data-day="sabtu">
+                                <i class="fas fa-plus"></i> Tambah Jadwal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="quick-action-btn" id="copyScheduleBtn">
+                    <i class="fas fa-copy"></i> Salin Jadwal
+                </button>
+                <button class="quick-action-btn" id="printScheduleBtn">
+                    <i class="fas fa-print"></i> Cetak
+                </button>
+                <button class="quick-action-btn" id="exportScheduleBtn">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+
+            <div style="height: 80px;"></div> <!-- Spacer -->
+        </div>
+
+        <!-- Bottom Nav KHUSUS ADMIN -->
+        <div class="bottom-nav">
+            <!-- 1. Home -->
+            <a href="dashboard-admin.html" class="nav-item">
+                <i class="fas fa-chart-pie"></i>
+                <span class="nav-label">Dash</span>
+            </a>
+
+            <!-- 2. Monitoring Guru -->
+            <a href="manajemen-guru.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span class="nav-label">Guru</span>
+            </a>
+
+            <!-- 3. Izin (Center) -->
+            <a href="#" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span class="nav-label">Izin</span>
+            </a>
+
+            <!-- 4. Laporan -->
+            <a href="#" class="nav-item">
+                <i class="fas fa-file-invoice"></i>
+                <span class="nav-label">Rekap</span>
+            </a>
+
+            <!-- 5. Pengaturan -->
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span class="nav-label">Set</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Add/Edit Schedule Modal -->
+    <div class="modal" id="scheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Jadwal</h3>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleForm">
+                    <div class="form-group">
+                        <label for="scheduleDay">Hari</label>
+                        <select id="scheduleDay" required>
+                            <option value="">Pilih Hari</option>
+                            <option value="senin">Senin</option>
+                            <option value="selasa">Selasa</option>
+                            <option value="rabu">Rabu</option>
+                            <option value="kamis">Kamis</option>
+                            <option value="jumat">Jumat</option>
+                            <option value="sabtu">Sabtu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="startTime">Waktu Mulai</label>
+                        <input type="time" id="startTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">Waktu Selesai</label>
+                        <input type="time" id="endTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Mata Pelajaran</label>
+                        <input type="text" id="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classRoom">Kelas</label>
+                        <select id="classRoom" required>
+                            <option value="">Pilih Kelas</option>
+                            <option value="X IPA 1">X IPA 1</option>
+                            <option value="X IPA 2">X IPA 2</option>
+                            <option value="X IPA 3">X IPA 3</option>
+                            <option value="X IPS 1">X IPS 1</option>
+                            <option value="X IPS 2">X IPS 2</option>
+                            <option value="XI IPA 1">XI IPA 1</option>
+                            <option value="XI IPA 2">XI IPA 2</option>
+                            <option value="XI IPS 1">XI IPS 1</option>
+                            <option value="XI IPS 2">XI IPS 2</option>
+                            <option value="XII IPA 1">XII IPA 1</option>
+                            <option value="XII IPA 2">XII IPA 2</option>
+                            <option value="XII IPS 1">XII IPS 1</option>
+                            <option value="XII IPS 2">XII IPS 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="room">Ruangan</label>
+                        <input type="text" id="room" placeholder="Contoh: Lab Komputer, Ruang 201">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelBtn">Batal</button>
+                <button type="submit" form="scheduleForm" class="btn btn-primary">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Schedule Modal -->
+    <div class="modal" id="copyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Salin Jadwal</h3>
+                <button class="close-btn" id="closeCopyModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Pilih guru untuk menyalin jadwal:</p>
+                <select id="copyTeacherSelect" class="teacher-select">
+                    <option value="">-- Pilih Guru --</option>
+                    <option value="1">Siti Aminah, S.Pd - Bahasa Indonesia</option>
+                    <option value="2">Dewi Sartika, S.Pd - Kimia</option>
+                    <option value="3">Eko Prasetyo, S.Kom - Teknik Komputer</option>
+                    <option value="4">Ahmad Fauzi, S.Pd - Fisika</option>
+                </select>
+                <div class="copy-options">
+                    <label>
+                        <input type="checkbox" id="overwriteExisting"> Timpa jadwal yang ada
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelCopyBtn">Batal</button>
+                <button type="button" class="btn btn-primary" id="confirmCopyBtn">Salin</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jadwal-guru.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

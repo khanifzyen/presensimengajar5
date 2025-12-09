@@ -1,0 +1,146 @@
+<!-- dashboard-admin.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header Admin -->
+            <div class="admin-header">
+                <div>
+                    <p class="subtitle">Panel Admin</p>
+                    <h2>SMP Negeri 1</h2>
+                </div>
+                <img src="https://placehold.co/50x50/white/1e3a8a?text=AD" alt="Admin" class="profile-pic">
+            </div>
+
+            <!-- Section 1: Ringkasan Hari Ini -->
+            <div class="stats-container">
+                <div class="section-title">Kehadiran Hari Ini (10 Des)</div>
+                <div class="stats-cards">
+                    <div class="card-stat blue">
+                        <h3>50</h3>
+                        <span>Total Guru</span>
+                    </div>
+                    <div class="card-stat green">
+                        <h3>42</h3>
+                        <span>Hadir</span>
+                    </div>
+                    <div class="card-stat yellow">
+                        <h3>3</h3>
+                        <span>Izin</span>
+                    </div>
+                    <div class="card-stat red">
+                        <h3>5</h3>
+                        <span>Belum</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Need Approval (Notifikasi) -->
+            <div class="alert-box">
+                <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="alert-text">
+                    <strong>3 Pengajuan Izin Baru</strong>
+                    <p>Menunggu persetujuan Anda.</p>
+                </div>
+                <button class="btn-xs" onclick="window.location.href='approval-izin.html'">Lihat</button>
+            </div>
+
+            <!-- Section 3: Live Monitoring -->
+            <div class="live-monitor">
+                <div class="section-title">Monitoring Real-time</div>
+
+                <!-- Guru 1 -->
+                <div class="teacher-row">
+                    <img src="https://placehold.co/40x40" alt="Guru">
+                    <div class="teacher-info">
+                        <h4>Budi Santoso</h4>
+                        <p>Mengajar: Matematika (XII-A)</p>
+                    </div>
+                    <div class="status-pill present">Hadir 07:00</div>
+                </div>
+
+                <!-- Guru 2 -->
+                <div class="teacher-row">
+                    <img src="https://placehold.co/40x40" alt="Guru">
+                    <div class="teacher-info">
+                        <h4>Siti Aminah</h4>
+                        <p>Staf Tata Usaha</p>
+                    </div>
+                    <div class="status-pill late">Telat 10m</div>
+                </div>
+
+                <!-- Guru 3 -->
+                <div class="teacher-row">
+                    <img src="https://placehold.co/40x40" alt="Guru">
+                    <div class="teacher-info">
+                        <h4>Ahmad Dahlan</h4>
+                        <p>Belum Check-in</p>
+                    </div>
+                    <div class="status-pill absent">Alpha</div>
+                </div>
+                <!-- Guru 4 -->
+                <div class="teacher-row">
+                    <img src="https://placehold.co/40x40" alt="Guru">
+                    <div class="teacher-info">
+                        <h4>Dewi Sartika</h4>
+                        <p>Izin Sakit</p>
+                    </div>
+                    <div class="status-pill permit">Sakit</div>
+                </div>
+            </div>
+
+            <div style="height: 80px;"></div> <!-- Spacer -->
+        </div>
+
+        <!-- Bottom Nav KHUSUS ADMIN -->
+        <div class="bottom-nav">
+            <!-- 1. Home -->
+            <a href="dashboard-admin.html" class="nav-item active">
+                <i class="fas fa-chart-pie"></i>
+                <span class="nav-label">Dash</span>
+            </a>
+
+            <!-- 2. Monitoring Guru -->
+            <a href="manajemen-guru.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span class="nav-label">Guru</span>
+            </a>
+
+            <!-- 3. Izin (Center) -->
+            <a href="approval-izin.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span class="nav-label">Izin</span>
+            </a>
+
+            <!-- 4. Laporan -->
+            <a href="#" class="nav-item">
+                <i class="fas fa-file-invoice"></i>
+                <span class="nav-label">Rekap</span>
+            </a>
+
+            <!-- 5. Pengaturan -->
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span class="nav-label">Set</span>
+            </a>
+        </div>
+    </div>
+
+
+
+    <script src="js/dashboard-admin.js?v=2"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

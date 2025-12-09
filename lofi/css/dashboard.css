@@ -1,0 +1,209 @@
+/* css/dashboard.css */
+.dash-header {
+    background-color: var(--primary);
+    padding: 50px 20px 30px 20px;
+    /* Padding top besar untuk status bar HP */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.greeting {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: 2px;
+}
+
+.username {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.notif-icon {
+    position: relative;
+    cursor: pointer;
+}
+
+.dot-red {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: var(--danger);
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+}
+
+.dash-body {
+    padding: 20px;
+    padding-bottom: 80px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.time-card {
+    margin-top: -40px;
+    text-align: center;
+}
+
+/* Overlap header */
+.digital-clock {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: monospace;
+}
+
+.date {
+    color: var(--grey-dark);
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.divider {
+    height: 1px;
+    background: #eee;
+    margin: 10px 0;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-around;
+    font-size: 14px;
+}
+
+.stats-row span {
+    display: block;
+    color: var(--grey-dark);
+    font-size: 12px;
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.action-card {
+    border-left: 5px solid var(--success);
+}
+
+.class-info {
+    margin-bottom: 15px;
+}
+
+.class-info h4 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.class-info p {
+    color: var(--grey-dark);
+    font-size: 14px;
+}
+
+.btn-danger-outline {
+    background: white;
+    border: 2px solid var(--danger);
+    color: var(--danger);
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.status-hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--success);
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.timeline-item.done {
+    border-left: 4px solid var(--success);
+    background: #f0fdf4;
+}
+
+.time {
+    font-weight: bold;
+    color: var(--primary);
+    min-width: 45px;
+}
+
+.details h4 {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.badge {
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.badge.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge.gray {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.btn-sm {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-left: auto;
+}
+
+/* Bottom navigation styles moved to style.css for consistency */

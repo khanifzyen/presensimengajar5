@@ -1,0 +1,342 @@
+<!-- manajemen-guru.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Guru</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/manajemen-guru.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header Admin -->
+            <div class="admin-header">
+                <div>
+                    <p class="subtitle">Panel Admin</p>
+                    <h2>Manajemen Guru</h2>
+                </div>
+                <img src="https://placehold.co/50x50/white/1e3a8a?text=AD" alt="Admin" class="profile-pic">
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="search-section">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari nama atau NIP..." id="searchInput">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Semua</button>
+                    <button class="filter-btn" data-filter="active">Aktif</button>
+                    <button class="filter-btn" data-filter="inactive">Non-Aktif</button>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-container">
+                <div class="stats-cards">
+                    <div class="card-stat blue">
+                        <h3 id="totalTeachers">50</h3>
+                        <span>Total Guru</span>
+                    </div>
+                    <div class="card-stat green">
+                        <h3 id="activeTeachers">45</h3>
+                        <span>Aktif</span>
+                    </div>
+                    <div class="card-stat yellow">
+                        <h3 id="newTeachers">3</h3>
+                        <span>Baru</span>
+                    </div>
+                    <div class="card-stat red">
+                        <h3 id="inactiveTeachers">5</h3>
+                        <span>Non-Aktif</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Teacher Button -->
+            <div class="add-teacher-section">
+                <button class="btn btn-primary" id="addTeacherBtn">
+                    <i class="fas fa-plus"></i> Tambah Guru Baru
+                </button>
+            </div>
+
+            <!-- Teacher List -->
+            <div class="teacher-list" id="teacherList">
+                <!-- Teacher 1 -->
+                <div class="teacher-card" data-status="active">
+                    <div class="teacher-avatar">
+                        <img src="https://placehold.co/60x60" alt="Guru">
+                    </div>
+                    <div class="teacher-details">
+                        <h4>Budi Santoso, S.Pd</h4>
+                        <p class="teacher-nip">NIP: 198506152008011001</p>
+                        <p class="teacher-subject">Matematika</p>
+                        <div class="teacher-status">
+                            <span class="status-badge active">Aktif</span>
+                            <span class="join-date">Bergabung: Jan 2020</span>
+                        </div>
+                    </div>
+                    <div class="teacher-actions">
+                        <button class="action-btn edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn schedule" title="Jadwal">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                        <button class="action-btn delete" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Teacher 2 -->
+                <div class="teacher-card" data-status="active">
+                    <div class="teacher-avatar">
+                        <img src="https://placehold.co/60x60" alt="Guru">
+                    </div>
+                    <div class="teacher-details">
+                        <h4>Siti Aminah, S.Pd</h4>
+                        <p class="teacher-nip">NIP: 198703122009022001</p>
+                        <p class="teacher-subject">Bahasa Indonesia</p>
+                        <div class="teacher-status">
+                            <span class="status-badge active">Aktif</span>
+                            <span class="join-date">Bergabung: Mar 2015</span>
+                        </div>
+                    </div>
+                    <div class="teacher-actions">
+                        <button class="action-btn edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn schedule" title="Jadwal">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                        <button class="action-btn delete" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Teacher 3 -->
+                <div class="teacher-card" data-status="inactive">
+                    <div class="teacher-avatar">
+                        <img src="https://placehold.co/60x60" alt="Guru">
+                    </div>
+                    <div class="teacher-details">
+                        <h4>Ahmad Dahlan, S.Pd</h4>
+                        <p class="teacher-nip">NIP: 198209101997031001</p>
+                        <p class="teacher-subject">Fisika</p>
+                        <div class="teacher-status">
+                            <span class="status-badge inactive">Non-Aktif</span>
+                            <span class="join-date">Bergabung: Sep 2010</span>
+                        </div>
+                    </div>
+                    <div class="teacher-actions">
+                        <button class="action-btn edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn schedule" title="Jadwal">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                        <button class="action-btn delete" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Teacher 4 -->
+                <div class="teacher-card" data-status="active">
+                    <div class="teacher-avatar">
+                        <img src="https://placehold.co/60x60" alt="Guru">
+                    </div>
+                    <div class="teacher-details">
+                        <h4>Dewi Sartika, S.Pd</h4>
+                        <p class="teacher-nip">NIP: 199012152019032001</p>
+                        <p class="teacher-subject">Kimia</p>
+                        <div class="teacher-status">
+                            <span class="status-badge active">Aktif</span>
+                            <span class="join-date">Bergabung: Des 2019</span>
+                        </div>
+                    </div>
+                    <div class="teacher-actions">
+                        <button class="action-btn edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn schedule" title="Jadwal">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                        <button class="action-btn delete" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Teacher 5 -->
+                <div class="teacher-card" data-status="active">
+                    <div class="teacher-avatar">
+                        <img src="https://placehold.co/60x60" alt="Guru">
+                    </div>
+                    <div class="teacher-details">
+                        <h4>Eko Prasetyo, S.Kom</h4>
+                        <p class="teacher-nip">NIP: 198805202010011001</p>
+                        <p class="teacher-subject">Teknik Komputer</p>
+                        <div class="teacher-status">
+                            <span class="status-badge new">Baru</span>
+                            <span class="join-date">Bergabung: Mei 2024</span>
+                        </div>
+                    </div>
+                    <div class="teacher-actions">
+                        <button class="action-btn edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn schedule" title="Jadwal">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                        <button class="action-btn delete" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 80px;"></div> <!-- Spacer -->
+        </div>
+
+        <!-- Bottom Nav KHUSUS ADMIN -->
+        <div class="bottom-nav">
+            <!-- 1. Home -->
+            <a href="dashboard-admin.html" class="nav-item">
+                <i class="fas fa-chart-pie"></i>
+                <span class="nav-label">Dash</span>
+            </a>
+
+            <!-- 2. Monitoring Guru -->
+            <a href="manajemen-guru.html" class="nav-item active">
+                <i class="fas fa-users"></i>
+                <span class="nav-label">Guru</span>
+            </a>
+
+            <!-- 3. Izin (Center) -->
+            <a href="approval-izin.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span class="nav-label">Izin</span>
+            </a>
+
+            <!-- 4. Laporan -->
+            <a href="#" class="nav-item">
+                <i class="fas fa-file-invoice"></i>
+                <span class="nav-label">Rekap</span>
+            </a>
+
+            <!-- 5. Pengaturan -->
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span class="nav-label">Set</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Add/Edit Teacher Modal -->
+    <div class="modal" id="teacherModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Guru Baru</h3>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="teacherForm">
+                    <div class="form-group">
+                        <label for="teacherName">Nama Lengkap</label>
+                        <input type="text" id="teacherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherNIP">NIP</label>
+                        <input type="text" id="teacherNIP" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherSubject">Mata Pelajaran</label>
+                        <select id="teacherSubject" required>
+                            <option value="">Pilih Mata Pelajaran</option>
+                            <option value="Matematika">Matematika</option>
+                            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                            <option value="Bahasa Inggris">Bahasa Inggris</option>
+                            <option value="Fisika">Fisika</option>
+                            <option value="Kimia">Kimia</option>
+                            <option value="Biologi">Biologi</option>
+                            <option value="Teknik Komputer">Teknik Komputer</option>
+                            <option value="Akuntansi">Akuntansi</option>
+                            <option value="Ekonomi">Ekonomi</option>
+                            <option value="Geografi">Geografi</option>
+                            <option value="Sejarah">Sejarah</option>
+                            <option value="PKN">PKN</option>
+                            <option value="Penjaskes">Penjaskes</option>
+                            <option value="Seni Budaya">Seni Budaya</option>
+                            <option value="Bimbingan Konseling">Bimbingan Konseling</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherEmail">Email</label>
+                        <input type="email" id="teacherEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherPhone">No. Telepon</label>
+                        <input type="tel" id="teacherPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherStatus">Status</label>
+                        <select id="teacherStatus" required>
+                            <option value="active">Aktif</option>
+                            <option value="inactive">Non-Aktif</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherJoinDate">Tanggal Bergabung</label>
+                        <input type="date" id="teacherJoinDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherPassword">Password</label>
+                        <input type="password" id="teacherPassword" placeholder="Masukkan password untuk login"
+                            required>
+                        <small class="form-help">Password akan digunakan untuk login guru</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelBtn">Batal</button>
+                <button type="submit" form="teacherForm" class="btn btn-primary">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Konfirmasi Hapus</h3>
+                <button class="close-btn" id="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus data guru ini?</p>
+                <p><strong id="deleteTeacherName"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelDeleteBtn">Batal</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/manajemen-guru.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

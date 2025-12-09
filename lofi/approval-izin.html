@@ -1,0 +1,354 @@
+<!-- approval-izin.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approval Izin - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/approval-izin.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header Admin -->
+            <div class="admin-header">
+                <div>
+                    <p class="subtitle">Panel Admin</p>
+                    <h2>Approval Izin</h2>
+                </div>
+                <img src="https://placehold.co/50x50/white/1e3a8a?text=AD" alt="Admin" class="profile-pic">
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterRequests('all')">
+                    <span class="tab-count">12</span>
+                    Semua
+                </button>
+                <button class="filter-tab" onclick="filterRequests('pending')">
+                    <span class="tab-count warning">3</span>
+                    Menunggu
+                </button>
+                <button class="filter-tab" onclick="filterRequests('approved')">
+                    <span class="tab-count success">7</span>
+                    Disetujui
+                </button>
+                <button class="filter-tab" onclick="filterRequests('rejected')">
+                    <span class="tab-count danger">2</span>
+                    Ditolak
+                </button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari nama guru atau jenis izin..." id="searchInput"
+                        onkeyup="searchRequests()">
+                </div>
+                <button class="filter-btn" onclick="toggleAdvancedFilter()">
+                    <i class="fas fa-filter"></i>
+                </button>
+            </div>
+
+            <!-- Advanced Filter (Hidden by default) -->
+            <div id="advancedFilter" class="advanced-filter hidden">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Jenis Izin</label>
+                        <select id="filterType">
+                            <option value="">Semua Jenis</option>
+                            <option value="sakit">Sakit</option>
+                            <option value="cuti">Cuti Pribadi</option>
+                            <option value="dinas">Dinas Luar</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Tanggal</label>
+                        <input type="date" id="filterDate">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Requests List -->
+            <div class="requests-container" id="requestsList">
+                <!-- Pending Request 1 -->
+                <div class="request-card pending" data-status="pending" data-type="cuti" data-name="Ahmad Dahlan">
+                    <div class="card-header">
+                        <div class="teacher-info">
+                            <img src="https://placehold.co/45x45" alt="Teacher" class="teacher-avatar">
+                            <div>
+                                <h4>Ahmad Dahlan</h4>
+                                <p class="teacher-subject">Guru Matematika</p>
+                            </div>
+                        </div>
+                        <span class="status-badge pending">Menunggu</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="request-details">
+                            <div class="detail-item">
+                                <i class="fas fa-tag"></i>
+                                <span>Cuti Pribadi</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>12 Des - 13 Des 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>2 hari</span>
+                            </div>
+                        </div>
+                        <div class="request-reason">
+                            <p><strong>Alasan:</strong> Acara keluarga di luar kota</p>
+                        </div>
+                        <div class="request-attachment" onclick="viewAttachment(this)">
+                            <i class="fas fa-paperclip"></i>
+                            <span>surat_izin.pdf</span>
+                            <i class="fas fa-external-link-alt"></i>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-action reject" onclick="rejectRequest(this, 'Ahmad Dahlan')">
+                            <i class="fas fa-times"></i> Tolak
+                        </button>
+                        <button class="btn-action approve" onclick="approveRequest(this, 'Ahmad Dahlan')">
+                            <i class="fas fa-check"></i> Setujui
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pending Request 2 -->
+                <div class="request-card pending" data-status="pending" data-type="sakit" data-name="Siti Aminah">
+                    <div class="card-header">
+                        <div class="teacher-info">
+                            <img src="https://placehold.co/45x45" alt="Teacher" class="teacher-avatar">
+                            <div>
+                                <h4>Siti Aminah</h4>
+                                <p class="teacher-subject">Staf Tata Usaha</p>
+                            </div>
+                        </div>
+                        <span class="status-badge pending">Menunggu</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="request-details">
+                            <div class="detail-item">
+                                <i class="fas fa-tag"></i>
+                                <span>Sakit</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>10 Des 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>1 hari</span>
+                            </div>
+                        </div>
+                        <div class="request-reason">
+                            <p><strong>Alasan:</strong> Demam tinggi, perlu istirahat</p>
+                        </div>
+                        <div class="request-attachment" onclick="viewAttachment(this)">
+                            <i class="fas fa-paperclip"></i>
+                            <span>surat_dokter.jpg</span>
+                            <i class="fas fa-external-link-alt"></i>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-action reject" onclick="rejectRequest(this, 'Siti Aminah')">
+                            <i class="fas fa-times"></i> Tolak
+                        </button>
+                        <button class="btn-action approve" onclick="approveRequest(this, 'Siti Aminah')">
+                            <i class="fas fa-check"></i> Setujui
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Approved Request -->
+                <div class="request-card approved" data-status="approved" data-type="sakit" data-name="Budi Santoso">
+                    <div class="card-header">
+                        <div class="teacher-info">
+                            <img src="https://placehold.co/45x45" alt="Teacher" class="teacher-avatar">
+                            <div>
+                                <h4>Budi Santoso</h4>
+                                <p class="teacher-subject">Guru Bahasa Indonesia</p>
+                            </div>
+                        </div>
+                        <span class="status-badge approved">Disetujui</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="request-details">
+                            <div class="detail-item">
+                                <i class="fas fa-tag"></i>
+                                <span>Sakit</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>01 Des 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>1 hari</span>
+                            </div>
+                        </div>
+                        <div class="request-reason">
+                            <p><strong>Alasan:</strong> Demam tinggi, surat dokter terlampir</p>
+                        </div>
+                        <div class="approval-info">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Disetujui oleh Admin pada 01 Des 2025, 08:30</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-action view" onclick="viewDetails('Budi Santoso')">
+                            <i class="fas fa-eye"></i> Lihat Detail
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rejected Request -->
+                <div class="request-card rejected" data-status="rejected" data-type="cuti" data-name="Dewi Sartika">
+                    <div class="card-header">
+                        <div class="teacher-info">
+                            <img src="https://placehold.co/45x45" alt="Teacher" class="teacher-avatar">
+                            <div>
+                                <h4>Dewi Sartika</h4>
+                                <p class="teacher-subject">Guru Kimia</p>
+                            </div>
+                        </div>
+                        <span class="status-badge rejected">Ditolak</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="request-details">
+                            <div class="detail-item">
+                                <i class="fas fa-tag"></i>
+                                <span>Cuti Pribadi</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>15 Nov - 16 Nov 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>2 hari</span>
+                            </div>
+                        </div>
+                        <div class="request-reason">
+                            <p><strong>Alasan:</strong> Liburan keluarga</p>
+                        </div>
+                        <div class="rejection-info">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Ditolak: Jadwal mengajar padat, mohon dijadwalkan ulang</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-action view" onclick="viewDetails('Dewi Sartika')">
+                            <i class="fas fa-eye"></i> Lihat Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 80px;"></div> <!-- Spacer for bottom nav -->
+        </div>
+
+        <!-- Bottom Nav Admin -->
+        <div class="bottom-nav">
+            <a href="dashboard-admin.html" class="nav-item">
+                <i class="fas fa-chart-pie"></i>
+                <span class="nav-label">Dash</span>
+            </a>
+            <a href="manajemen-guru.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span class="nav-label">Guru</span>
+            </a>
+            <a href="approval-izin.html" class="nav-item active">
+                <i class="fas fa-clipboard-check"></i>
+                <span class="nav-label">Izin</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-file-invoice"></i>
+                <span class="nav-label">Rekap</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span class="nav-label">Set</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Approval Modal -->
+    <div id="approvalModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Konfirmasi Persetujuan</h3>
+                <button class="close-btn" onclick="closeModal('approvalModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin <strong id="approvalAction">menyetujui</strong> pengajuan izin dari <strong
+                        id="teacherName">-</strong>?</p>
+                <div class="form-group">
+                    <label>Catatan (Opsional)</label>
+                    <textarea id="approvalNote" rows="3" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('approvalModal')">Batal</button>
+                <button class="btn btn-primary" id="confirmApprovalBtn" onclick="confirmApproval()">
+                    <i class="fas fa-check"></i> Ya, Setujui
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rejection Modal -->
+    <div id="rejectionModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Konfirmasi Penolakan</h3>
+                <button class="close-btn" onclick="closeModal('rejectionModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin <strong>menolak</strong> pengajuan izin dari <strong
+                        id="rejectTeacherName">-</strong>?</p>
+                <div class="form-group">
+                    <label>Alasan Penolakan <span class="required">*</span></label>
+                    <textarea id="rejectionReason" rows="3" placeholder="Harap sebutkan alasan penolakan..."
+                        required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('rejectionModal')">Batal</button>
+                <button class="btn btn-danger" id="confirmRejectionBtn" onclick="confirmRejection()">
+                    <i class="fas fa-times"></i> Ya, Tolak
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content success-modal">
+            <div class="success-animation">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 id="successTitle">Berhasil!</h3>
+            <p id="successMessage">Pengajuan izin telah diproses.</p>
+            <button class="btn btn-primary" onclick="closeModal('successModal')">OK</button>
+        </div>
+    </div>
+
+    <script src="js/approval-izin.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<!-- riwayat.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Presensi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/riwayat.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <div class="page-header">
+                <h2>Riwayat</h2>
+                <div class="month-selector">
+                    <span>Desember 2025</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-box success">
+                    <h3>20</h3>
+                    <span>Hadir</span>
+                </div>
+                <div class="stat-box warning">
+                    <h3>2</h3>
+                    <span>Telat</span>
+                </div>
+                <div class="stat-box info">
+                    <h3>1</h3>
+                    <span>Izin</span>
+                </div>
+                <div class="stat-box danger">
+                    <h3>0</h3>
+                    <span>Alpha</span>
+                </div>
+            </div>
+
+            <!-- List History -->
+            <div class="history-list">
+                <!-- Item 1: Normal -->
+                <div class="history-item status-success">
+                    <div class="date-box">
+                        <span class="day">10</span>
+                        <span class="dow">SEN</span>
+                    </div>
+                    <div class="info-box">
+                        <div class="time-range">07:00 - 14:00</div>
+                        <div class="notes">Hadir Tepat Waktu</div>
+                    </div>
+                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                </div>
+
+                <!-- Item 2: Late -->
+                <div class="history-item status-warning">
+                    <div class="date-box">
+                        <span class="day">09</span>
+                        <span class="dow">MIN</span>
+                    </div>
+                    <div class="info-box">
+                        <div class="time-range">07:15 - 14:00</div>
+                        <div class="notes">Terlambat 15 Menit</div>
+                    </div>
+                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                </div>
+
+                <!-- Item 3: Izin -->
+                <div class="history-item status-info">
+                    <div class="date-box">
+                        <span class="day">08</span>
+                        <span class="dow">SAB</span>
+                    </div>
+                    <div class="info-box">
+                        <div class="time-range">Izin Sakit</div>
+                        <div class="notes">Surat Dokter.pdf</div>
+                    </div>
+                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+
+            <!-- Bottom Nav -->
+            <div class="bottom-nav">
+                <a href="dashboard-guru.html"><i class="fas fa-home"></i></a>
+                <a href="riwayat.html" class="active"><i class="fas fa-calendar-alt"></i></a>
+                <a href="presensi.html" class="plus-btn"><i class="fas fa-camera"></i></a>
+                <a href="izin.html"><i class="fas fa-file-alt"></i></a>
+                <a href="profil.html"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+    </div>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,180 @@
+<!-- panduan.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Penggunaan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/panduan.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header -->
+            <div class="page-header">
+                <a href="profil.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h2>Panduan</h2>
+                <div style="width: 24px;"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari panduan..." id="searchInput" onkeyup="searchGuide()">
+                </div>
+            </div>
+
+            <!-- Guide Categories -->
+            <div class="guide-container">
+                <!-- Getting Started -->
+                <div class="guide-category">
+                    <div class="category-header" onclick="toggleCategory('getting-started')">
+                        <i class="fas fa-rocket"></i>
+                        <h3>Memulai Aplikasi</h3>
+                        <i class="fas fa-chevron-down category-arrow"></i>
+                    </div>
+                    <div class="category-content" id="getting-started">
+                        <div class="guide-item">
+                            <h4>1. Login Pertama Kali</h4>
+                            <p>Buka aplikasi dan masukkan NIP serta kata sandi yang telah diberikan oleh admin sekolah.
+                            </p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>2. Dashboard Overview</h4>
+                            <p>Dashboard menampilkan jadwal mengajar hari ini, jam kerja, dan status presensi terkini.
+                            </p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>3. Navigasi Aplikasi</h4>
+                            <p>Gunakan menu bawah untuk berpindah antar halaman: Home, Riwayat, Presensi, Izin, dan
+                                Profil.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Presensi Guide -->
+                <div class="guide-category">
+                    <div class="category-header" onclick="toggleCategory('presensi')">
+                        <i class="fas fa-camera"></i>
+                        <h3>Panduan Presensi</h3>
+                        <i class="fas fa-chevron-down category-arrow"></i>
+                    </div>
+                    <div class="category-content hidden" id="presensi">
+                        <div class="guide-item">
+                            <h4>1. Lokasi Valid</h4>
+                            <p>Pastikan Anda berada dalam radius sekolah (maksimal 100 meter dari gedung sekolah).</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>2. Wajah Jelas</h4>
+                            <p>Posisikan wajah Anda dengan jelas di kamera. Pastikan pencahayaan cukup dan tidak ada
+                                bayangan.</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>3. Jam Presensi</h4>
+                            <p>Presensi masuk dapat dilakukan 30 menit sebelum jam mengajar. Presensi keluar setelah
+                                selesai mengajar.</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>4. Notifikasi</h4>
+                            <p>Anda akan menerima notifikasi jika presensi berhasil atau ada masalah yang perlu
+                                diperbaiki.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Izin Guide -->
+                <div class="guide-category">
+                    <div class="category-header" onclick="toggleCategory('izin')">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Panduan Izin</h3>
+                        <i class="fas fa-chevron-down category-arrow"></i>
+                    </div>
+                    <div class="category-content hidden" id="izin">
+                        <div class="guide-item">
+                            <h4>1. Jenis Izin</h4>
+                            <p>Pilih jenis izin: Sakit (dengan surat dokter), Cuti Pribadi, atau Dinas Luar.</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>2. Pengisian Form</h4>
+                            <p>Isi tanggal mulai dan selesai, serta berikan keterangan yang jelas dan lengkap.</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>3. Lampiran Dokumen</h4>
+                            <p>Upload dokumen pendukung (surat dokter, surat tugas, dll) dalam format JPG atau PDF
+                                maksimal 5MB.</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>4. Status Persetujuan</h4>
+                            <p>Monitor status pengajuan di tab Riwayat. Status: Menunggu, Disetujui, atau Ditolak.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting -->
+                <div class="guide-category">
+                    <div class="category-header" onclick="toggleCategory('troubleshooting')">
+                        <i class="fas fa-tools"></i>
+                        <h3>Troubleshooting</h3>
+                        <i class="fas fa-chevron-down category-arrow"></i>
+                    </div>
+                    <div class="category-content hidden" id="troubleshooting">
+                        <div class="guide-item">
+                            <h4>GPS Tidak Terdeteksi</h4>
+                            <p>Pastikan GPS di perangkat Anda aktif dan berikan izin lokasi untuk aplikasi.</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>Kamera Tidak Berfungsi</h4>
+                            <p>Periksa izin kamera di pengaturan perangkat dan restart aplikasi.</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>Lupa Kata Sandi</h4>
+                            <p>Hubungi admin sekolah untuk reset kata sandi. Tidak ada fitur lupa sandi otomatis.</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>Data Tidak Sync</h4>
+                            <p>Pastikan koneksi internet stabil dan coba refresh dengan menarik ke bawah pada dashboard.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Support -->
+            <div class="support-section">
+                <h3>Butuh Bantuan?</h3>
+                <p>Hubungi IT Support sekolah untuk bantuan lebih lanjut.</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>021-1234-5678</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>support@sekolah.sch.id</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 100px;"></div> <!-- Spacer for bottom nav -->
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+            <a href="dashboard-guru.html"><i class="fas fa-home"></i></a>
+            <a href="riwayat.html"><i class="fas fa-calendar-alt"></i></a>
+            <a href="presensi.html" class="plus-btn"><i class="fas fa-camera"></i></a>
+            <a href="izin.html"><i class="fas fa-file-alt"></i></a>
+            <a href="profil.html"><i class="fas fa-user"></i></a>
+        </div>
+    </div>
+
+    <script src="js/panduan.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,327 @@
+<!-- laporan.html -->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Presensi - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/laporan.css">
+</head>
+
+<body>
+    <div class="mobile-frame">
+        <div class="screen-content page-transition">
+            <!-- Header Admin -->
+            <div class="admin-header">
+                <div>
+                    <p class="subtitle">Panel Admin</p>
+                    <h2>Laporan Presensi</h2>
+                </div>
+                <img src="https://placehold.co/50x50/white/1e3a8a?text=AD" alt="Admin" class="profile-pic">
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-header">
+                    <h3>Filter Laporan</h3>
+                    <button class="toggle-filter" onclick="toggleFilterOptions()">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="filter-options" id="filterOptions">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>Bulan</label>
+                            <select id="monthFilter">
+                                <option value="">Pilih Bulan</option>
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="6">Juni</option>
+                                <option value="7">Juli</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Tahun</label>
+                            <select id="yearFilter">
+                                <option value="">Pilih Tahun</option>
+                                <option value="2024">2024</option>
+                                <option value="2025" selected>2025</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>Guru</label>
+                            <select id="teacherFilter">
+                                <option value="">Semua Guru</option>
+                                <option value="1">Budi Santoso, S.Pd</option>
+                                <option value="2">Siti Aminah, S.Pd</option>
+                                <option value="3">Ahmad Dahlan, S.Pd</option>
+                                <option value="4">Dewi Sartika, S.Pd</option>
+                                <option value="5">Eko Prasetyo, S.Kom</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status</label>
+                            <select id="statusFilter">
+                                <option value="">Semua Status</option>
+                                <option value="hadir">Hadir</option>
+                                <option value="telat">Telat</option>
+                                <option value="izin">Izin</option>
+                                <option value="sakit">Sakit</option>
+                                <option value="alpha">Alpha</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" onclick="applyFilters()">
+                            <i class="fas fa-filter"></i> Terapkan Filter
+                        </button>
+                        <button class="btn btn-outline" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-section">
+                <div class="section-title">Ringkasan Presensi</div>
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="card-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="totalDays">22</h3>
+                            <span>Total Hari</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="totalPresent">18</h3>
+                            <span>Hadir</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon yellow">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="totalLate">2</h3>
+                            <span>Telat</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon orange">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="totalPermit">1</h3>
+                            <span>Izin/Sakit</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon red">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="totalAbsent">1</h3>
+                            <span>Alpha</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Section -->
+            <div class="export-section">
+                <button class="btn btn-success" onclick="exportToExcel()">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Excel</span>
+                </button>
+                <button class="btn btn-info" onclick="exportToPDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF</span>
+                </button>
+                <button class="btn btn-warning" onclick="printReport()">
+                    <i class="fas fa-print"></i>
+                    <span>Print</span>
+                </button>
+            </div>
+
+            <!-- Report Table -->
+            <div class="report-section">
+                <div class="section-title">Detail Presensi</div>
+                <div class="table-container">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Hari</th>
+                                <th>Nama Guru</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Status</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                            <!-- Sample Data Row 1 -->
+                            <tr>
+                                <td>01 Des 2025</td>
+                                <td>Senin</td>
+                                <td>
+                                    <div class="teacher-info">
+                                        <img src="https://placehold.co/30x30" alt="Guru">
+                                        <span>Budi Santoso</span>
+                                    </div>
+                                </td>
+                                <td>Matematika</td>
+                                <td>07:00</td>
+                                <td>15:30</td>
+                                <td><span class="status-badge present">Hadir</span></td>
+                                <td>-</td>
+                            </tr>
+                            <!-- Sample Data Row 2 -->
+                            <tr>
+                                <td>01 Des 2025</td>
+                                <td>Senin</td>
+                                <td>
+                                    <div class="teacher-info">
+                                        <img src="https://placehold.co/30x30" alt="Guru">
+                                        <span>Siti Aminah</span>
+                                    </div>
+                                </td>
+                                <td>Bahasa Indonesia</td>
+                                <td>07:10</td>
+                                <td>15:30</td>
+                                <td><span class="status-badge late">Telat</span></td>
+                                <td>Telat 10 menit</td>
+                            </tr>
+                            <!-- Sample Data Row 3 -->
+                            <tr>
+                                <td>01 Des 2025</td>
+                                <td>Senin</td>
+                                <td>
+                                    <div class="teacher-info">
+                                        <img src="https://placehold.co/30x30" alt="Guru">
+                                        <span>Ahmad Dahlan</span>
+                                    </div>
+                                </td>
+                                <td>Fisika</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td><span class="status-badge alpha">Alpha</span></td>
+                                <td>Tidak hadir tanpa keterangan</td>
+                            </tr>
+                            <!-- Sample Data Row 4 -->
+                            <tr>
+                                <td>02 Des 2025</td>
+                                <td>Selasa</td>
+                                <td>
+                                    <div class="teacher-info">
+                                        <img src="https://placehold.co/30x30" alt="Guru">
+                                        <span>Dewi Sartika</span>
+                                    </div>
+                                </td>
+                                <td>Kimia</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td><span class="status-badge permit">Sakit</span></td>
+                                <td>Demam tinggi</td>
+                            </tr>
+                            <!-- Sample Data Row 5 -->
+                            <tr>
+                                <td>02 Des 2025</td>
+                                <td>Selasa</td>
+                                <td>
+                                    <div class="teacher-info">
+                                        <img src="https://placehold.co/30x30" alt="Guru">
+                                        <span>Eko Prasetyo</span>
+                                    </div>
+                                </td>
+                                <td>Teknik Komputer</td>
+                                <td>06:55</td>
+                                <td>15:30</td>
+                                <td><span class="status-badge present">Hadir</span></td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="height: 80px;"></div> <!-- Spacer for bottom nav -->
+        </div>
+
+        <!-- Bottom Nav Admin -->
+        <div class="bottom-nav">
+            <a href="dashboard-admin.html" class="nav-item">
+                <i class="fas fa-chart-pie"></i>
+                <span class="nav-label">Dash</span>
+            </a>
+            <a href="manajemen-guru.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span class="nav-label">Guru</span>
+            </a>
+            <a href="approval-izin.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span class="nav-label">Izin</span>
+            </a>
+            <a href="laporan.html" class="nav-item active">
+                <i class="fas fa-file-invoice"></i>
+                <span class="nav-label">Rekap</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span class="nav-label">Set</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export Laporan</h3>
+                <button class="close-btn" onclick="closeModal('exportModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Pilih format export yang diinginkan:</p>
+                <div class="export-options">
+                    <button class="export-option" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Excel (.xlsx)</span>
+                    </button>
+                    <button class="export-option" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>PDF (.pdf)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/laporan.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>

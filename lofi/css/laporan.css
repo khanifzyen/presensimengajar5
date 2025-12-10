@@ -1,4 +1,25 @@
 /* css/laporan.css */
+
+/* Category Badge Styles */
+.category-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.category-badge.office {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.category-badge.class {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+}
+
 /* Laporan Presensi Styles - Admin Panel */
 
 /* Filter Section */

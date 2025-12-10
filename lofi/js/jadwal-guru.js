@@ -21,108 +21,119 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Schedule data storage (in real app, this would be from a database)
 let schedules = [
+    // Schedules for Siti Aminah (id: 2) - Bahasa Indonesia
     {
         id: 1,
-        teacherId: 1,
+        teacherId: 2,
         day: 'senin',
         startTime: '07:00',
         endTime: '08:30',
-        subject: 'Matematika',
+        subject: 'Bahasa Indonesia',
         classRoom: 'XII IPA 1',
-        room: 'Ruang 201'
+        room: 'Ruang 101'
     },
     {
         id: 2,
-        teacherId: 1,
-        day: 'senin',
+        teacherId: 2,
+        day: 'selasa',
         startTime: '09:00',
         endTime: '10:30',
-        subject: 'Matematika',
+        subject: 'Bahasa Indonesia',
         classRoom: 'XI IPA 2',
-        room: 'Ruang 202'
+        room: 'Ruang 102'
     },
     {
         id: 3,
-        teacherId: 1,
-        day: 'selasa',
+        teacherId: 2,
+        day: 'rabu',
         startTime: '07:00',
         endTime: '08:30',
-        subject: 'Matematika',
+        subject: 'Bahasa Indonesia',
         classRoom: 'XII IPS 1',
-        room: 'Ruang 203'
+        room: 'Ruang 103'
     },
     {
         id: 4,
-        teacherId: 1,
-        day: 'selasa',
+        teacherId: 2,
+        day: 'kamis',
         startTime: '13:00',
         endTime: '14:30',
-        subject: 'Matematika',
+        subject: 'Bahasa Indonesia',
         classRoom: 'X IPA 3',
-        room: 'Ruang 204'
+        room: 'Ruang 104'
     },
+    // Schedules for Dewi Sartika (id: 4) - Kimia
     {
         id: 5,
-        teacherId: 1,
-        day: 'rabu',
+        teacherId: 4,
+        day: 'senin',
         startTime: '08:00',
         endTime: '09:30',
-        subject: 'Matematika',
+        subject: 'Kimia',
         classRoom: 'XI IPS 2',
-        room: 'Ruang 205'
+        room: 'Lab Kimia 1'
     },
     {
         id: 6,
-        teacherId: 1,
-        day: 'kamis',
-        startTime: '07:00',
-        endTime: '08:30',
-        subject: 'Matematika',
+        teacherId: 4,
+        day: 'selasa',
+        startTime: '10:00',
+        endTime: '11:30',
+        subject: 'Kimia',
         classRoom: 'XII IPA 2',
-        room: 'Ruang 206'
+        room: 'Lab Kimia 1'
     },
     {
         id: 7,
-        teacherId: 1,
-        day: 'kamis',
-        startTime: '10:00',
-        endTime: '11:30',
-        subject: 'Matematika',
-        classRoom: 'X IPS 1',
-        room: 'Ruang 207'
-    },
-    {
-        id: 8,
-        teacherId: 1,
+        teacherId: 4,
         day: 'jumat',
         startTime: '07:00',
         endTime: '08:30',
-        subject: 'Matematika',
+        subject: 'Kimia',
         classRoom: 'XI IPA 1',
-        room: 'Ruang 208'
+        room: 'Lab Kimia 1'
+    },
+    // Schedules for Eko Prasetyo (id: 5) - Teknik Komputer
+    {
+        id: 8,
+        teacherId: 5,
+        day: 'senin',
+        startTime: '13:00',
+        endTime: '14:30',
+        subject: 'Teknik Komputer',
+        classRoom: 'XII IPS 2',
+        room: 'Lab Komputer'
     },
     {
         id: 9,
-        teacherId: 1,
+        teacherId: 5,
+        day: 'rabu',
+        startTime: '09:00',
+        endTime: '10:30',
+        subject: 'Teknik Komputer',
+        classRoom: 'X IPA 3',
+        room: 'Lab Komputer'
+    },
+    {
+        id: 10,
+        teacherId: 5,
         day: 'jumat',
-        startTime: '13:00',
-        endTime: '14:30',
-        subject: 'Matematika',
-        classRoom: 'XII IPS 2',
-        room: 'Ruang 209'
+        startTime: '10:00',
+        endTime: '11:30',
+        subject: 'Teknik Komputer',
+        classRoom: 'XI IPA 2',
+        room: 'Lab Komputer'
     }
 ];
 
-// Teacher data
+// Teacher data (only teachers with "jadwal" category)
 const teachers = [
-    { id: 1, name: 'Budi Santoso, S.Pd', subject: 'Matematika' },
-    { id: 2, name: 'Siti Aminah, S.Pd', subject: 'Bahasa Indonesia' },
-    { id: 3, name: 'Dewi Sartika, S.Pd', subject: 'Kimia' },
-    { id: 4, name: 'Eko Prasetyo, S.Kom', subject: 'Teknik Komputer' },
-    { id: 5, name: 'Ahmad Fauzi, S.Pd', subject: 'Fisika' }
+    { id: 2, name: 'Siti Aminah, S.Pd', subject: 'Bahasa Indonesia', attendanceCategory: 'jadwal' },
+    { id: 4, name: 'Dewi Sartika, S.Pd', subject: 'Kimia', attendanceCategory: 'jadwal' },
+    { id: 5, name: 'Eko Prasetyo, S.Kom', subject: 'Teknik Komputer', attendanceCategory: 'jadwal' }
 ];
 
-let currentTeacherId = 1;
+let currentTeacherId = 2; // Default to first "jadwal" teacher
 let currentWeekOffset = 0;
 let currentEditId = null;
 let currentEditDay = null;
@@ -144,8 +155,13 @@ function initializeScheduleManagement() {
 function initializeTeacherSelector() {
     const teacherSelect = document.getElementById('selectTeacher');
 
-    // Populate teacher options
-    teachers.forEach(teacher => {
+    // Clear existing options
+    teacherSelect.innerHTML = '<option value="">-- Pilih Guru --</option>';
+
+    // Only populate teachers with "jadwal" category
+    const jadwalTeachers = teachers.filter(teacher => teacher.attendanceCategory === 'jadwal');
+
+    jadwalTeachers.forEach(teacher => {
         const option = document.createElement('option');
         option.value = teacher.id;
         option.textContent = `${teacher.name} - ${teacher.subject}`;
@@ -154,7 +170,7 @@ function initializeTeacherSelector() {
 
     // Handle teacher selection change
     teacherSelect.addEventListener('change', function () {
-        currentTeacherId = parseInt(this.value) || 1;
+        currentTeacherId = parseInt(this.value) || jadwalTeachers[0]?.id || 1;
         updateScheduleDisplay();
     });
 }
@@ -472,6 +488,21 @@ function initializeQuickActions() {
     const exportScheduleBtn = document.getElementById('exportScheduleBtn');
 
     copyScheduleBtn.addEventListener('click', function () {
+        // Populate copy teacher select with only "jadwal" teachers
+        const copyTeacherSelect = document.getElementById('copyTeacherSelect');
+        copyTeacherSelect.innerHTML = '<option value="">-- Pilih Guru --</option>';
+
+        const jadwalTeachers = teachers.filter(teacher =>
+            teacher.attendanceCategory === 'jadwal' && teacher.id !== currentTeacherId
+        );
+
+        jadwalTeachers.forEach(teacher => {
+            const option = document.createElement('option');
+            option.value = teacher.id;
+            option.textContent = `${teacher.name} - ${teacher.subject}`;
+            copyTeacherSelect.appendChild(option);
+        });
+
         document.getElementById('copyModal').classList.add('active');
     });
 

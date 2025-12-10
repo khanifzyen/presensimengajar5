@@ -1,4 +1,46 @@
 /* css/admin.css */
+
+/* Category Badge Styles */
+.category-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+}
+
+.category-badge.office {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.category-badge.class {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+}
+
+/* Status Pill Styles for different categories */
+.status-pill.office {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: white;
+}
+
+.status-pill.class {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+}
+
+/* Card Stat Colors */
+.card-stat.purple {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+}
+
+.card-stat.orange {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
 /* Admin Dashboard Styles - Consistent with Main App Design */
 
 /* Import base styles */

@@ -565,34 +565,21 @@
     width: auto;
 }
 
-/* Mobile Frame Styles - Show on Desktop, Hide on Mobile */
-body.kurikulum-page .mobile-frame {
+/* Mobile Frame Styles - Use standard styling like other pages */
+.mobile-frame {
     max-width: 414px;
     margin: 20px auto;
-    background: #000;
-    border-radius: 40px;
+    background: #f5f5f5;
+    border-radius: 30px;
     padding: 10px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     position: relative;
     min-height: calc(100vh - 40px);
 }
 
-body.kurikulum-page .mobile-frame::before {
-    content: '';
-    position: absolute;
-    top: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 150px;
-    height: 5px;
-    background: #333;
-    border-radius: 10px;
-    z-index: 10;
-}
-
-body.kurikulum-page .mobile-frame .screen-content {
-    background: #f8fafc;
-    border-radius: 30px;
+.mobile-frame .screen-content {
+    background: white;
+    border-radius: 20px;
     height: 100%;
     overflow: hidden;
     position: relative;
@@ -609,11 +596,11 @@ body.kurikulum-page .mobile-frame .screen-content {
         font-family: 'Inter', sans-serif;
     }
 
-    body.kurikulum-page .mobile-frame {
+    .mobile-frame {
         width: 100%;
         height: 100vh;
         background-color: var(--white);
-        overflow: hidden;
+        overflow: auto;
         position: relative;
         border: none;
         border-radius: 0;
@@ -622,12 +609,10 @@ body.kurikulum-page .mobile-frame .screen-content {
         padding: 0;
     }
 
-    body.kurikulum-page .mobile-frame::before {
-        display: none;
-    }
-
-    body.kurikulum-page .mobile-frame .screen-content {
+    .mobile-frame .screen-content {
         border-radius: 0;
+        min-height: 100vh;
+        overflow: auto;
     }
 
     .tab-navigation {
@@ -732,7 +717,7 @@ body.kurikulum-page .mobile-frame .screen-content {
 
 /* Show mobile frame on desktop (ensure it's visible) */
 @media (min-width: 768px) {
-    body.kurikulum-page .mobile-frame {
+    .mobile-frame {
         display: block !important;
     }
 }
@@ -942,24 +927,45 @@ body.kurikulum-page .mobile-frame .screen-content {
     }
 
     .period-header {
-        flex-direction: column;
+        flex-direction: row;
         align-items: flex-start;
         gap: 10px;
+        justify-content: space-between;
+    }
+
+    /* Position action buttons to the right of title */
+    .period-header .period-info {
+        flex: 1;
+        padding-right: 10px;
+    }
+
+    .period-header .period-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-self: flex-start;
+        margin-top: 0;
     }
 
     .period-stats {
-        grid-template-columns: 1fr;
-        gap: 10px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
     }
 
     .stat-item {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         align-items: center;
-        text-align: left;
+        text-align: center;
+        padding: 8px;
     }
 
     .stat-label {
-        margin-bottom: 0;
+        margin-bottom: 3px;
+        font-size: 10px;
+    }
+
+    .stat-value {
+        font-size: 14px;
     }
 }

@@ -79,6 +79,7 @@
                         <p class="teacher-subject">Matematika</p>
                         <div class="teacher-status">
                             <span class="status-badge active">Aktif</span>
+                            <span class="category-badge tetap">Tetap</span>
                             <span class="join-date">Bergabung: Jan 2020</span>
                         </div>
                     </div>
@@ -106,6 +107,7 @@
                         <p class="teacher-subject">Bahasa Indonesia</p>
                         <div class="teacher-status">
                             <span class="status-badge active">Aktif</span>
+                            <span class="category-badge jadwal">Jadwal</span>
                             <span class="join-date">Bergabung: Mar 2015</span>
                         </div>
                     </div>
@@ -133,6 +135,7 @@
                         <p class="teacher-subject">Fisika</p>
                         <div class="teacher-status">
                             <span class="status-badge inactive">Non-Aktif</span>
+                            <span class="category-badge tetap">Tetap</span>
                             <span class="join-date">Bergabung: Sep 2010</span>
                         </div>
                     </div>
@@ -160,6 +163,7 @@
                         <p class="teacher-subject">Kimia</p>
                         <div class="teacher-status">
                             <span class="status-badge active">Aktif</span>
+                            <span class="category-badge jadwal">Jadwal</span>
                             <span class="join-date">Bergabung: Des 2019</span>
                         </div>
                     </div>
@@ -187,6 +191,7 @@
                         <p class="teacher-subject">Teknik Komputer</p>
                         <div class="teacher-status">
                             <span class="status-badge new">Baru</span>
+                            <span class="category-badge jadwal">Jadwal</span>
                             <span class="join-date">Bergabung: Mei 2024</span>
                         </div>
                     </div>
@@ -295,6 +300,16 @@
                             <option value="active">Aktif</option>
                             <option value="inactive">Non-Aktif</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="attendanceCategory">Kategori Kehadiran</label>
+                        <select id="attendanceCategory" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="tetap">Guru Tetap (Jam Kantor 07:00-15:00)</option>
+                            <option value="jadwal">Guru Jadwal Mengajar</option>
+                        </select>
+                        <small class="form-help">Guru tetap hanya check-in/out sekali sehari, guru jadwal mengajar
+                            sesuai jadwal</small>
                     </div>
                     <div class="form-group">
                         <label for="teacherJoinDate">Tanggal Bergabung</label>

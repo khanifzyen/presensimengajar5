@@ -17,8 +17,20 @@
             <!-- Header -->
             <div class="page-header">
                 <a href="dashboard-guru.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-                <h2>Konfirmasi Presensi</h2>
+                <h2 id="presensiTitle">Konfirmasi Presensi</h2>
                 <div style="width: 24px;"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Attendance Type Indicator -->
+            <div class="attendance-type-indicator" id="attendanceTypeIndicator">
+                <div class="type-badge office" id="officeBadge" style="display: none;">
+                    <i class="fas fa-building"></i>
+                    <span>Presensi Kantor</span>
+                </div>
+                <div class="type-badge class" id="classBadge" style="display: none;">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Presensi Mengajar</span>
+                </div>
             </div>
 
             <!-- Section 1: Map -->
@@ -53,7 +65,7 @@
             <!-- Section 4: Button -->
             <div class="action-footer">
                 <button id="btn-submit" class="btn btn-disabled" onclick="submitPresensi()" disabled>
-                    KIRIM PRESENSI
+                    <span id="submitButtonText">KIRIM PRESENSI</span>
                 </button>
             </div>
         </div>
@@ -65,8 +77,8 @@
                     <i class="fas fa-check"></i>
                 </div>
                 <h3>Presensi Berhasil!</h3>
-                <p>Selamat mengajar, Pak Budi.</p>
-                <p class="time-stamp">07:05:12</p>
+                <p id="successMessage">Selamat mengajar, Pak Budi.</p>
+                <p class="time-stamp" id="successTimestamp">07:05:12</p>
                 <button class="btn btn-primary" onclick="window.location.href='dashboard-guru.html'">KEMBALI KE
                     HOME</button>
             </div>

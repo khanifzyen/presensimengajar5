@@ -27,6 +27,7 @@ let teachers = [
         phone: '08123456789',
         status: 'active',
         joinDate: '2020-01-15',
+        attendanceCategory: 'tetap', // tetap atau jadwal
         avatar: 'https://placehold.co/60x60'
     },
     {
@@ -38,6 +39,7 @@ let teachers = [
         phone: '08234567890',
         status: 'active',
         joinDate: '2015-03-20',
+        attendanceCategory: 'jadwal', // tetap atau jadwal
         avatar: 'https://placehold.co/60x60'
     },
     {
@@ -49,6 +51,7 @@ let teachers = [
         phone: '08345678901',
         status: 'inactive',
         joinDate: '2010-09-10',
+        attendanceCategory: 'tetap', // tetap atau jadwal
         avatar: 'https://placehold.co/60x60'
     },
     {
@@ -60,6 +63,7 @@ let teachers = [
         phone: '08456789012',
         status: 'active',
         joinDate: '2019-12-15',
+        attendanceCategory: 'jadwal', // tetap atau jadwal
         avatar: 'https://placehold.co/60x60'
     },
     {
@@ -71,6 +75,7 @@ let teachers = [
         phone: '08567890123',
         status: 'active',
         joinDate: '2024-05-20',
+        attendanceCategory: 'jadwal', // tetap atau jadwal
         avatar: 'https://placehold.co/60x60'
     }
 ];
@@ -134,6 +139,7 @@ function renderTeacherList(filteredTeachers = teachers) {
                 <p class="teacher-subject">${teacher.subject}</p>
                 <div class="teacher-status">
                     <span class="status-badge ${statusBadgeClass}">${statusBadgeText}</span>
+                    <span class="category-badge ${teacher.attendanceCategory}">${teacher.attendanceCategory === 'tetap' ? 'Tetap' : 'Jadwal'}</span>
                     <span class="join-date">Bergabung: ${formatDate(teacher.joinDate)}</span>
                 </div>
             </div>
@@ -141,7 +147,7 @@ function renderTeacherList(filteredTeachers = teachers) {
                 <button class="action-btn edit" title="Edit" data-id="${teacher.id}">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="action-btn schedule" title="Jadwal" data-id="${teacher.id}">
+                <button class="action-btn schedule" title="Jadwal" data-id="${teacher.id}" ${teacher.attendanceCategory === 'tetap' ? 'style="display:none;"' : ''}>
                     <i class="fas fa-calendar"></i>
                 </button>
                 <button class="action-btn delete" title="Hapus" data-id="${teacher.id}">
@@ -263,6 +269,7 @@ function initializeModals() {
             email: document.getElementById('teacherEmail').value,
             phone: document.getElementById('teacherPhone').value,
             status: document.getElementById('teacherStatus').value,
+            attendanceCategory: document.getElementById('attendanceCategory').value,
             joinDate: document.getElementById('teacherJoinDate').value,
             password: document.getElementById('teacherPassword').value,
             avatar: `https://placehold.co/60x60`
@@ -335,6 +342,7 @@ function initializeActionButtons() {
             document.getElementById('teacherEmail').value = teacher.email;
             document.getElementById('teacherPhone').value = teacher.phone;
             document.getElementById('teacherStatus').value = teacher.status;
+            document.getElementById('attendanceCategory').value = teacher.attendanceCategory;
             document.getElementById('teacherJoinDate').value = teacher.joinDate;
 
             // For edit mode, clear password field and make it optional

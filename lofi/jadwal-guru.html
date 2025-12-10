@@ -29,12 +29,13 @@
                 <label for="selectTeacher">Pilih Guru:</label>
                 <select id="selectTeacher" class="teacher-select">
                     <option value="">-- Pilih Guru --</option>
-                    <option value="1">Budi Santoso, S.Pd - Matematika</option>
+                    <!-- Only show teachers with "jadwal" category -->
                     <option value="2">Siti Aminah, S.Pd - Bahasa Indonesia</option>
-                    <option value="3">Dewi Sartika, S.Pd - Kimia</option>
-                    <option value="4">Eko Prasetyo, S.Kom - Teknik Komputer</option>
-                    <option value="5">Ahmad Fauzi, S.Pd - Fisika</option>
+                    <option value="4">Dewi Sartika, S.Pd - Kimia</option>
+                    <option value="5">Eko Prasetyo, S.Kom - Teknik Komputer</option>
                 </select>
+                <small class="form-help">Hanya guru dengan kategori "Jadwal Mengajar" yang dapat diatur
+                    jadwalnya</small>
             </div>
 
             <!-- Week Selector -->
@@ -441,10 +442,10 @@
                 <p>Pilih guru untuk menyalin jadwal:</p>
                 <select id="copyTeacherSelect" class="teacher-select">
                     <option value="">-- Pilih Guru --</option>
+                    <!-- Only show teachers with "jadwal" category -->
                     <option value="1">Siti Aminah, S.Pd - Bahasa Indonesia</option>
                     <option value="2">Dewi Sartika, S.Pd - Kimia</option>
                     <option value="3">Eko Prasetyo, S.Kom - Teknik Komputer</option>
-                    <option value="4">Ahmad Fauzi, S.Pd - Fisika</option>
                 </select>
                 <div class="copy-options">
                     <label>

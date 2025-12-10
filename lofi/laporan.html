@@ -85,6 +85,16 @@
                             </select>
                         </div>
                     </div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>Kategori Presensi</label>
+                            <select id="categoryFilter">
+                                <option value="">Semua Kategori</option>
+                                <option value="office">Presensi Kantor</option>
+                                <option value="class">Presensi Mengajar</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="filter-actions">
                         <button class="btn btn-primary" onclick="applyFilters()">
                             <i class="fas fa-filter"></i> Terapkan Filter
@@ -174,7 +184,8 @@
                                 <th>Tanggal</th>
                                 <th>Hari</th>
                                 <th>Nama Guru</th>
-                                <th>Mata Pelajaran</th>
+                                <th>Kategori</th>
+                                <th>Mata Pelajaran/Kegiatan</th>
                                 <th>Check In</th>
                                 <th>Check Out</th>
                                 <th>Status</th>
@@ -192,7 +203,8 @@
                                         <span>Budi Santoso</span>
                                     </div>
                                 </td>
-                                <td>Matematika</td>
+                                <td><span class="category-badge office">Kantor</span></td>
+                                <td>Presensi Kantor</td>
                                 <td>07:00</td>
                                 <td>15:30</td>
                                 <td><span class="status-badge present">Hadir</span></td>
@@ -208,9 +220,10 @@
                                         <span>Siti Aminah</span>
                                     </div>
                                 </td>
-                                <td>Bahasa Indonesia</td>
+                                <td><span class="category-badge class">Mengajar</span></td>
+                                <td>Bahasa Indonesia - XII IPA 1</td>
                                 <td>07:10</td>
-                                <td>15:30</td>
+                                <td>08:30</td>
                                 <td><span class="status-badge late">Telat</span></td>
                                 <td>Telat 10 menit</td>
                             </tr>
@@ -224,7 +237,8 @@
                                         <span>Ahmad Dahlan</span>
                                     </div>
                                 </td>
-                                <td>Fisika</td>
+                                <td><span class="category-badge office">Kantor</span></td>
+                                <td>Presensi Kantor</td>
                                 <td>-</td>
                                 <td>-</td>
                                 <td><span class="status-badge alpha">Alpha</span></td>
@@ -240,7 +254,8 @@
                                         <span>Dewi Sartika</span>
                                     </div>
                                 </td>
-                                <td>Kimia</td>
+                                <td><span class="category-badge class">Mengajar</span></td>
+                                <td>Kimia - XII IPA 2</td>
                                 <td>-</td>
                                 <td>-</td>
                                 <td><span class="status-badge permit">Sakit</span></td>
@@ -256,9 +271,10 @@
                                         <span>Eko Prasetyo</span>
                                     </div>
                                 </td>
-                                <td>Teknik Komputer</td>
+                                <td><span class="category-badge class">Mengajar</span></td>
+                                <td>Teknik Komputer - XII IPS 2</td>
                                 <td>06:55</td>
-                                <td>15:30</td>
+                                <td>08:25</td>
                                 <td><span class="status-badge present">Hadir</span></td>
                                 <td>-</td>
                             </tr>
@@ -292,31 +308,6 @@
                 <i class="fas fa-cog"></i>
                 <span class="nav-label">Set</span>
             </a>
-        </div>
-    </div>
-
-    <!-- Export Modal -->
-    <div id="exportModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Export Laporan</h3>
-                <button class="close-btn" onclick="closeModal('exportModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Pilih format export yang diinginkan:</p>
-                <div class="export-options">
-                    <button class="export-option" onclick="exportToExcel()">
-                        <i class="fas fa-file-excel"></i>
-                        <span>Excel (.xlsx)</span>
-                    </button>
-                    <button class="export-option" onclick="exportToPDF()">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>PDF (.pdf)</span>
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 

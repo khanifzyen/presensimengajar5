@@ -1,4 +1,26 @@
 /* css/manajemen-guru.css */
+
+/* Category Badge Styles */
+.category-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-right: 8px;
+}
+
+.category-badge.tetap {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.category-badge.jadwal {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+}
+
 /* Teacher Management and Schedule Styles - Consistent with Admin Design */
 
 /* Search Section */

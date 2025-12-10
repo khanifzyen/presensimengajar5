@@ -203,3 +203,32 @@
         opacity: 1;
     }
 }
+
+/* Attendance Type Indicator */
+.attendance-type-indicator {
+    padding: 15px 20px;
+    background: white;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+}
+
+.type-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.type-badge.office {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.type-badge.class {
+    background: #f3e8ff;
+    color: #7c3aed;
+}

@@ -91,13 +91,14 @@ function applyFilters() {
     const year = document.getElementById('yearFilter').value;
     const teacher = document.getElementById('teacherFilter').value;
     const status = document.getElementById('statusFilter').value;
+    const category = document.getElementById('categoryFilter').value;
 
     // Show loading state
     showLoading();
 
     // Simulate API call
     setTimeout(() => {
-        loadReportData(month, year, teacher, status);
+        loadReportData(month, year, teacher, status, category);
         hideLoading();
         showNotification('Filter berhasil diterapkan');
     }, 500);
@@ -109,6 +110,7 @@ function resetFilters() {
     document.getElementById('yearFilter').value = '';
     document.getElementById('teacherFilter').value = '';
     document.getElementById('statusFilter').value = '';
+    document.getElementById('categoryFilter').value = '';
 
     // Reload data with default filters
     loadReportData();
@@ -116,9 +118,9 @@ function resetFilters() {
 }
 
 // Load report data
-function loadReportData(month = '', year = '', teacher = '', status = '') {
+function loadReportData(month = '', year = '', teacher = '', status = '', category = '') {
     // Sample data - in real app, this would come from API
-    const reportData = generateSampleData(month, year, teacher, status);
+    const reportData = generateSampleData(month, year, teacher, status, category);
 
     // Update table
     updateReportTable(reportData);
@@ -128,13 +130,15 @@ function loadReportData(month = '', year = '', teacher = '', status = '') {
 }
 
 // Generate sample data (in real app, this would come from API)
-function generateSampleData(month, year, teacher, status) {
+function generateSampleData(month, year, teacher, status, category) {
     const sampleData = [
         {
             date: '01 Des 2025',
             day: 'Senin',
             teacher: 'Budi Santoso',
-            subject: 'Matematika',
+            category: 'office',
+            categoryName: 'Kantor',
+            subject: 'Presensi Kantor',
             checkIn: '07:00',
             checkOut: '15:30',
             status: 'hadir',
@@ -144,9 +148,11 @@ function generateSampleData(month, year, teacher, status) {
             date: '01 Des 2025',
             day: 'Senin',
             teacher: 'Siti Aminah',
-            subject: 'Bahasa Indonesia',
+            category: 'class',
+            categoryName: 'Mengajar',
+            subject: 'Bahasa Indonesia - XII IPA 1',
             checkIn: '07:10',
-            checkOut: '15:30',
+            checkOut: '08:30',
             status: 'telat',
             note: 'Telat 10 menit'
         },
@@ -154,7 +160,9 @@ function generateSampleData(month, year, teacher, status) {
             date: '01 Des 2025',
             day: 'Senin',
             teacher: 'Ahmad Dahlan',
-            subject: 'Fisika',
+            category: 'office',
+            categoryName: 'Kantor',
+            subject: 'Presensi Kantor',
             checkIn: '-',
             checkOut: '-',
             status: 'alpha',
@@ -164,7 +172,9 @@ function generateSampleData(month, year, teacher, status) {
             date: '02 Des 2025',
             day: 'Selasa',
             teacher: 'Dewi Sartika',
-            subject: 'Kimia',
+            category: 'class',
+            categoryName: 'Mengajar',
+            subject: 'Kimia - XII IPA 2',
             checkIn: '-',
             checkOut: '-',
             status: 'permit',
@@ -174,9 +184,11 @@ function generateSampleData(month, year, teacher, status) {
             date: '02 Des 2025',
             day: 'Selasa',
             teacher: 'Eko Prasetyo',
-            subject: 'Teknik Komputer',
+            category: 'class',
+            categoryName: 'Mengajar',
+            subject: 'Teknik Komputer - XII IPS 2',
             checkIn: '06:55',
-            checkOut: '15:30',
+            checkOut: '08:25',
             status: 'hadir',
             note: '-'
         }
@@ -201,6 +213,10 @@ function generateSampleData(month, year, teacher, status) {
 
     if (status) {
         filteredData = filteredData.filter(item => item.status === status);
+    }
+
+    if (category) {
+        filteredData = filteredData.filter(item => item.category === category);
     }
 
     return filteredData;
@@ -232,6 +248,7 @@ function updateReportTable(data) {
                     <span>${item.teacher}</span>
                 </div>
             </td>
+            <td><span class="category-badge ${item.category}">${item.categoryName}</span></td>
             <td>${item.subject}</td>
             <td>${item.checkIn}</td>
             <td>${item.checkOut}</td>

@@ -1,0 +1,13 @@
+{
+  "name": "edupresence-migration",
+  "version": "1.0.0",
+  "description": "PocketBase migration scripts for EduPresence",
+  "main": "src/migrate.js",
+  "scripts": {
+    "migrate": "node src/migrate.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "pocketbase": "^0.21.1"
+  }
+}

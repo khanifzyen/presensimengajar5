@@ -1,11 +1,11 @@
-<!-- dashboard-guru.html -->
+<!-- dashboard-guru-mengajar.html -->
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Guru</title>
+    <title>Dashboard Guru Mengajar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
@@ -20,7 +20,7 @@
                     <img src="https://placehold.co/50x50/white/1e3a8a?text=BG" alt="Profil" class="profile-pic">
                     <div>
                         <p class="greeting">Halo, Selamat Pagi</p>
-                        <h3 class="username">Budi Santoso, S.Pd</h3>
+                        <h3 class="username">Siti Nurhaliza, S.Pd</h3>
                     </div>
                 </div>
                 <div class="notif-icon">
@@ -49,45 +49,52 @@
                     </div>
                 </div>
 
-                <!-- Dashboard untuk Guru Tetap -->
-                <div id="dashboardTetap" style="display: none;">
-                    <!-- Section 2: Office Attendance Card -->
-                    <div class="section-title">Kehadiran Kantor</div>
-                    <div class="card action-card">
-                        <div class="office-info">
-                            <h4>Jam Kerja: 07:00 - 15:00</h4>
-                            <p>Senin - Sabtu</p>
-                        </div>
-                        <button class="btn btn-primary" id="checkInOffice">
-                            <i class="fas fa-sign-in-alt"></i> CHECK-IN KANTOR
-                        </button>
-                        <button class="btn btn-danger-outline" id="checkOutOffice" style="display: none;">
-                            <i class="fas fa-sign-out-alt"></i> CHECK-OUT KANTOR
-                        </button>
-                        <p class="status-hint" id="officeStatusHint">Belum check-in</p>
+                <!-- Section 2: Current Class Status -->
+                <div class="section-title">Kelas Saat Ini</div>
+                <div class="card action-card" id="currentClassCard">
+                    <div class="class-info">
+                        <h4 id="currentClassName">Matematika Wajib</h4>
+                        <p id="currentClassSchedule">Kelas XII IPA 1 • 07:00 - 08:30</p>
                     </div>
+                    <!-- Simulasi tombol check-out karena jam sudah 07:15 -->
+                    <button class="btn btn-danger-outline" id="checkOutClass">
+                        <i class="fas fa-sign-out-alt"></i> CHECK-OUT KELAS
+                    </button>
+                    <p class="status-hint" id="classStatusHint">Sedang berlangsung...</p>
                 </div>
 
-                <!-- Dashboard untuk Guru Jadwal -->
-                <div id="dashboardJadwal" style="display: none;">
-                    <!-- Section 2: Action Card (Kondisi: Kategori Pengajaran) -->
-                    <div class="section-title">Status Saat Ini</div>
-                    <div class="card action-card" id="currentClassCard" style="display: none;">
-                        <div class="class-info">
-                            <h4 id="currentClassName">Matematika Wajib</h4>
-                            <p id="currentClassSchedule">Kelas XII IPA 1 • 07:00 - 08:30</p>
-                        </div>
-                        <!-- Simulasi tombol check-out karena jam sudah 07:15 -->
-                        <button class="btn btn-danger-outline" id="checkOutClass">
-                            <i class="fas fa-sign-out-alt"></i> CHECK-OUT KELAS
-                        </button>
-                        <p class="status-hint" id="classStatusHint">Sedang berlangsung...</p>
-                    </div>
+                <!-- Section 3: Today's Schedule -->
+                <div class="section-title">Jadwal Hari Ini</div>
+                <div class="schedule-tabs">
+                    <button class="tab-btn active" data-day="senin">Senin</button>
+                    <button class="tab-btn" data-day="selasa">Selasa</button>
+                    <button class="tab-btn" data-day="rabu">Rabu</button>
+                    <button class="tab-btn" data-day="kamis">Kamis</button>
+                    <button class="tab-btn" data-day="jumat">Jumat</button>
+                </div>
 
-                    <!-- Section 3: Timeline -->
-                    <div class="section-title">Jadwal Hari Ini</div>
-                    <div class="timeline" id="scheduleTimeline">
-                        <!-- Schedule items will be dynamically generated -->
+                <div class="timeline" id="scheduleTimeline">
+                    <!-- Schedule items will be dynamically generated -->
+                </div>
+
+                <!-- Section 4: Quick Stats -->
+                <div class="section-title">Statistik Minggu Ini</div>
+                <div class="stats-grid">
+                    <div class="stat-box success">
+                        <h3>12</h3>
+                        <span>Kelas Diampu</span>
+                    </div>
+                    <div class="stat-box warning">
+                        <h3>2</h3>
+                        <span>Terlambat</span>
+                    </div>
+                    <div class="stat-box info">
+                        <h3>1</h3>
+                        <span>Izin</span>
+                    </div>
+                    <div class="stat-box danger">
+                        <h3>0</h3>
+                        <span>Alpha</span>
                     </div>
                 </div>
 
@@ -121,7 +128,7 @@
         </div>
     </div>
 
-    <script src="js/dashboard.js"></script>
+    <script src="js/dashboard-mengajar.js"></script>
     <script src="js/navigation.js"></script>
 </body>
 

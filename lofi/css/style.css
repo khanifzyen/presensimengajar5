@@ -84,6 +84,8 @@ body {
         background-color: var(--white);
         overflow: hidden;
         position: relative;
+        display: flex;
+        flex-direction: column;
     }
 }
 
@@ -95,6 +97,8 @@ body {
     /* Smooth scrolling */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    flex: 1;
+    /* Allow content to take remaining space */
 }
 
 /* Hide scrollbar for clean look */
@@ -151,31 +155,74 @@ body {
     left: 0;
     width: 100%;
     background: white;
-    padding: 15px 30px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
+    /* Align items to bottom */
     border-top: 1px solid #eee;
     z-index: 10;
     /* Ensure it's always visible */
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    /* Prevent nav from shrinking */
+    height: 70px;
+    /* Fixed height for consistency */
+}
+
+/* Mobile specific bottom nav adjustments */
+@media (max-width: 767px) {
+    .mobile-frame {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .screen-content {
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 80px;
+        /* Add padding to account for fixed bottom nav */
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        height: calc(70px + env(safe-area-inset-bottom, 0px));
+    }
 }
 
 .bottom-nav a {
     color: #ccc;
-    font-size: 20px;
     text-decoration: none;
     transition: color 0.3s ease, transform 0.2s ease;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 60px;
+    /* Wider to fit text */
+    height: auto;
+    border-radius: 0;
+    /* Remove circle shape */
+    gap: 4px;
+}
+
+.bottom-nav a i {
+    font-size: 20px;
+}
+
+.bottom-nav a span {
+    font-size: 10px;
+    font-weight: 500;
 }
 
 .bottom-nav a:hover {
-    transform: scale(1.1);
+    transform: translateY(-2px);
+    /* Slight lift instead of scale */
 }
 
 .bottom-nav a.active {
@@ -185,15 +232,40 @@ body {
 .plus-btn {
     background: var(--primary);
     color: white !important;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    width: 50px !important;
+    /* Force circle dimensions */
+    height: 50px !important;
+    border-radius: 50% !important;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -30px;
+    margin-bottom: 25px;
+    /* Push up above the bar */
     box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.plus-btn i {
+    font-size: 24px !important;
+}
+
+.plus-btn span {
+    display: none;
+    /* Hide label for plus button if preferred, or we can show it below */
+}
+
+/* If we want label for plus button, we need a wrapper or different structure. 
+   For now, let's keep the plus button as a floating action button without label 
+   OR make it part of the flow. The user asked for labels. 
+   Let's try to make the plus button just an icon with label below, 
+   BUT usually the big plus button is icon only. 
+   Let's stick to the design where plus button is prominent. 
+   If I add a label to it, it might look weird if it's floating.
+   Let's try to make it look good with a label.
+*/
+
+.bottom-nav a.plus-btn-container {
+    overflow: visible;
 }
 
 .plus-btn:hover {
@@ -209,15 +281,14 @@ body {
         padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     }
 
-    .bottom-nav a {
+    .bottom-nav a i {
         font-size: 18px;
-        width: 35px;
-        height: 35px;
     }
 
     .plus-btn {
-        width: 45px;
-        height: 45px;
+        width: 45px !important;
+        height: 45px !important;
+        margin-bottom: 25px;
     }
 }
 
@@ -244,16 +315,14 @@ body {
     /* Improve viewport handling */
     html {
         height: 100%;
-        position: fixed;
         width: 100%;
-        overflow: hidden;
     }
 
     body {
         height: 100%;
-        overflow: hidden;
-        position: fixed;
         width: 100%;
+        margin: 0;
+        padding: 0;
     }
 
     /* Prevent zoom on input focus */
@@ -287,13 +356,10 @@ body {
 
     /* Prevent elastic scroll on iOS */
     .mobile-frame {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        position: relative;
         width: 100vw;
         height: 100vh;
+        overflow: hidden;
     }
 }
 

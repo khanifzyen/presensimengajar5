@@ -16,6 +16,13 @@ import 'domain/repositories/schedule_repository.dart';
 import 'domain/repositories/attendance_repository.dart';
 import 'domain/repositories/leave_repository.dart';
 
+import 'presentation/blocs/auth/auth_bloc.dart';
+import 'presentation/blocs/user/user_bloc.dart';
+import 'presentation/blocs/schedule/schedule_bloc.dart';
+import 'presentation/blocs/attendance/attendance_bloc.dart';
+import 'presentation/blocs/leave/leave_bloc.dart';
+import 'presentation/blocs/notification/notification_bloc.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -40,5 +47,11 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<LeaveRepository>(() => LeaveRepositoryImpl(sl()));
 
-  // Blocs (To be registered later)
+  // Blocs
+  sl.registerFactory(() => AuthBloc(authRepository: sl()));
+  sl.registerFactory(() => UserBloc(teacherRepository: sl()));
+  sl.registerFactory(() => ScheduleBloc(scheduleRepository: sl()));
+  sl.registerFactory(() => AttendanceBloc(attendanceRepository: sl()));
+  sl.registerFactory(() => LeaveBloc(leaveRepository: sl()));
+  sl.registerFactory(() => NotificationBloc());
 }

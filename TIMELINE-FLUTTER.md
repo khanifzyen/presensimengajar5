@@ -58,12 +58,12 @@ Based on `migration/src/schema.js`.
 
 ## 3. State Management (Blocs)
 
-- [ ] **AuthBloc**: Manage authentication state (Authenticated, Unauthenticated, Loading).
-- [ ] **UserBloc**: Manage current user profile data.
-- [ ] **ScheduleBloc**: Fetch and filter schedules.
-- [ ] **AttendanceBloc**: Handle check-in/out logic, location validation.
-- [ ] **LeaveBloc**: Manage leave requests and status.
-- [ ] **NotificationBloc**: Fetch notifications.
+- [x] **AuthBloc**: Manage authentication state (Authenticated, Unauthenticated, Loading).
+- [x] **UserBloc**: Manage current user profile data.
+- [x] **ScheduleBloc**: Fetch and filter schedules.
+- [x] **AttendanceBloc**: Handle check-in/out logic, location validation.
+- [x] **LeaveBloc**: Manage leave requests and status.
+- [x] **NotificationBloc**: Fetch notifications.
 
 ## 4. Feature Implementation (Based on `lofi` prototypes)
 

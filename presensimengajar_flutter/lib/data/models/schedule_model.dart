@@ -14,6 +14,7 @@ class ScheduleModel {
   // Expand relations if needed
   final RecordModel? subject;
   final RecordModel? classInfo;
+  final Map<String, dynamic>? expand;
 
   ScheduleModel({
     required this.id,
@@ -27,9 +28,21 @@ class ScheduleModel {
     required this.room,
     this.subject,
     this.classInfo,
+    this.expand,
   });
 
   factory ScheduleModel.fromRecord(RecordModel record) {
+    // Extract expand data
+    Map<String, dynamic>? expandData;
+    try {
+      final expandRaw = record.data['expand'];
+      if (expandRaw != null && expandRaw is Map) {
+        expandData = Map<String, dynamic>.from(expandRaw);
+      }
+    } catch (e) {
+      expandData = null;
+    }
+
     return ScheduleModel(
       id: record.id,
       teacherId: record.getStringValue('teacher_id'),
@@ -46,6 +59,7 @@ class ScheduleModel {
       classInfo: record
           .get<List<RecordModel>>('expand.class_id', [])
           .firstOrNull,
+      expand: expandData,
     );
   }
 }

@@ -25,6 +25,22 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   int _selectedIndex = 0;
   late Timer _timer;
   String _timeString = '';
+  String _selectedDay = _getCurrentDayInIndonesian();
+
+  static String _getCurrentDayInIndonesian() {
+    final now = DateTime.now();
+    final dayOfWeek = now.weekday; // 1 = Monday, 7 = Sunday
+    const days = [
+      'senin',
+      'selasa',
+      'rabu',
+      'kamis',
+      'jumat',
+      'sabtu',
+      'minggu',
+    ];
+    return days[dayOfWeek - 1];
+  }
 
   @override
   void initState() {
@@ -81,6 +97,20 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     });
   }
 
+  void _onDaySelected(String day) {
+    setState(() {
+      _selectedDay = day;
+    });
+
+    // Fetch schedules for the selected day
+    final userState = context.read<UserBloc>().state;
+    if (userState is UserLoaded) {
+      context.read<ScheduleBloc>().add(
+        ScheduleFetch(teacherId: userState.teacher.id, day: day),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +120,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
           if (state is UserLoaded) {
             // Fetch schedule using the correct teacher ID from the profile
             context.read<ScheduleBloc>().add(
-              ScheduleFetch(teacherId: state.teacher.id),
+              ScheduleFetch(teacherId: state.teacher.id, day: _selectedDay),
             );
           } else if (state is UserError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -260,9 +290,13 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                           );
                         } else if (state is UserError) {
                           return Center(
-                            child: Text(
-                              'Gagal memuat profil',
-                              style: const TextStyle(color: Colors.white),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Gagal memuat profil: ${state.message}',
+                                style: const TextStyle(color: Colors.white),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           );
                         }
@@ -369,7 +403,101 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
 
             const SizedBox(height: 24),
 
-            // Today's Schedule Section
+            // Kelas Saat Ini Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Kelas Saat Ini',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3A8A),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border(
+                        left: BorderSide(
+                          color: Colors.green, // Active status color
+                          width: 6,
+                        ),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Matematika Wajib', // Placeholder, should be dynamic
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Kelas XII IPA 1 • 07:00 - 08:30', // Placeholder
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(Icons.logout, color: Colors.red),
+                            label: const Text(
+                              'CHECK-OUT KELAS',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        const Center(
+                          child: Text(
+                            'Sedang berlangsung...',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Jadwal Hari Ini Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -380,10 +508,51 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E3A8A), // Dark blue
+                      color: Color(0xFF1E3A8A),
                     ),
                   ),
                   const SizedBox(height: 16),
+
+                  // Day Filter Tabs
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: ['senin', 'selasa', 'rabu', 'kamis', 'jumat']
+                          .map((day) {
+                            final isSelected = day == _selectedDay;
+                            // Capitalize first letter for display
+                            final displayDay =
+                                day[0].toUpperCase() + day.substring(1);
+                            return Container(
+                              margin: const EdgeInsets.only(right: 8),
+                              child: ElevatedButton(
+                                onPressed: () => _onDaySelected(day),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isSelected
+                                      ? const Color(0xFF1E3A8A)
+                                      : Colors.white,
+                                  foregroundColor: isSelected
+                                      ? Colors.white
+                                      : Colors.grey[600],
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                child: Text(displayDay),
+                              ),
+                            );
+                          })
+                          .toList(),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
                   BlocBuilder<ScheduleBloc, ScheduleState>(
                     builder: (context, state) {
                       if (state is ScheduleLoading) {
@@ -409,95 +578,138 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                           itemCount: state.schedules.length,
                           itemBuilder: (context, index) {
                             final schedule = state.schedules[index];
+
+                            // Get subject name from expanded data
+                            String subjectName = 'Mata Pelajaran';
+                            if (schedule.subject != null) {
+                              subjectName = schedule.subject!.getStringValue(
+                                'name',
+                              );
+                            }
+
+                            // Get class name from expanded data
+                            String className = 'Kelas';
+                            if (schedule.classInfo != null) {
+                              className = schedule.classInfo!.getStringValue(
+                                'name',
+                              );
+                            }
+
                             return Container(
                               margin: const EdgeInsets.only(bottom: 12),
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border(
+                                color: const Color(
+                                  0xFFF0FDF4,
+                                ), // Light green bg
+                                borderRadius: BorderRadius.circular(16),
+                                border: const Border(
                                   left: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                    width: 4,
+                                    color: Color(0xFF10B981), // Green accent
+                                    width: 6,
                                   ),
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.03),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
                               ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                title: Text(
-                                  schedule.subjectId,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Row(
                                   children: [
-                                    const SizedBox(height: 4),
-                                    Row(
+                                    // Time Column
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        Icon(
-                                          Icons.access_time,
-                                          size: 14,
-                                          color: Colors.grey[600],
-                                        ),
-                                        const SizedBox(width: 4),
                                         Text(
-                                          '${schedule.startTime} - ${schedule.endTime}',
-                                          style: TextStyle(
-                                            color: Colors.grey[600],
-                                            fontSize: 13,
+                                          schedule.startTime,
+                                          style: const TextStyle(
+                                            color: Color(0xFF1E3A8A),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        const Text(
+                                          '-',
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                        Text(
+                                          schedule.endTime,
+                                          style: const TextStyle(
+                                            color: Color(0xFF1E3A8A),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.location_on_outlined,
-                                          size: 14,
-                                          color: Colors.grey[600],
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          schedule.classId,
-                                          style: TextStyle(
-                                            color: Colors.grey[600],
-                                            fontSize: 13,
+                                    const SizedBox(width: 16),
+
+                                    // Divider
+                                    Container(
+                                      height: 50,
+                                      width: 1,
+                                      color: Colors.grey[300],
+                                    ),
+                                    const SizedBox(width: 16),
+
+                                    // Details Column
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '$subjectName - $className',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              color: Colors.black87,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_on,
+                                                size: 14,
+                                                color: Colors.grey[600],
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                schedule.room.isEmpty
+                                                    ? 'Ruang Kelas'
+                                                    : schedule.room,
+                                                style: TextStyle(
+                                                  color: Colors.grey[600],
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFDCFCE7),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'Hadir (${schedule.startTime} - ${schedule.endTime})',
+                                              style: const TextStyle(
+                                                color: Color(0xFF166534),
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
-                                ),
-                                trailing: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Text(
-                                    'Hadir', // Dynamic status later
-                                    style: TextStyle(
-                                      color: Colors.green,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
                                 ),
                               ),
                             );

@@ -5,7 +5,8 @@
   "main": "src/migrate.js",
   "scripts": {
     "migrate": "node src/migrate.js",
-    "seed": "node src/seed.js"
+    "seed": "node src/seed.js",
+    "seed:activity": "node src/seed_activity.js"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

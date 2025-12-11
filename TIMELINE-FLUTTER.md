@@ -68,10 +68,10 @@ Based on `migration/src/schema.js`.
 ## 4. Feature Implementation (Based on `lofi` prototypes)
 
 ### Phase 1: Authentication & Base UI
-- [ ] **Login Screen** (`login.html`)
+- [x] **Login Screen** (`login.html`)
     - UI Implementation.
     - Integrate `AuthBloc`.
-- [ ] **Main Layout & Navigation**
+- [x] **Main Layout & Navigation**
     - Bottom Navigation for Teachers (Home, Schedule, History, Profile).
     - Drawer/Sidebar for Admin.
 

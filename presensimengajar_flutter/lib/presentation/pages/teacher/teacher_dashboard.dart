@@ -35,13 +35,10 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
       (Timer t) => _updateTime(),
     );
 
-    // Fetch user profile and schedule on init
+    // Fetch user profile on init
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<UserBloc>().add(UserGetProfile(authState.userId));
-      context.read<ScheduleBloc>().add(
-        ScheduleFetch(teacherId: authState.userId),
-      ); // Assuming teacherId is same as userId for now or handled in repo
     }
   }
 
@@ -88,14 +85,28 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          _buildHomeTab(),
-          const Center(child: Text('Jadwal Page Placeholder')),
-          const Center(child: Text('Riwayat Page Placeholder')),
-          const ProfilePage(),
-        ],
+      body: BlocListener<UserBloc, UserState>(
+        listener: (context, state) {
+          if (state is UserLoaded) {
+            // Fetch schedule using the correct teacher ID from the profile
+            context.read<ScheduleBloc>().add(
+              ScheduleFetch(teacherId: state.teacher.id),
+            );
+          } else if (state is UserError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Gagal memuat profil: ${state.message}')),
+            );
+          }
+        },
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            _buildHomeTab(),
+            const Center(child: Text('Jadwal Page Placeholder')),
+            const Center(child: Text('Riwayat Page Placeholder')),
+            const ProfilePage(),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -150,9 +161,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         final authState = context.read<AuthBloc>().state;
         if (authState is AuthAuthenticated) {
           context.read<UserBloc>().add(UserGetProfile(authState.userId));
-          context.read<ScheduleBloc>().add(
-            ScheduleFetch(teacherId: authState.userId),
-          );
+          // Schedule fetch will be triggered by the listener when UserLoaded is emitted
         }
       },
       child: SingleChildScrollView(
@@ -247,6 +256,13 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                           return const Center(
                             child: CircularProgressIndicator(
                               color: Colors.white,
+                            ),
+                          );
+                        } else if (state is UserError) {
+                          return Center(
+                            child: Text(
+                              'Gagal memuat profil',
+                              style: const TextStyle(color: Colors.white),
                             ),
                           );
                         }

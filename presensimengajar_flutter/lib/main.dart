@@ -5,6 +5,10 @@ import 'injection_container.dart' as di;
 import 'core/theme.dart';
 import 'routes/app_router.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
+import 'presentation/blocs/user/user_bloc.dart';
+import 'presentation/blocs/schedule/schedule_bloc.dart';
+import 'presentation/blocs/attendance/attendance_bloc.dart';
+import 'presentation/blocs/leave/leave_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +25,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => di.sl<AuthBloc>()),
+        BlocProvider(create: (_) => di.sl<UserBloc>()),
+        BlocProvider(create: (_) => di.sl<ScheduleBloc>()),
+        BlocProvider(create: (_) => di.sl<AttendanceBloc>()),
+        BlocProvider(create: (_) => di.sl<LeaveBloc>()),
         // Add other global blocs here if needed
       ],
       child: MaterialApp.router(

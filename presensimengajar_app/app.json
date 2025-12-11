@@ -27,8 +27,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      "nativewind/expo"
+      "expo-router"
     ]
   }
 }

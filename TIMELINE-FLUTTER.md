@@ -36,7 +36,7 @@ This document outlines the implementation plan for the Presensi Mengajar applica
 
 Based on `migration/src/schema.js`.
 
-- [ ] **Models Creation**
+- [x] **Models Creation**
     - `UserModel` (users collection)
     - `TeacherModel` (teachers collection)
     - `SubjectModel` (subjects collection)
@@ -48,7 +48,7 @@ Based on `migration/src/schema.js`.
     - `NotificationModel` (notifications collection)
     - `SettingModel` (settings collection)
 
-- [ ] **Repository Interfaces & Implementations**
+- [x] **Repository Interfaces & Implementations**
     - `AuthRepository`: Login, Logout, Check Auth Status.
     - `TeacherRepository`: Get profile, update profile.
     - `ScheduleRepository`: Get daily/weekly schedules.

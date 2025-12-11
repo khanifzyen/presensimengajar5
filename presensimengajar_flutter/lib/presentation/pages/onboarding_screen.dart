@@ -19,22 +19,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'title': 'Presensi Fleksibel',
       'description':
           'Satu aplikasi untuk presensi mengajar dan kehadiran kerja harian Anda.',
-      'image':
-          'https://placehold.co/300x250/e0e7ff/1e3a8a?text=Ilustrasi+Presensi', // Placeholder, replace with asset if available
+      'image': 'assets/images/onboarding_1.png',
     },
     {
       'title': 'Validasi Akurat',
       'description':
           'Check-in hanya bisa dilakukan dalam radius sekolah dengan verifikasi foto wajah.',
-      'image':
-          'https://placehold.co/300x250/e0e7ff/1e3a8a?text=Lokasi+%26+Foto',
+      'image': 'assets/images/onboarding_2.png',
     },
     {
       'title': 'Pantau Izin',
       'description':
           'Ajukan izin sakit atau cuti langsung kepada Admin dan pantau performa Anda.',
-      'image':
-          'https://placehold.co/300x250/e0e7ff/1e3a8a?text=Izin+%26+Laporan',
+      'image': 'assets/images/onboarding_3.png',
     },
   ];
 
@@ -77,21 +74,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Image placeholder
-                        Container(
+                        // Image
+                        Image.asset(
+                          _slides[index]['image']!,
                           height: 250,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondary,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.image,
-                              size: 100,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
+                          fit: BoxFit.contain,
                         ),
                         const SizedBox(height: 40),
                         Text(
@@ -120,15 +107,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // Bottom Controls
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
                   // Dots
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       _slides.length,
                       (index) => Container(
-                        margin: const EdgeInsets.only(right: 8),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
                         height: 8,
                         width: _currentPage == index ? 24 : 8,
                         decoration: BoxDecoration(
@@ -140,27 +127,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 32),
 
                   // Next/Start Button
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_currentPage == _slides.length - 1) {
-                        _completeOnboarding();
-                      } else {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(20),
-                    ),
-                    child: Icon(
-                      _currentPage == _slides.length - 1
-                          ? Icons.check
-                          : Icons.arrow_forward,
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_currentPage == _slides.length - 1) {
+                          _completeOnboarding();
+                        } else {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                      },
+                      child: Text(
+                        _currentPage == _slides.length - 1
+                            ? 'Mulai Sekarang'
+                            : 'Lanjut',
+                      ),
                     ),
                   ),
                 ],

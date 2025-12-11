@@ -10,10 +10,13 @@ import 'presentation/blocs/schedule/schedule_bloc.dart';
 import 'presentation/blocs/attendance/attendance_bloc.dart';
 import 'presentation/blocs/leave/leave_bloc.dart';
 
+import 'package:intl/date_symbol_data_local.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await di.init();
+  await initializeDateFormatting('id_ID', null);
   runApp(const MyApp());
 }
 

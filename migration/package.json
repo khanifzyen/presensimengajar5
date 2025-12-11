@@ -7,7 +7,7 @@
     "migrate": "node src/migrate.js"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "pocketbase": "^0.21.1"
+    "dotenv": "^17.2.3",
+    "pocketbase": "^0.26.5"
   }
 }

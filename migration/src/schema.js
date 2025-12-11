@@ -2,66 +2,63 @@ const schema = [
     {
         name: 'users',
         type: 'auth',
-        schema: [
+        fields: [
             {
                 name: 'role',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['admin', 'teacher']
-                }
+                maxSelect: 1,
+                values: ['admin', 'teacher']
             },
             {
                 name: 'verified',
                 type: 'bool',
                 required: false
             }
-        ]
+        ],
+        indexes: []
     },
     {
         name: 'subjects',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'name',
                 type: 'text',
-                required: true,
-                unique: true
+                required: true
             },
             {
                 name: 'code',
                 type: 'text',
-                required: false,
-                unique: true
+                required: false
             },
             {
                 name: 'description',
                 type: 'text',
                 required: false
             }
+        ],
+        indexes: [
+            'CREATE UNIQUE INDEX `idx_subjects_name` ON `subjects` (`name`)',
+            'CREATE UNIQUE INDEX `idx_subjects_code` ON `subjects` (`code`)'
         ]
     },
     {
         name: 'teachers',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'user_id',
                 type: 'relation',
                 required: true,
-                unique: true,
-                options: {
-                    collectionId: 'users',
-                    cascadeDelete: true,
-                    maxSelect: 1
-                }
+                collectionId: 'users',
+                cascadeDelete: true,
+                maxSelect: 1
             },
             {
                 name: 'nip',
                 type: 'text',
-                required: true,
-                unique: true
+                required: true
             },
             {
                 name: 'name',
@@ -82,83 +79,72 @@ const schema = [
                 name: 'photo',
                 type: 'file',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    maxSize: 5242880,
-                    mimeTypes: ['image/jpeg', 'image/png', 'image/svg+xml', 'image/gif', 'image/webp']
-                }
+                maxSelect: 1,
+                maxSize: 5242880,
+                mimeTypes: ['image/jpeg', 'image/png', 'image/svg+xml', 'image/gif', 'image/webp']
             },
             {
                 name: 'subject_id',
                 type: 'relation',
                 required: false,
-                options: {
-                    collectionId: 'subjects',
-                    cascadeDelete: false,
-                    maxSelect: 1
-                }
+                collectionId: 'subjects',
+                cascadeDelete: false,
+                maxSelect: 1
             },
             {
                 name: 'position',
                 type: 'select',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    values: ['guru', 'kepala_sekolah', 'wakil_kepala', 'staff_tu']
-                }
+                maxSelect: 1,
+                values: ['guru', 'kepala_sekolah', 'wakil_kepala', 'staff_tu']
             },
             {
                 name: 'attendance_category',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['tetap', 'jadwal']
-                }
+                maxSelect: 1,
+                values: ['tetap', 'jadwal']
             },
             {
                 name: 'status',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['active', 'inactive']
-                }
+                maxSelect: 1,
+                values: ['active', 'inactive']
             },
             {
                 name: 'join_date',
                 type: 'date',
                 required: false
             }
+        ],
+        indexes: [
+            'CREATE UNIQUE INDEX `idx_teachers_user_id` ON `teachers` (`user_id`)',
+            'CREATE UNIQUE INDEX `idx_teachers_nip` ON `teachers` (`nip`)'
         ]
     },
     {
         name: 'classes',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'name',
                 type: 'text',
-                required: true,
-                unique: true
+                required: true
             },
             {
                 name: 'level',
                 type: 'select',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    values: ['X', 'XI', 'XII']
-                }
+                maxSelect: 1,
+                values: ['X', 'XI', 'XII']
             },
             {
                 name: 'major',
                 type: 'select',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    values: ['IPA', 'IPS', 'Umum']
-                }
+                maxSelect: 1,
+                values: ['IPA', 'IPS', 'Umum']
             },
             {
                 name: 'room',
@@ -170,26 +156,26 @@ const schema = [
                 type: 'number',
                 required: false
             }
+        ],
+        indexes: [
+            'CREATE UNIQUE INDEX `idx_classes_name` ON `classes` (`name`)'
         ]
     },
     {
         name: 'academic_periods',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'name',
                 type: 'text',
-                required: true,
-                unique: true
+                required: true
             },
             {
                 name: 'semester',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['ganjil', 'genap']
-                }
+                maxSelect: 1,
+                values: ['ganjil', 'genap']
             },
             {
                 name: 'start_date',
@@ -206,60 +192,53 @@ const schema = [
                 type: 'bool',
                 required: false
             }
+        ],
+        indexes: [
+            'CREATE UNIQUE INDEX `idx_academic_periods_name` ON `academic_periods` (`name`)'
         ]
     },
     {
         name: 'schedules',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'teacher_id',
                 type: 'relation',
                 required: true,
-                options: {
-                    collectionId: 'teachers',
-                    cascadeDelete: true,
-                    maxSelect: 1
-                }
+                collectionId: 'teachers',
+                cascadeDelete: true,
+                maxSelect: 1
             },
             {
                 name: 'subject_id',
                 type: 'relation',
                 required: true,
-                options: {
-                    collectionId: 'subjects',
-                    cascadeDelete: false,
-                    maxSelect: 1
-                }
+                collectionId: 'subjects',
+                cascadeDelete: false,
+                maxSelect: 1
             },
             {
                 name: 'class_id',
                 type: 'relation',
                 required: true,
-                options: {
-                    collectionId: 'classes',
-                    cascadeDelete: false,
-                    maxSelect: 1
-                }
+                collectionId: 'classes',
+                cascadeDelete: false,
+                maxSelect: 1
             },
             {
                 name: 'period_id',
                 type: 'relation',
                 required: true,
-                options: {
-                    collectionId: 'academic_periods',
-                    cascadeDelete: false,
-                    maxSelect: 1
-                }
+                collectionId: 'academic_periods',
+                cascadeDelete: false,
+                maxSelect: 1
             },
             {
                 name: 'day',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
-                }
+                maxSelect: 1,
+                values: ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
             },
             {
                 name: 'start_time',
@@ -276,31 +255,28 @@ const schema = [
                 type: 'text',
                 required: false
             }
-        ]
+        ],
+        indexes: []
     },
     {
         name: 'attendances',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'teacher_id',
                 type: 'relation',
                 required: true,
-                options: {
-                    collectionId: 'teachers',
-                    cascadeDelete: true,
-                    maxSelect: 1
-                }
+                collectionId: 'teachers',
+                cascadeDelete: true,
+                maxSelect: 1
             },
             {
                 name: 'schedule_id',
                 type: 'relation',
                 required: false,
-                options: {
-                    collectionId: 'schedules',
-                    cascadeDelete: false,
-                    maxSelect: 1
-                }
+                collectionId: 'schedules',
+                cascadeDelete: false,
+                maxSelect: 1
             },
             {
                 name: 'date',
@@ -311,14 +287,12 @@ const schema = [
                 name: 'type',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['office', 'class']
-                }
+                maxSelect: 1,
+                values: ['office', 'class']
             },
             {
                 name: 'check_in',
-                type: 'date', // PocketBase uses date type for datetime as well
+                type: 'date',
                 required: false
             },
             {
@@ -330,10 +304,8 @@ const schema = [
                 name: 'status',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['hadir', 'telat', 'izin', 'sakit', 'alpha']
-                }
+                maxSelect: 1,
+                values: ['hadir', 'telat', 'izin', 'sakit', 'alpha']
             },
             {
                 name: 'latitude',
@@ -354,41 +326,36 @@ const schema = [
                 name: 'photo',
                 type: 'file',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    maxSize: 5242880,
-                    mimeTypes: ['image/jpeg', 'image/png', 'image/webp']
-                }
+                maxSelect: 1,
+                maxSize: 5242880,
+                mimeTypes: ['image/jpeg', 'image/png', 'image/webp']
             },
             {
                 name: 'notes',
                 type: 'text',
                 required: false
             }
-        ]
+        ],
+        indexes: []
     },
     {
         name: 'leave_requests',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'teacher_id',
                 type: 'relation',
                 required: true,
-                options: {
-                    collectionId: 'teachers',
-                    cascadeDelete: true,
-                    maxSelect: 1
-                }
+                collectionId: 'teachers',
+                cascadeDelete: true,
+                maxSelect: 1
             },
             {
                 name: 'type',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['sakit', 'cuti', 'dinas']
-                }
+                maxSelect: 1,
+                values: ['sakit', 'cuti', 'dinas']
             },
             {
                 name: 'start_date',
@@ -409,30 +376,24 @@ const schema = [
                 name: 'attachment',
                 type: 'file',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    maxSize: 5242880,
-                    mimeTypes: ['application/pdf', 'image/jpeg', 'image/png']
-                }
+                maxSelect: 1,
+                maxSize: 5242880,
+                mimeTypes: ['application/pdf', 'image/jpeg', 'image/png']
             },
             {
                 name: 'status',
                 type: 'select',
                 required: true,
-                options: {
-                    maxSelect: 1,
-                    values: ['pending', 'approved', 'rejected']
-                }
+                maxSelect: 1,
+                values: ['pending', 'approved', 'rejected']
             },
             {
                 name: 'approved_by',
                 type: 'relation',
                 required: false,
-                options: {
-                    collectionId: 'users',
-                    cascadeDelete: false,
-                    maxSelect: 1
-                }
+                collectionId: 'users',
+                cascadeDelete: false,
+                maxSelect: 1
             },
             {
                 name: 'approved_at',
@@ -444,17 +405,17 @@ const schema = [
                 type: 'text',
                 required: false
             }
-        ]
+        ],
+        indexes: []
     },
     {
         name: 'settings',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'key',
                 type: 'text',
-                required: true,
-                unique: true
+                required: true
             },
             {
                 name: 'value',
@@ -465,10 +426,8 @@ const schema = [
                 name: 'type',
                 type: 'select',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    values: ['text', 'number', 'boolean', 'json']
-                }
+                maxSelect: 1,
+                values: ['text', 'number', 'boolean', 'json']
             },
             {
                 name: 'description',
@@ -479,26 +438,25 @@ const schema = [
                 name: 'category',
                 type: 'select',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    values: ['general', 'location', 'time', 'notification']
-                }
+                maxSelect: 1,
+                values: ['general', 'location', 'time', 'notification']
             }
+        ],
+        indexes: [
+            'CREATE UNIQUE INDEX `idx_settings_key` ON `settings` (`key`)'
         ]
     },
     {
         name: 'notifications',
         type: 'base',
-        schema: [
+        fields: [
             {
                 name: 'user_id',
                 type: 'relation',
                 required: true,
-                options: {
-                    collectionId: 'users',
-                    cascadeDelete: true,
-                    maxSelect: 1
-                }
+                collectionId: 'users',
+                cascadeDelete: true,
+                maxSelect: 1
             },
             {
                 name: 'title',
@@ -514,10 +472,8 @@ const schema = [
                 name: 'type',
                 type: 'select',
                 required: false,
-                options: {
-                    maxSelect: 1,
-                    values: ['info', 'success', 'warning', 'error']
-                }
+                maxSelect: 1,
+                values: ['info', 'success', 'warning', 'error']
             },
             {
                 name: 'is_read',
@@ -529,7 +485,8 @@ const schema = [
                 type: 'json',
                 required: false
             }
-        ]
+        ],
+        indexes: []
     }
 ];
 

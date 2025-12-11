@@ -45,25 +45,11 @@ class _SplashScreenState extends State<SplashScreen> {
             prefs.getBool('onboarding_completed') ?? false;
 
         if (state is AuthAuthenticated) {
-          // Navigate to Dashboard (Placeholder for now)
-          // context.go('/dashboard');
-          // For now, just print or go to login if dashboard not ready,
-          // but actually if authenticated we should go to dashboard.
-          // Since dashboard isn't ready, let's go to login but maybe show a message?
-          // Or better, let's assume we go to login for now as "Home" isn't built.
-          // Wait, the user asked to implement phase 1.
-          // Let's go to '/login' but effectively it should be dashboard.
-          // I'll add a temporary dashboard route or just log it.
-          // Actually, if authenticated, we skip onboarding and login.
-          // For this step, let's just go to Login if not authenticated.
-          // If authenticated, we also go to Login (as placeholder) or stay here?
-          // Let's go to /login for now, but in reality it should be /dashboard.
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('User Authenticated! Navigating to Dashboard...'),
-            ),
-          );
-          // context.go('/dashboard');
+          if (state.role == 'admin') {
+            context.go('/admin-dashboard');
+          } else {
+            context.go('/teacher-dashboard');
+          }
         } else if (state is AuthUnauthenticated) {
           if (isOnboardingCompleted) {
             context.go('/login');

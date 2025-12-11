@@ -2,6 +2,8 @@ import 'package:go_router/go_router.dart';
 import '../presentation/pages/splash_screen.dart';
 import '../presentation/pages/onboarding_screen.dart';
 import '../presentation/pages/login_screen.dart';
+import '../presentation/pages/teacher/teacher_dashboard.dart';
+import '../presentation/pages/admin/admin_dashboard.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -13,7 +15,14 @@ class AppRouter {
         builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
-      // Add Dashboard route later
+      GoRoute(
+        path: '/teacher-dashboard',
+        builder: (context, state) => const TeacherDashboard(),
+      ),
+      GoRoute(
+        path: '/admin-dashboard',
+        builder: (context, state) => const AdminDashboard(),
+      ),
     ],
   );
 }

@@ -34,6 +34,9 @@ class AuthRepositoryImpl implements AuthRepository {
   String? get currentUserId => pb.authStore.record?.id;
 
   @override
+  String? get currentUserRole => pb.authStore.record?.getStringValue('role');
+
+  @override
   Future<UserModel?> getCurrentUser() async {
     if (!isAuthenticated || currentUserId == null) return null;
     try {

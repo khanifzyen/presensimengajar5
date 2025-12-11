@@ -17,7 +17,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     if (authRepository.isAuthenticated) {
-      emit(AuthAuthenticated(authRepository.currentUserId!));
+      final role =
+          authRepository.currentUserRole ??
+          'teacher'; // Default to teacher if null
+      emit(AuthAuthenticated(authRepository.currentUserId!, role));
     } else {
       emit(AuthUnauthenticated());
     }
@@ -30,7 +33,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       await authRepository.login(event.email, event.password);
-      emit(AuthAuthenticated(authRepository.currentUserId!));
+      final role = authRepository.currentUserRole ?? 'teacher';
+      emit(AuthAuthenticated(authRepository.currentUserId!, role));
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }

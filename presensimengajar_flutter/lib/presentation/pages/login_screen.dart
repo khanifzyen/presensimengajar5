@@ -107,6 +107,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (value == null || value.isEmpty) {
                             return 'Mohon masukkan NIP atau Email';
                           }
+                          // Simple email validation regex
+                          final emailRegex = RegExp(
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          );
+                          // Allow NIP (digits) or Email
+                          final isNip = RegExp(r'^[0-9]+$').hasMatch(value);
+
+                          if (!isNip && !emailRegex.hasMatch(value)) {
+                            return 'Format Email atau NIP tidak valid';
+                          }
                           return null;
                         },
                       ),

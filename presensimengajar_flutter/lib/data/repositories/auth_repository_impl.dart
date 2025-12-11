@@ -1,5 +1,7 @@
 import 'package:pocketbase/pocketbase.dart';
 import '../../core/constants.dart';
+import '../../core/error/exceptions.dart';
+import '../../core/error/error_handler.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../models/user_model.dart';
 
@@ -10,8 +12,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthStore> login(String email, String password) async {
-    await pb.collection(AppCollections.users).authWithPassword(email, password);
-    return pb.authStore;
+    try {
+      await pb
+          .collection(AppCollections.users)
+          .authWithPassword(email, password);
+      return pb.authStore;
+    } catch (e) {
+      throw AuthException(ErrorHandler.parseError(e));
+    }
   }
 
   @override

@@ -30,6 +30,15 @@ class AttendanceHistoryLoaded extends AttendanceState {
   List<Object> get props => [history];
 }
 
+class AttendanceScheduleMapLoaded extends AttendanceState {
+  final Map<String, AttendanceModel> attendanceMap;
+
+  const AttendanceScheduleMapLoaded(this.attendanceMap);
+
+  @override
+  List<Object> get props => [attendanceMap];
+}
+
 class AttendanceError extends AttendanceState {
   final String message;
 

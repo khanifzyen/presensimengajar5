@@ -11,6 +11,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     on<AttendanceCheckIn>(_onAttendanceCheckIn);
     on<AttendanceCheckOut>(_onAttendanceCheckOut);
     on<AttendanceFetchHistory>(_onAttendanceFetchHistory);
+    on<AttendanceFetchForSchedules>(_onAttendanceFetchForSchedules);
   }
 
   Future<void> _onAttendanceCheckIn(
@@ -62,6 +63,24 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         endDate: event.endDate,
       );
       emit(AttendanceHistoryLoaded(history));
+    } catch (e) {
+      emit(AttendanceError(e.toString()));
+    }
+  }
+
+  Future<void> _onAttendanceFetchForSchedules(
+    AttendanceFetchForSchedules event,
+    Emitter<AttendanceState> emit,
+  ) async {
+    emit(AttendanceLoading());
+    try {
+      final attendanceMap = await attendanceRepository.getAttendanceBySchedules(
+        event.teacherId,
+        event.scheduleIds,
+        event.startDate,
+        event.endDate,
+      );
+      emit(AttendanceScheduleMapLoaded(attendanceMap));
     } catch (e) {
       emit(AttendanceError(e.toString()));
     }

@@ -22,4 +22,11 @@ abstract class AttendanceRepository {
     DateTime? startDate,
     DateTime? endDate,
   });
+
+  Future<Map<String, AttendanceModel>> getAttendanceBySchedules(
+    String teacherId,
+    List<String> scheduleIds,
+    DateTime startDate,
+    DateTime endDate,
+  );
 }

@@ -12,6 +12,10 @@ import '../../blocs/user/user_state.dart';
 import '../../blocs/schedule/schedule_bloc.dart';
 import '../../blocs/schedule/schedule_event.dart';
 import '../../blocs/schedule/schedule_state.dart';
+import '../../blocs/attendance/attendance_bloc.dart';
+import '../../blocs/attendance/attendance_event.dart';
+import '../../blocs/attendance/attendance_state.dart';
+import '../../../data/models/attendance_model.dart';
 import 'profile_page.dart';
 
 class TeacherDashboard extends StatefulWidget {
@@ -25,21 +29,68 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   int _selectedIndex = 0;
   late Timer _timer;
   String _timeString = '';
-  String _selectedDay = _getCurrentDayInIndonesian();
 
-  static String _getCurrentDayInIndonesian() {
-    final now = DateTime.now();
-    final dayOfWeek = now.weekday; // 1 = Monday, 7 = Sunday
-    const days = [
-      'senin',
-      'selasa',
-      'rabu',
-      'kamis',
-      'jumat',
-      'sabtu',
-      'minggu',
-    ];
-    return days[dayOfWeek - 1];
+  // Weekly navigation state
+  DateTime _selectedWeekStart = _getWeekStart(DateTime.now());
+  DateTime _selectedWeekEnd = _getWeekEnd(DateTime.now());
+  int _weekOffset = 0; // 0 = current week, -1 = last week, +1 = next week
+
+  // Helper methods for week calculation
+  static DateTime _getWeekStart(DateTime date) {
+    // Get Monday of the week
+    final dayOfWeek = date.weekday; // 1 = Monday, 7 = Sunday
+    return date.subtract(Duration(days: dayOfWeek - 1));
+  }
+
+  static DateTime _getWeekEnd(DateTime date) {
+    // Get Sunday of the week
+    final dayOfWeek = date.weekday;
+    return date.add(Duration(days: 7 - dayOfWeek));
+  }
+
+  void _navigateWeek(int offset) {
+    setState(() {
+      _weekOffset += offset;
+      final newDate = DateTime.now().add(Duration(days: _weekOffset * 7));
+      _selectedWeekStart = _getWeekStart(newDate);
+      _selectedWeekEnd = _getWeekEnd(newDate);
+    });
+
+    // Re-fetch schedules for new week
+    final userState = context.read<UserBloc>().state;
+    if (userState is UserLoaded) {
+      context.read<ScheduleBloc>().add(
+        ScheduleFetch(teacherId: userState.teacher.id),
+      );
+    }
+  }
+
+  String _getWeekLabel() {
+    if (_weekOffset == 0) {
+      return 'Jadwal Minggu Ini';
+    } else if (_weekOffset == -1) {
+      return 'Jadwal 1 Minggu Lalu';
+    } else if (_weekOffset == 1) {
+      return 'Jadwal 1 Minggu Kedepan';
+    } else if (_weekOffset < -1) {
+      return 'Jadwal ${_weekOffset.abs()} Minggu Lalu';
+    } else {
+      return 'Jadwal $_weekOffset Minggu Kedepan';
+    }
+  }
+
+  String _getWeekDateRange() {
+    final startDay = _selectedWeekStart.day;
+    final endDay = _selectedWeekEnd.day;
+    final startMonth = DateFormat('MMM', 'id_ID').format(_selectedWeekStart);
+    final endMonth = DateFormat('MMM', 'id_ID').format(_selectedWeekEnd);
+    final year = _selectedWeekEnd.year;
+
+    if (_selectedWeekStart.month == _selectedWeekEnd.month) {
+      return '$startDay-$endDay $endMonth $year';
+    } else {
+      return '$startDay $startMonth - $endDay $endMonth $year';
+    }
   }
 
   @override
@@ -97,20 +148,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     });
   }
 
-  void _onDaySelected(String day) {
-    setState(() {
-      _selectedDay = day;
-    });
-
-    // Fetch schedules for the selected day
-    final userState = context.read<UserBloc>().state;
-    if (userState is UserLoaded) {
-      context.read<ScheduleBloc>().add(
-        ScheduleFetch(teacherId: userState.teacher.id, day: day),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,9 +155,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
       body: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserLoaded) {
-            // Fetch schedule using the correct teacher ID from the profile
+            // Fetch all schedules for the teacher (no day filter for weekly view)
             context.read<ScheduleBloc>().add(
-              ScheduleFetch(teacherId: state.teacher.id, day: _selectedDay),
+              ScheduleFetch(teacherId: state.teacher.id),
             );
           } else if (state is UserError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -152,10 +189,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
-            activeIcon: Icon(
-              Icons.history,
-              weight: 700,
-            ), // Material icons don't always have filled history, using weight or same
+            activeIcon: Icon(Icons.history, weight: 700),
             label: 'Riwayat',
           ),
           BottomNavigationBarItem(
@@ -191,7 +225,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         final authState = context.read<AuthBloc>().state;
         if (authState is AuthAuthenticated) {
           context.read<UserBloc>().add(UserGetProfile(authState.userId));
-          // Schedule fetch will be triggered by the listener when UserLoaded is emitted
         }
       },
       child: SingleChildScrollView(
@@ -364,7 +397,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                 ),
                                 const SizedBox(height: 4),
                                 const Text(
-                                  '05:30', // Placeholder
+                                  '05:30',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -383,7 +416,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                 ),
                                 const SizedBox(height: 4),
                                 const Text(
-                                  'Tepat Waktu', // Placeholder
+                                  'Tepat Waktu',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.green,
@@ -424,11 +457,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border(
-                        left: BorderSide(
-                          color: Colors.green, // Active status color
-                          width: 6,
-                        ),
+                      border: const Border(
+                        left: BorderSide(color: Colors.green, width: 6),
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -442,7 +472,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Matematika Wajib', // Placeholder, should be dynamic
+                          'Matematika Wajib',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -450,7 +480,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Kelas XII IPA 1 • 07:00 - 08:30', // Placeholder
+                          'Kelas XII IPA 1 • 07:00 - 08:30',
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 14,
@@ -497,229 +527,362 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
 
             const SizedBox(height: 24),
 
-            // Jadwal Hari Ini Section
+            // Jadwal Minggu Ini Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Jadwal Hari Ini',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E3A8A),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                  // Week Navigation Header
+                  Row(
+                    children: [
+                      // Left Arrow
+                      IconButton(
+                        onPressed: () => _navigateWeek(-1),
+                        icon: const Icon(Icons.arrow_back_ios, size: 20),
+                        color: const Color(0xFF1E3A8A),
+                      ),
 
-                  // Day Filter Tabs
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: ['senin', 'selasa', 'rabu', 'kamis', 'jumat']
-                          .map((day) {
-                            final isSelected = day == _selectedDay;
-                            // Capitalize first letter for display
-                            final displayDay =
-                                day[0].toUpperCase() + day.substring(1);
-                            return Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              child: ElevatedButton(
-                                onPressed: () => _onDaySelected(day),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isSelected
-                                      ? const Color(0xFF1E3A8A)
-                                      : Colors.white,
-                                  foregroundColor: isSelected
-                                      ? Colors.white
-                                      : Colors.grey[600],
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 12,
-                                  ),
-                                ),
-                                child: Text(displayDay),
+                      // Week Label and Date Range
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              _getWeekLabel(),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1E3A8A),
                               ),
-                            );
-                          })
-                          .toList(),
-                    ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _getWeekDateRange(),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Right Arrow
+                      IconButton(
+                        onPressed: () => _navigateWeek(1),
+                        icon: const Icon(Icons.arrow_forward_ios, size: 20),
+                        color: const Color(0xFF1E3A8A),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 16),
 
-                  BlocBuilder<ScheduleBloc, ScheduleState>(
-                    builder: (context, state) {
-                      if (state is ScheduleLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state is ScheduleLoaded) {
-                        if (state.schedules.isEmpty) {
-                          return Center(
-                            child: Column(
-                              children: [
-                                Image.asset(
-                                  'assets/images/no_data.png',
-                                  width: 200,
-                                ),
-                                const SizedBox(height: 16),
-                                const Text('Belum ada jadwal hari ini'),
-                              ],
+                  // Schedule List with Attendance
+                  BlocListener<ScheduleBloc, ScheduleState>(
+                    listener: (context, state) {
+                      if (state is ScheduleLoaded &&
+                          state.schedules.isNotEmpty) {
+                        // Extract schedule IDs and fetch attendance
+                        final scheduleIds = state.schedules
+                            .map((s) => s.id)
+                            .toList();
+                        final userState = context.read<UserBloc>().state;
+                        if (userState is UserLoaded) {
+                          context.read<AttendanceBloc>().add(
+                            AttendanceFetchForSchedules(
+                              teacherId: userState.teacher.id,
+                              scheduleIds: scheduleIds,
+                              startDate: _selectedWeekStart,
+                              endDate: _selectedWeekEnd,
                             ),
                           );
                         }
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: state.schedules.length,
-                          itemBuilder: (context, index) {
-                            final schedule = state.schedules[index];
-
-                            // Get subject name from expanded data
-                            String subjectName = 'Mata Pelajaran';
-                            if (schedule.subject != null) {
-                              subjectName = schedule.subject!.getStringValue(
-                                'name',
-                              );
-                            }
-
-                            // Get class name from expanded data
-                            String className = 'Kelas';
-                            if (schedule.classInfo != null) {
-                              className = schedule.classInfo!.getStringValue(
-                                'name',
-                              );
-                            }
-
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFFF0FDF4,
-                                ), // Light green bg
-                                borderRadius: BorderRadius.circular(16),
-                                border: const Border(
-                                  left: BorderSide(
-                                    color: Color(0xFF10B981), // Green accent
-                                    width: 6,
+                      }
+                    },
+                    child: BlocBuilder<ScheduleBloc, ScheduleState>(
+                      builder: (context, scheduleState) {
+                        if (scheduleState is ScheduleLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (scheduleState is ScheduleLoaded) {
+                          if (scheduleState.schedules.isEmpty) {
+                            return Center(
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/no_data.png',
+                                    width: 200,
                                   ),
-                                ),
+                                  const SizedBox(height: 16),
+                                  const Text('Belum ada jadwal minggu ini'),
+                                ],
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  children: [
-                                    // Time Column
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          schedule.startTime,
-                                          style: const TextStyle(
-                                            color: Color(0xFF1E3A8A),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
+                            );
+                          }
+
+                          // Filter schedules for current week
+                          final weekSchedules = scheduleState.schedules.where((
+                            schedule,
+                          ) {
+                            // For now, show all schedules. In production, you'd filter by date
+                            return true;
+                          }).toList();
+
+                          // Nest AttendanceBloc builder to get attendance data
+                          return BlocBuilder<AttendanceBloc, AttendanceState>(
+                            builder: (context, attendanceState) {
+                              Map<String, AttendanceModel> attendanceMap = {};
+                              if (attendanceState
+                                  is AttendanceScheduleMapLoaded) {
+                                attendanceMap = attendanceState.attendanceMap;
+                              }
+
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: weekSchedules.length,
+                                itemBuilder: (context, index) {
+                                  final schedule = weekSchedules[index];
+                                  final attendance = attendanceMap[schedule.id];
+
+                                  // Get subject name from expanded data
+                                  String subjectName = 'Mata Pelajaran';
+                                  if (schedule.subject != null) {
+                                    subjectName = schedule.subject!
+                                        .getStringValue('name');
+                                  }
+
+                                  // Get class name from expanded data
+                                  String className = 'Kelas';
+                                  if (schedule.classInfo != null) {
+                                    className = schedule.classInfo!
+                                        .getStringValue('name');
+                                  }
+
+                                  // Determine status and button
+                                  String statusLabel;
+                                  Color statusColor;
+                                  Widget? actionButton;
+
+                                  if (attendance == null) {
+                                    // No attendance record
+                                    statusLabel = 'Menunggu';
+                                    statusColor = Colors.grey;
+                                    actionButton = ElevatedButton(
+                                      onPressed: () {
+                                        // TODO: Navigate to check-in
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(
+                                          0xFF1E3A8A,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 8,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
                                           ),
                                         ),
-                                        const Text(
-                                          '-',
-                                          style: TextStyle(color: Colors.grey),
+                                      ),
+                                      child: const Text(
+                                        'Check-In',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    );
+                                  } else if (attendance.checkIn != null &&
+                                      attendance.checkOut == null) {
+                                    // Checked in, not checked out
+                                    statusLabel = 'Sedang Mengajar';
+                                    statusColor = Colors.orange;
+                                    actionButton = ElevatedButton(
+                                      onPressed: () {
+                                        // TODO: Navigate to check-out
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 8,
                                         ),
-                                        Text(
-                                          schedule.endTime,
-                                          style: const TextStyle(
-                                            color: Color(0xFF1E3A8A),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 16),
+                                      ),
+                                      child: const Text(
+                                        'Check-Out',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    );
+                                  } else {
+                                    // Checked out (completed)
+                                    final checkInTime = DateFormat('HH:mm')
+                                        .format(
+                                          DateTime.parse(attendance.checkIn!),
+                                        );
+                                    final checkOutTime = DateFormat('HH:mm')
+                                        .format(
+                                          DateTime.parse(attendance.checkOut!),
+                                        );
+                                    statusLabel =
+                                        'Hadir ($checkInTime - $checkOutTime)';
+                                    statusColor = const Color(0xFF10B981);
+                                    actionButton =
+                                        null; // No button for completed
+                                  }
 
-                                    // Divider
-                                    Container(
-                                      height: 50,
-                                      width: 1,
-                                      color: Colors.grey[300],
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF0FDF4),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: const Border(
+                                        left: BorderSide(
+                                          color: Color(0xFF10B981),
+                                          width: 6,
+                                        ),
+                                      ),
                                     ),
-                                    const SizedBox(width: 16),
-
-                                    // Details Column
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Row(
                                         children: [
-                                          Text(
-                                            '$subjectName - $className',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: Colors.black87,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Row(
+                                          // Time Column
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
                                             children: [
-                                              Icon(
-                                                Icons.location_on,
-                                                size: 14,
-                                                color: Colors.grey[600],
-                                              ),
-                                              const SizedBox(width: 4),
                                               Text(
-                                                schedule.room.isEmpty
-                                                    ? 'Ruang Kelas'
-                                                    : schedule.room,
+                                                schedule.startTime,
+                                                style: const TextStyle(
+                                                  color: Color(0xFF1E3A8A),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              const Text(
+                                                '-',
                                                 style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 14,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              Text(
+                                                schedule.endTime,
+                                                style: const TextStyle(
+                                                  color: Color(0xFF1E3A8A),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 4),
+                                          const SizedBox(width: 16),
+
+                                          // Divider
                                           Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFFDCFCE7),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                            ),
-                                            child: Text(
-                                              'Hadir (${schedule.startTime} - ${schedule.endTime})',
-                                              style: const TextStyle(
-                                                color: Color(0xFF166534),
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                              ),
+                                            height: 50,
+                                            width: 1,
+                                            color: Colors.grey[300],
+                                          ),
+                                          const SizedBox(width: 16),
+
+                                          // Details Column
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '$subjectName - $className',
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                    color: Colors.black87,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      size: 14,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      schedule.room.isEmpty
+                                                          ? 'Ruang Kelas'
+                                                          : schedule.room,
+                                                      style: TextStyle(
+                                                        color: Colors.grey[600],
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: statusColor
+                                                            .withOpacity(0.1),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        statusLabel,
+                                                        style: TextStyle(
+                                                          color: statusColor,
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    if (actionButton !=
+                                                        null) ...[
+                                                      const SizedBox(width: 8),
+                                                      actionButton,
+                                                    ],
+                                                  ],
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      } else if (state is ScheduleError) {
-                        return Center(child: Text('Error: ${state.message}'));
-                      }
-                      return const SizedBox.shrink();
-                    },
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        } else if (scheduleState is ScheduleError) {
+                          return Center(
+                            child: Text('Error: ${scheduleState.message}'),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
                   ),
                 ],
               ),

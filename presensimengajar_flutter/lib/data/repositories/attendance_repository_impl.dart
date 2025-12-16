@@ -86,4 +86,43 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
 
     return records.map((r) => AttendanceModel.fromRecord(r)).toList();
   }
+
+  @override
+  Future<Map<String, AttendanceModel>> getAttendanceBySchedules(
+    String teacherId,
+    List<String> scheduleIds,
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    if (scheduleIds.isEmpty) {
+      return {};
+    }
+
+    // Build filter for schedule IDs
+    final scheduleFilter = scheduleIds
+        .map((id) => 'schedule_id="$id"')
+        .join(' || ');
+
+    // Format dates as YYYY-MM-DD for PocketBase date comparison
+    final startDateStr = startDate.toIso8601String().split('T')[0];
+    final endDateStr = endDate.toIso8601String().split('T')[0];
+
+    final filter =
+        'teacher_id="$teacherId" && ($scheduleFilter) && date>="$startDateStr" && date<="$endDateStr"';
+
+    final records = await pb
+        .collection(AppCollections.attendances)
+        .getFullList(filter: filter);
+
+    // Map by schedule_id for quick lookup
+    final Map<String, AttendanceModel> attendanceMap = {};
+    for (final record in records) {
+      final attendance = AttendanceModel.fromRecord(record);
+      if (attendance.scheduleId != null) {
+        attendanceMap[attendance.scheduleId!] = attendance;
+      }
+    }
+
+    return attendanceMap;
+  }
 }

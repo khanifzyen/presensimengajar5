@@ -65,3 +65,20 @@ class AttendanceFetchHistory extends AttendanceEvent {
   @override
   List<Object?> get props => [teacherId, startDate, endDate];
 }
+
+class AttendanceFetchForSchedules extends AttendanceEvent {
+  final String teacherId;
+  final List<String> scheduleIds;
+  final DateTime startDate;
+  final DateTime endDate;
+
+  const AttendanceFetchForSchedules({
+    required this.teacherId,
+    required this.scheduleIds,
+    required this.startDate,
+    required this.endDate,
+  });
+
+  @override
+  List<Object> get props => [teacherId, scheduleIds, startDate, endDate];
+}

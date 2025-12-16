@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import '../../blocs/user/user_bloc.dart';
@@ -238,7 +239,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           backgroundImage: _selectedImage != null
                               ? FileImage(_selectedImage!)
                               : (teacher.photo.isNotEmpty
-                                        ? NetworkImage(teacher.photo)
+                                        ? NetworkImage(
+                                            teacher.getPhotoUrl(
+                                              dotenv.env['POCKETBASE_URL'] ??
+                                                  'https://pb-presensi.pasarjepara.com',
+                                            ),
+                                          )
                                         : null)
                                     as ImageProvider?,
                           child: _selectedImage == null && teacher.photo.isEmpty

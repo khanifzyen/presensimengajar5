@@ -4,7 +4,7 @@ This document outlines the implementation plan for the Presensi Mengajar applica
 
 ## 1. Project Setup & Architecture
 
-- [ ] **Initialize Flutter Project**
+- [x] **Initialize Flutter Project**
     - Create new Flutter project.
     - Configure `pubspec.yaml` with dependencies:
         - `flutter_bloc`
@@ -16,7 +16,7 @@ This document outlines the implementation plan for the Presensi Mengajar applica
         - `intl` (Date formatting)
         - `table_calendar` (Calendar)
         - `slide_to_act` (UI Action)
-- [ ] **Folder Structure Setup**
+- [x] **Folder Structure Setup**
     - `lib/core`: Constants, Utils, Errors, Theme.
     - `lib/data`:
         - `models`: Data models (fromJson/toJson).
@@ -84,16 +84,16 @@ Based on `migration/src/schema.js`.
     - Change Password.
 
 ### Phase 3: History & Teaching (Revised)
-- [ ] **History Screen** (`riwayat.html` -> `history_page.dart`)
+- [x] **History Screen** (`riwayat.html` -> `history_page.dart`)
     - Monthly Stats (Hadir, Telat, Izin, Alpha).
     - History List with Date and Time.
     - Filter by Month.
-- [ ] **Teaching Dashboard** (`teaching_page.dart`)
+- [x] **Teaching Dashboard** (`teaching_page.dart`)
     - Accessed from Home/Dashboard "Kelas Saat Ini".
     - Check-in/Check-out.
 
 ### Phase 4: Permissions (Izin)
-- [ ] **Permission Screen** (`izin.html` -> `permission_page.dart`)
+- [/] **Permission Screen** (`izin.html` -> `permission_page.dart`)
     - Tabs: Form & History.
     - Form: Date, Type, Reason, Attachment.
     - History List: Status (Pending, Approved, Rejected).

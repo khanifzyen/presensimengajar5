@@ -201,8 +201,9 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
       final gracePeriodMinutes = 15;
 
       for (final attendance in attendances) {
-        if (attendance.checkIn == null || attendance.scheduleId == null)
+        if (attendance.checkIn == null || attendance.scheduleId == null) {
           continue;
+        }
 
         // Parse checkIn string to DateTime
         final checkInTime = DateTime.tryParse(attendance.checkIn!);

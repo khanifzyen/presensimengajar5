@@ -155,7 +155,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               Text(
                 'Panel Admin',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   fontSize: 14,
                 ),
               ),
@@ -334,13 +334,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: pendingCount > 0
-              ? AppTheme.statYellow.withOpacity(0.1)
-              : Colors.grey.withOpacity(0.1),
+              ? AppTheme.statYellow.withValues(alpha: 0.1)
+              : Colors.grey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: pendingCount > 0
-                ? AppTheme.statYellow.withOpacity(0.3)
-                : Colors.grey.withOpacity(0.3),
+                ? AppTheme.statYellow.withValues(alpha: 0.3)
+                : Colors.grey.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
@@ -449,7 +449,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),

@@ -399,7 +399,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -511,7 +511,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -1093,8 +1093,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                               ),
                                                           decoration: BoxDecoration(
                                                             color: statusColor
-                                                                .withOpacity(
-                                                                  0.1,
+                                                                .withValues(
+                                                                  alpha: 0.1,
                                                                 ),
                                                             borderRadius:
                                                                 BorderRadius.circular(
@@ -1301,9 +1301,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

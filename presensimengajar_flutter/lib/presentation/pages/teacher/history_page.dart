@@ -378,7 +378,7 @@ class _HistoryPageState extends State<HistoryPage> {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(color: textColor.withOpacity(0.8), fontSize: 14),
+            style: TextStyle(color: textColor.withValues(alpha: 0.8), fontSize: 14),
           ),
         ],
       ),
@@ -435,7 +435,7 @@ class _HistoryPageState extends State<HistoryPage> {
             border: Border(left: BorderSide(color: statusColor, width: 4)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),

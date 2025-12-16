@@ -48,7 +48,7 @@ class TeacherMonitoringItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -70,7 +70,7 @@ class TeacherMonitoringItem extends StatelessWidget {
 
               return CircleAvatar(
                 radius: 24,
-                backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                 backgroundImage: photoUrl.isNotEmpty
                     ? NetworkImage(photoUrl)
                     : null,
@@ -115,7 +115,7 @@ class TeacherMonitoringItem extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: _getCategoryColor().withOpacity(0.1),
+                    color: _getCategoryColor().withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -134,10 +134,10 @@ class TeacherMonitoringItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _getStatusColor().withOpacity(0.1),
+              color: _getStatusColor().withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: _getStatusColor().withOpacity(0.3),
+                color: _getStatusColor().withValues(alpha: 0.3),
                 width: 1,
               ),
             ),

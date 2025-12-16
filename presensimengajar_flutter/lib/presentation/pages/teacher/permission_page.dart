@@ -4,13 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pocketbase/pocketbase.dart'; // For error handling types if needed
 import '../../blocs/leave/leave_bloc.dart';
 import '../../blocs/leave/leave_event.dart';
 import '../../blocs/leave/leave_state.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_state.dart';
-import '../../../core/utils/file_utils.dart';
+import '../../../core/utils/file_utils.dart'; // import PocketBase removed
 
 class PermissionPage extends StatefulWidget {
   const PermissionPage({super.key});
@@ -481,15 +480,15 @@ class _PermissionPageState extends State<PermissionPage>
 
                 // Simple normalization
                 if (item.status.toLowerCase() == 'pending') {
-                  badgeColor = Colors.orange.withOpacity(0.1);
+                  badgeColor = Colors.orange.withValues(alpha: 0.1);
                   badgeText = Colors.orange;
                   statusLabel = 'Menunggu';
                 } else if (item.status.toLowerCase() == 'approved') {
-                  badgeColor = Colors.green.withOpacity(0.1);
+                  badgeColor = Colors.green.withValues(alpha: 0.1);
                   badgeText = Colors.green;
                   statusLabel = 'Disetujui';
                 } else {
-                  badgeColor = Colors.red.withOpacity(0.1);
+                  badgeColor = Colors.red.withValues(alpha: 0.1);
                   badgeText = Colors.red;
                   statusLabel = 'Ditolak';
                 }
@@ -513,7 +512,7 @@ class _PermissionPageState extends State<PermissionPage>
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                       ),
                     ],

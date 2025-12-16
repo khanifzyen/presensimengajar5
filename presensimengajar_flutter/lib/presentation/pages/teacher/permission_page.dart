@@ -9,6 +9,10 @@ import 'package:open_file/open_file.dart'; // Add import at the top
 import '../../blocs/leave/leave_bloc.dart';
 import '../../blocs/leave/leave_event.dart';
 import '../../blocs/leave/leave_state.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../core/constants.dart';
+
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_state.dart';
 import '../../../core/utils/file_utils.dart'; // import PocketBase removed
@@ -653,32 +657,107 @@ class _PermissionPageState extends State<PermissionPage>
                         item.reason,
                         style: TextStyle(color: Colors.grey[800], fontSize: 14),
                       ),
-                      if (item.rejectionReason != null &&
-                          item.rejectionReason!.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+
+                      // Attachment Button
+                      if (item.attachment != null &&
+                          item.attachment!.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        InkWell(
+                          onTap: () async {
+                            final url =
+                                '${dotenv.env['POCKETBASE_URL']}/api/files/${AppCollections.leaveRequests}/${item.id}/${item.attachment}';
+                            if (!await launchUrl(
+                              Uri.parse(url),
+                              mode: LaunchMode.externalApplication,
+                            )) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Gagal membuka lampiran'),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(8),
                           child: Container(
-                            padding: const EdgeInsets.all(8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(6),
+                              color: Colors.blue.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.blue.withValues(alpha: 0.2),
+                              ),
                             ),
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(
-                                  Icons.info_outline,
+                                  Icons.attachment,
                                   size: 16,
-                                  color: Colors.red,
+                                  color: Colors.blue,
                                 ),
                                 const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Alasan Ditolak: ${item.rejectionReason}',
-                                    style: const TextStyle(
+                                const Text(
+                                  'Lihat Lampiran',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+
+                      // Rejection Reason
+                      if (item.status.toLowerCase() == 'rejected')
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.red.withValues(alpha: 0.1),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.info_outline,
+                                      size: 16,
                                       color: Colors.red,
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic,
                                     ),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Alasan Ditolak',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  item.rejectionReason?.isNotEmpty == true
+                                      ? item.rejectionReason!
+                                      : '-',
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 13,
                                   ),
                                 ),
                               ],

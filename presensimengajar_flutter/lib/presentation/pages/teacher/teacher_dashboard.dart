@@ -1254,6 +1254,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   }
 
   // Helper method to build statistics grid
+  // Helper method to build statistics grid
   Widget _buildStatisticsGrid(WeeklyStatisticsModel statistics) {
     return GridView.count(
       crossAxisCount: 2,
@@ -1261,7 +1262,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      childAspectRatio: 1.3,
+      childAspectRatio:
+          1.2, // Decreased ratio to increase height and fix overflow
       children: [
         _buildStatBox(
           label: 'Kelas Diampu',
@@ -1299,7 +1301,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     required IconData icon,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
@@ -1308,17 +1310,17 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 4),
           Text(
             value.toString(),
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             label,
             textAlign: TextAlign.center,

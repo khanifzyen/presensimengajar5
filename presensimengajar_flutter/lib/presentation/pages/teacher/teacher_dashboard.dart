@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:intl/intl.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import '../../blocs/user/user_bloc.dart';
@@ -17,7 +18,6 @@ import '../../blocs/attendance/attendance_event.dart';
 import '../../blocs/attendance/attendance_state.dart';
 import '../../../data/models/attendance_model.dart';
 import '../../../data/models/weekly_statistics_model.dart';
-import '../../../core/constants.dart';
 import 'profile_page.dart';
 
 class TeacherDashboard extends StatefulWidget {
@@ -296,7 +296,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                 backgroundImage: state.teacher.photo.isNotEmpty
                                     ? NetworkImage(
                                         state.teacher.getPhotoUrl(
-                                          AppConfig.pocketbaseUrl,
+                                          dotenv.env['POCKETBASE_URL'] ??
+                                              'https://pb-presensi.pasarjepara.com',
                                         ),
                                       )
                                     : null,

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_state.dart';
-import '../../../core/constants.dart';
 import 'change_password_page.dart';
 import 'edit_profile_page.dart';
 
@@ -41,7 +41,8 @@ class ProfilePage extends StatelessWidget {
                             backgroundImage: teacher.photo.isNotEmpty
                                 ? NetworkImage(
                                     teacher.getPhotoUrl(
-                                      AppConfig.pocketbaseUrl,
+                                      dotenv.env['POCKETBASE_URL'] ??
+                                          'https://pb-presensi.pasarjepara.com',
                                     ),
                                   )
                                 : null,

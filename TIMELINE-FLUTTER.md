@@ -11,12 +11,11 @@ This document outlines the implementation plan for the Presensi Mengajar applica
         - `equatable`
         - `pocketbase`
         - `get_it` (Dependency Injection)
-        - `go_router` (Navigation)
-        - `shared_preferences` (Local storage)
-        - `geolocator` (GPS)
         - `camera` or `image_picker` (Photo)
         - `google_maps_flutter` or `flutter_map` (Maps)
         - `intl` (Date formatting)
+        - `table_calendar` (Calendar)
+        - `slide_to_act` (UI Action)
 - [ ] **Folder Structure Setup**
     - `lib/core`: Constants, Utils, Errors, Theme.
     - `lib/data`:
@@ -84,20 +83,26 @@ Based on `migration/src/schema.js`.
     - View and Edit Profile.
     - Change Password.
 
-### Phase 3: Schedule & Teaching
-- [ ] **Schedule View** (`jadwal-guru.html`)
-    - List/Grid view of classes.
-- [ ] **Teaching Dashboard** (`dashboard-guru-mengajar.html`)
-    - Specific view for active class session.
+### Phase 3: History & Teaching (Revised)
+- [ ] **History Screen** (`riwayat.html` -> `history_page.dart`)
+    - Monthly Stats (Hadir, Telat, Izin, Alpha).
+    - History List with Date and Time.
+    - Filter by Month.
+- [ ] **Teaching Dashboard** (`teaching_page.dart`)
+    - Accessed from Home/Dashboard "Kelas Saat Ini".
+    - Check-in/Check-out.
 
-### Phase 4: Attendance (Core Feature)
+### Phase 4: Permissions (Izin)
+- [ ] **Permission Screen** (`izin.html` -> `permission_page.dart`)
+    - Tabs: Form & History.
+    - Form: Date, Type, Reason, Attachment.
+    - History List: Status (Pending, Approved, Rejected).
+
+### Phase 5: Attendance (Core Feature)
 - [ ] **Attendance Screen** (`presensi.html`)
     - Geolocation check.
     - Camera integration for selfie.
     - Submit Check-in/Check-out.
-- [ ] **Attendance History** (`riwayat.html`)
-    - List of past attendance logs.
-    - Filter by date/month.
 
 ### Phase 5: Leave Management (Izin)
 - [ ] **Leave Request** (`izin.html`)

@@ -18,7 +18,15 @@ import '../../blocs/attendance/attendance_event.dart';
 import '../../blocs/attendance/attendance_state.dart';
 import '../../../data/models/attendance_model.dart';
 import '../../../data/models/weekly_statistics_model.dart';
+import '../../../data/models/academic_period_model.dart';
+import '../../blocs/academic_period/academic_period_bloc.dart';
+import '../../blocs/academic_period/academic_period_state.dart';
+import '../../blocs/academic_period/academic_period_event.dart';
+
 import 'profile_page.dart';
+import 'history_page.dart';
+import 'permission_page.dart';
+import 'teaching_page.dart';
 
 class TeacherDashboard extends StatefulWidget {
   const TeacherDashboard({super.key});
@@ -133,6 +141,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     if (authState is AuthAuthenticated) {
       context.read<UserBloc>().add(UserGetProfile(authState.userId));
     }
+
+    // Fetch academic periods
+    context.read<AcademicPeriodBloc>().add(FetchAcademicPeriods());
   }
 
   @override
@@ -204,8 +215,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
           index: _selectedIndex,
           children: [
             _buildHomeTab(),
-            const Center(child: Text('Jadwal Page Placeholder')),
-            const Center(child: Text('Riwayat Page Placeholder')),
+            const HistoryPage(),
+            const PermissionPage(),
             const ProfilePage(),
           ],
         ),
@@ -218,14 +229,14 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
             label: 'Beranda',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.calendar_month),
-            label: 'Jadwal',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.history),
             activeIcon: Icon(Icons.history, weight: 700),
             label: 'Riwayat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description_outlined),
+            activeIcon: Icon(Icons.description),
+            label: 'Izin',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
@@ -240,16 +251,14 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
       ),
-      floatingActionButton: _selectedIndex == 0 || _selectedIndex == 1
-          ? FloatingActionButton(
-              onPressed: () {
-                // TODO: Navigate to Scan/Attendance
-              },
-              backgroundColor: Theme.of(context).primaryColor,
-              shape: const CircleBorder(),
-              child: const Icon(FontAwesomeIcons.camera, color: Colors.white),
-            )
-          : null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: Navigate to Scan/Attendance
+        },
+        backgroundColor: Theme.of(context).primaryColor,
+        shape: const CircleBorder(),
+        child: const Icon(FontAwesomeIcons.camera, color: Colors.white),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
@@ -675,305 +684,465 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   const SizedBox(height: 16),
 
                   // Schedule List with Attendance
-                  BlocListener<ScheduleBloc, ScheduleState>(
-                    listener: (context, state) {
-                      if (state is ScheduleLoaded &&
-                          state.schedules.isNotEmpty) {
-                        // Extract schedule IDs and fetch attendance
-                        final scheduleIds = state.schedules
-                            .map((s) => s.id)
-                            .toList();
-                        final userState = context.read<UserBloc>().state;
-                        if (userState is UserLoaded) {
-                          context.read<AttendanceBloc>().add(
-                            AttendanceFetchForSchedules(
-                              teacherId: userState.teacher.id,
-                              scheduleIds: scheduleIds,
-                              startDate: _selectedWeekStart,
-                              endDate: _selectedWeekEnd,
-                            ),
+                  BlocBuilder<AcademicPeriodBloc, AcademicPeriodState>(
+                    builder: (context, periodState) {
+                      if (periodState is AcademicPeriodLoading ||
+                          periodState is AcademicPeriodInitial) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      AcademicPeriodModel? activePeriod;
+                      if (periodState is AcademicPeriodLoaded) {
+                        try {
+                          activePeriod = periodState.periods.firstWhere(
+                            (p) => p.isActive,
                           );
+                        } catch (_) {
+                          // Fallback to first if no active found
+                          if (periodState.periods.isNotEmpty) {
+                            activePeriod = periodState.periods.first;
+                          }
                         }
                       }
-                    },
-                    child: BlocBuilder<ScheduleBloc, ScheduleState>(
-                      builder: (context, scheduleState) {
-                        if (scheduleState is ScheduleLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (scheduleState is ScheduleLoaded) {
-                          if (scheduleState.schedules.isEmpty) {
-                            return Center(
-                              child: Column(
-                                children: [
-                                  Image.asset(
-                                    'assets/images/no_data.png',
-                                    width: 200,
+
+                      if (activePeriod == null) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text('Tidak ada data kurikulum'),
+                          ),
+                        );
+                      }
+
+                      // Check if selected week is within active period
+                      final periodStart = DateTime.parse(
+                        activePeriod.startDate,
+                      );
+                      final periodEnd = DateTime.parse(activePeriod.endDate);
+
+                      final displayStart = DateTime(
+                        _selectedWeekStart.year,
+                        _selectedWeekStart.month,
+                        _selectedWeekStart.day,
+                      );
+                      final displayEnd = DateTime(
+                        _selectedWeekEnd.year,
+                        _selectedWeekEnd.month,
+                        _selectedWeekEnd.day,
+                      );
+
+                      // Check intersection
+                      final isWithinPeriod =
+                          !(displayEnd.isBefore(periodStart) ||
+                              displayStart.isAfter(periodEnd));
+
+                      if (!isWithinPeriod) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.event_busy,
+                                  size: 48,
+                                  color: Colors.grey[400],
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Tidak Ada Jadwal Kurikulum ${activePeriod.name} Ini',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontStyle: FontStyle.italic,
                                   ),
-                                  const SizedBox(height: 16),
-                                  const Text('Belum ada jadwal minggu ini'),
-                                ],
-                              ),
-                            );
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+
+                      return BlocListener<ScheduleBloc, ScheduleState>(
+                        listener: (context, state) {
+                          if (state is ScheduleLoaded &&
+                              state.schedules.isNotEmpty) {
+                            // Filter schedules by active period
+                            final validSchedules = state.schedules
+                                .where((s) => s.periodId == activePeriod?.id)
+                                .toList();
+
+                            if (validSchedules.isNotEmpty) {
+                              // Extract schedule IDs and fetch attendance
+                              final scheduleIds = validSchedules
+                                  .map((s) => s.id)
+                                  .toList();
+
+                              final userState = context.read<UserBloc>().state;
+                              if (userState is UserLoaded) {
+                                context.read<AttendanceBloc>().add(
+                                  AttendanceFetchForSchedules(
+                                    teacherId: userState.teacher.id,
+                                    scheduleIds: scheduleIds,
+                                    startDate: _selectedWeekStart,
+                                    endDate: _selectedWeekEnd,
+                                  ),
+                                );
+                              }
+                            }
                           }
+                        },
+                        child: BlocBuilder<ScheduleBloc, ScheduleState>(
+                          builder: (context, scheduleState) {
+                            if (scheduleState is ScheduleLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (scheduleState is ScheduleLoaded) {
+                              // First filter by active period
+                              final periodSchedules = scheduleState.schedules
+                                  .where((s) => s.periodId == activePeriod?.id)
+                                  .toList();
 
-                          // Filter schedules for selected day
-                          final daySchedules = scheduleState.schedules
-                              .where((schedule) => schedule.day == _selectedDay)
-                              .toList();
-
-                          // Nest AttendanceBloc builder to get attendance data
-                          return BlocBuilder<AttendanceBloc, AttendanceState>(
-                            builder: (context, attendanceState) {
-                              Map<String, AttendanceModel> attendanceMap = {};
-                              if (attendanceState
-                                  is AttendanceScheduleMapLoaded) {
-                                attendanceMap = attendanceState.attendanceMap;
+                              if (periodSchedules.isEmpty) {
+                                return Center(
+                                  child: Column(
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/no_data.png',
+                                        width: 200,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Belum ada jadwal di kurikulum ${activePeriod?.name}',
+                                      ),
+                                    ],
+                                  ),
+                                );
                               }
 
-                              return ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: daySchedules.length,
-                                itemBuilder: (context, index) {
-                                  final schedule = daySchedules[index];
-                                  final attendance = attendanceMap[schedule.id];
+                              // Then filter by day
+                              final daySchedules = periodSchedules
+                                  .where(
+                                    (schedule) => schedule.day == _selectedDay,
+                                  )
+                                  .toList();
 
-                                  // Get subject name from expanded data
-                                  String subjectName = 'Mata Pelajaran';
-                                  if (schedule.subject != null) {
-                                    subjectName = schedule.subject!
-                                        .getStringValue('name');
-                                  }
-
-                                  // Get class name from expanded data
-                                  String className = 'Kelas';
-                                  if (schedule.classInfo != null) {
-                                    className = schedule.classInfo!
-                                        .getStringValue('name');
-                                  }
-
-                                  // Determine status and button
-                                  String statusLabel;
-                                  Color statusColor;
-                                  Widget? actionButton;
-
-                                  if (attendance == null) {
-                                    // No attendance record
-                                    statusLabel = 'Menunggu';
-                                    statusColor = Colors.grey;
-                                    actionButton = ElevatedButton(
-                                      onPressed: () {
-                                        // TODO: Navigate to check-in
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(
-                                          0xFF1E3A8A,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 8,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'Check-In',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    );
-                                  } else if (attendance.checkIn != null &&
-                                      attendance.checkOut == null) {
-                                    // Checked in, not checked out
-                                    statusLabel = 'Sedang Mengajar';
-                                    statusColor = Colors.orange;
-                                    actionButton = ElevatedButton(
-                                      onPressed: () {
-                                        // TODO: Navigate to check-out
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 8,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'Check-Out',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    );
-                                  } else {
-                                    // Checked out (completed)
-                                    final checkInTime = DateFormat('HH:mm')
-                                        .format(
-                                          DateTime.parse(attendance.checkIn!),
-                                        );
-                                    final checkOutTime = DateFormat('HH:mm')
-                                        .format(
-                                          DateTime.parse(attendance.checkOut!),
-                                        );
-                                    statusLabel =
-                                        'Hadir ($checkInTime - $checkOutTime)';
-                                    statusColor = const Color(0xFF10B981);
-                                    actionButton =
-                                        null; // No button for completed
-                                  }
-
-                                  return Container(
-                                    margin: const EdgeInsets.only(bottom: 12),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFF0FDF4),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: const Border(
-                                        left: BorderSide(
-                                          color: Color(0xFF10B981),
-                                          width: 6,
-                                        ),
-                                      ),
+                              if (daySchedules.isEmpty) {
+                                return Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: Text(
+                                      'Tidak ada jadwal di hari ${_selectedDay[0].toUpperCase()}${_selectedDay.substring(1)}',
+                                      style: TextStyle(color: Colors.grey[500]),
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Row(
-                                        children: [
-                                          // Time Column
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                  ),
+                                );
+                              }
+
+                              // Nest AttendanceBloc builder to get attendance data
+                              return BlocBuilder<
+                                AttendanceBloc,
+                                AttendanceState
+                              >(
+                                builder: (context, attendanceState) {
+                                  Map<String, AttendanceModel> attendanceMap =
+                                      {};
+                                  if (attendanceState
+                                      is AttendanceScheduleMapLoaded) {
+                                    attendanceMap =
+                                        attendanceState.attendanceMap;
+                                  }
+
+                                  return ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: daySchedules.length,
+                                    itemBuilder: (context, index) {
+                                      final schedule = daySchedules[index];
+                                      final attendance =
+                                          attendanceMap[schedule.id];
+
+                                      // Get subject name from expanded data
+                                      String subjectName = 'Mata Pelajaran';
+                                      if (schedule.subject != null) {
+                                        subjectName = schedule.subject!
+                                            .getStringValue('name');
+                                      }
+
+                                      // Get class name from expanded data
+                                      String className = 'Kelas';
+                                      if (schedule.classInfo != null) {
+                                        className = schedule.classInfo!
+                                            .getStringValue('name');
+                                      }
+
+                                      // Determine status and button
+                                      String statusLabel;
+                                      Color statusColor;
+                                      Widget? actionButton;
+
+                                      if (attendance == null) {
+                                        // No attendance record
+                                        statusLabel = 'Menunggu';
+                                        statusColor = Colors.grey;
+                                        actionButton = ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    TeachingPage(
+                                                      schedule: schedule,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFF1E3A8A,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 8,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'Check-In',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        );
+                                      } else if (attendance.checkIn != null &&
+                                          attendance.checkOut == null) {
+                                        // Checked in, not checked out
+                                        statusLabel = 'Sedang Mengajar';
+                                        statusColor = Colors.orange;
+                                        actionButton = ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    TeachingPage(
+                                                      schedule: schedule,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 8,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'Check-Out',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        // Checked out (completed)
+                                        final checkInTime = DateFormat('HH:mm')
+                                            .format(
+                                              DateTime.parse(
+                                                attendance.checkIn!,
+                                              ),
+                                            );
+                                        final checkOutTime = DateFormat('HH:mm')
+                                            .format(
+                                              DateTime.parse(
+                                                attendance.checkOut!,
+                                              ),
+                                            );
+                                        statusLabel =
+                                            'Hadir ($checkInTime - $checkOutTime)';
+                                        statusColor = const Color(0xFF10B981);
+                                        actionButton =
+                                            null; // No button for completed
+                                      }
+
+                                      return Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF0FDF4),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          border: const Border(
+                                            left: BorderSide(
+                                              color: Color(0xFF10B981),
+                                              width: 6,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Row(
                                             children: [
-                                              Text(
-                                                schedule.startTime,
-                                                style: const TextStyle(
-                                                  color: Color(0xFF1E3A8A),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
+                                              // Time Column
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    schedule.startTime,
+                                                    style: const TextStyle(
+                                                      color: Color(0xFF1E3A8A),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                  const Text(
+                                                    '-',
+                                                    style: TextStyle(
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    schedule.endTime,
+                                                    style: const TextStyle(
+                                                      color: Color(0xFF1E3A8A),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                              const Text(
-                                                '-',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                ),
+                                              const SizedBox(width: 16),
+
+                                              // Divider
+                                              Container(
+                                                height: 50,
+                                                width: 1,
+                                                color: Colors.grey[300],
                                               ),
-                                              Text(
-                                                schedule.endTime,
-                                                style: const TextStyle(
-                                                  color: Color(0xFF1E3A8A),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
+                                              const SizedBox(width: 16),
+
+                                              // Details Column
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '$subjectName - $className',
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                        color: Colors.black87,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.location_on,
+                                                          size: 14,
+                                                          color:
+                                                              Colors.grey[600],
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 4,
+                                                        ),
+                                                        Text(
+                                                          schedule.room.isEmpty
+                                                              ? 'Ruang Kelas'
+                                                              : schedule.room,
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .grey[600],
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Row(
+                                                      children: [
+                                                        Container(
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 8,
+                                                                vertical: 4,
+                                                              ),
+                                                          decoration: BoxDecoration(
+                                                            color: statusColor
+                                                                .withOpacity(
+                                                                  0.1,
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  4,
+                                                                ),
+                                                          ),
+                                                          child: Text(
+                                                            statusLabel,
+                                                            style: TextStyle(
+                                                              color:
+                                                                  statusColor,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        if (actionButton !=
+                                                            null) ...[
+                                                          const SizedBox(
+                                                            width: 8,
+                                                          ),
+                                                          actionButton,
+                                                        ],
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(width: 16),
-
-                                          // Divider
-                                          Container(
-                                            height: 50,
-                                            width: 1,
-                                            color: Colors.grey[300],
-                                          ),
-                                          const SizedBox(width: 16),
-
-                                          // Details Column
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  '$subjectName - $className',
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
-                                                    color: Colors.black87,
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_on,
-                                                      size: 14,
-                                                      color: Colors.grey[600],
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                      schedule.room.isEmpty
-                                                          ? 'Ruang Kelas'
-                                                          : schedule.room,
-                                                      style: TextStyle(
-                                                        color: Colors.grey[600],
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                            horizontal: 8,
-                                                            vertical: 4,
-                                                          ),
-                                                      decoration: BoxDecoration(
-                                                        color: statusColor
-                                                            .withOpacity(0.1),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              4,
-                                                            ),
-                                                      ),
-                                                      child: Text(
-                                                        statusLabel,
-                                                        style: TextStyle(
-                                                          color: statusColor,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    if (actionButton !=
-                                                        null) ...[
-                                                      const SizedBox(width: 8),
-                                                      actionButton,
-                                                    ],
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
                               );
-                            },
-                          );
-                        } else if (scheduleState is ScheduleError) {
-                          return Center(
-                            child: Text('Error: ${scheduleState.message}'),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
+                            } else if (scheduleState is ScheduleError) {
+                              return Center(
+                                child: Text('Error: ${scheduleState.message}'),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -996,14 +1165,80 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  BlocBuilder<AttendanceBloc, AttendanceState>(
-                    builder: (context, state) {
-                      if (state is AttendanceStatisticsLoaded) {
-                        return _buildStatisticsGrid(state.statistics);
+                  BlocBuilder<AcademicPeriodBloc, AcademicPeriodState>(
+                    builder: (context, periodState) {
+                      AcademicPeriodModel? activePeriod;
+                      if (periodState is AcademicPeriodLoaded) {
+                        try {
+                          activePeriod = periodState.periods.firstWhere(
+                            (p) => p.isActive,
+                          );
+                        } catch (_) {
+                          if (periodState.periods.isNotEmpty) {
+                            activePeriod = periodState.periods.first;
+                          }
+                        }
                       }
-                      // Show empty state while loading
-                      return _buildStatisticsGrid(
-                        WeeklyStatisticsModel.empty(),
+
+                      if (activePeriod != null) {
+                        // Check intersection
+                        final periodStart = DateTime.parse(
+                          activePeriod.startDate,
+                        );
+                        final periodEnd = DateTime.parse(activePeriod.endDate);
+
+                        final displayStart = DateTime(
+                          _selectedWeekStart.year,
+                          _selectedWeekStart.month,
+                          _selectedWeekStart.day,
+                        );
+                        final displayEnd = DateTime(
+                          _selectedWeekEnd.year,
+                          _selectedWeekEnd.month,
+                          _selectedWeekEnd.day,
+                        );
+
+                        final isWithinPeriod =
+                            !(displayEnd.isBefore(periodStart) ||
+                                displayStart.isAfter(periodEnd));
+
+                        if (!isWithinPeriod) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.bar_chart,
+                                    size: 48,
+                                    color: Colors.grey[400],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Tidak Ada Statistik Minggu ini di Kurikulum ${activePeriod.name}',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                      }
+
+                      return BlocBuilder<AttendanceBloc, AttendanceState>(
+                        builder: (context, state) {
+                          if (state is AttendanceStatisticsLoaded) {
+                            return _buildStatisticsGrid(state.statistics);
+                          }
+                          // Show empty state while loading
+                          return _buildStatisticsGrid(
+                            WeeklyStatisticsModel.empty(),
+                          );
+                        },
                       );
                     },
                   ),

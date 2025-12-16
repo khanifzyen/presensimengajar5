@@ -215,7 +215,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               Row(
                 children: [
-                  // Left arrow (go to more recent date)
+                  // Left arrow (go backward to older date) - positioned on the left
+                  IconButton(
+                    onPressed: () {
+                      context.read<AdminBloc>().add(
+                        AdminChangeDateOffset(state.dateOffset + 1),
+                      );
+                    },
+                    icon: const Icon(Icons.chevron_left),
+                    color: AppTheme.primaryColor,
+                  ),
+                  // Right arrow (go forward to more recent date) - positioned on the right
                   IconButton(
                     onPressed: state.dateOffset > 0
                         ? () {
@@ -224,18 +234,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             );
                           }
                         : null,
-                    icon: const Icon(Icons.chevron_left),
-                    color: AppTheme.primaryColor,
-                  ),
-                  // Right arrow (go to older date)
-                  IconButton(
-                    onPressed: () {
-                      context.read<AdminBloc>().add(
-                        AdminChangeDateOffset(state.dateOffset + 1),
-                      );
-                    },
                     icon: const Icon(Icons.chevron_right),
                     color: AppTheme.primaryColor,
+                    disabledColor: Colors.grey[300],
                   ),
                 ],
               ),

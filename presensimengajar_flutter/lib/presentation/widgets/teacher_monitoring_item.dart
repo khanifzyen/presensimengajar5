@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../data/models/teacher_model.dart';
 import '../../core/theme.dart';
 
@@ -56,25 +57,37 @@ class TeacherMonitoringItem extends StatelessWidget {
       child: Row(
         children: [
           // Teacher photo
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-            backgroundImage:
-                teacher.photo.isNotEmpty && teacher.photo.startsWith('http')
-                ? NetworkImage(teacher.photo)
-                : null,
-            child: teacher.photo.isEmpty || !teacher.photo.startsWith('http')
-                ? Text(
-                    teacher.name.isNotEmpty
-                        ? teacher.name[0].toUpperCase()
-                        : 'G',
-                    style: const TextStyle(
-                      color: AppTheme.primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  )
-                : null,
+          Builder(
+            builder: (context) {
+              // Get PocketBase URL from environment
+              final pocketbaseUrl =
+                  dotenv.env['POCKETBASE_URL'] ?? 'http://127.0.0.1:8090';
+
+              // Get full photo URL
+              final photoUrl = teacher.photo.isNotEmpty
+                  ? teacher.getPhotoUrl(pocketbaseUrl)
+                  : '';
+
+              return CircleAvatar(
+                radius: 24,
+                backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                backgroundImage: photoUrl.isNotEmpty
+                    ? NetworkImage(photoUrl)
+                    : null,
+                child: photoUrl.isEmpty
+                    ? Text(
+                        teacher.name.isNotEmpty
+                            ? teacher.name[0].toUpperCase()
+                            : 'G',
+                        style: const TextStyle(
+                          color: AppTheme.primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      )
+                    : null,
+              );
+            },
           ),
           const SizedBox(width: 12),
           // Teacher info

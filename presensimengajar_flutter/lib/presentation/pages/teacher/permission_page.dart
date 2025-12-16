@@ -481,28 +481,51 @@ class _PermissionPageState extends State<PermissionPage>
               itemCount: state.history.length,
               itemBuilder: (context, index) {
                 final item = state.history[index];
-                Color badgeColor;
-                Color badgeText;
-                String statusLabel = item.status;
+                Color statusColor;
+                Color badgeBgColor;
+                Color badgeTextColor;
+                String statusLabel;
 
-                // Simple normalization
-                if (item.status.toLowerCase() == 'pending') {
-                  badgeColor = Colors.orange.withValues(alpha: 0.1);
-                  badgeText = Colors.orange;
-                  statusLabel = 'Menunggu';
-                } else if (item.status.toLowerCase() == 'approved') {
-                  badgeColor = Colors.green.withValues(alpha: 0.1);
-                  badgeText = Colors.green;
-                  statusLabel = 'Disetujui';
-                } else {
-                  badgeColor = Colors.red.withValues(alpha: 0.1);
-                  badgeText = Colors.red;
-                  statusLabel = 'Ditolak';
+                switch (item.status.toLowerCase()) {
+                  case 'approved':
+                    statusColor = const Color(0xFF10B981); // Green
+                    badgeBgColor = const Color(0xFFD1FAE5);
+                    badgeTextColor = const Color(0xFF047857);
+                    statusLabel = 'Disetujui';
+                    break;
+                  case 'rejected':
+                    statusColor = const Color(0xFFEF4444); // Red
+                    badgeBgColor = const Color(0xFFFEE2E2);
+                    badgeTextColor = const Color(0xFFB91C1C);
+                    statusLabel = 'Ditolak';
+                    break;
+                  default: // pending
+                    statusColor = const Color(0xFFF59E0B); // Amber
+                    badgeBgColor = const Color(0xFFFEF3C7);
+                    badgeTextColor = const Color(0xFFB45309);
+                    statusLabel = 'Menunggu';
                 }
 
-                String dateDisplay = item.startDate == item.endDate
-                    ? item.startDate
-                    : '${item.startDate} - ${item.endDate}';
+                // Date Formatting
+                String dateDisplay = '';
+                try {
+                  // PocketBase datetime string format: YYYY-MM-DD HH:mm:ss.SSSZ
+                  final start = DateTime.parse(item.startDate);
+                  final end = DateTime.parse(item.endDate);
+                  final formatter = DateFormat('d MMM yyyy', 'id_ID');
+
+                  // Check if same day
+                  if (start.year == end.year &&
+                      start.month == end.month &&
+                      start.day == end.day) {
+                    dateDisplay = formatter.format(start);
+                  } else {
+                    dateDisplay =
+                        '${formatter.format(start)} - ${formatter.format(end)}';
+                  }
+                } catch (e) {
+                  dateDisplay = item.startDate; // Fallback
+                }
 
                 // Capitalize first letter of type
                 String typeDisplay = item.type;
@@ -516,13 +539,18 @@ class _PermissionPageState extends State<PermissionPage>
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
+                        color: Colors.grey.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
                       ),
                     ],
+                    // Left colored border
+                    border: Border(
+                      left: BorderSide(color: statusColor, width: 5),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -530,11 +558,14 @@ class _PermissionPageState extends State<PermissionPage>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            typeDisplay,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                          Expanded(
+                            child: Text(
+                              typeDisplay,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
                             ),
                           ),
                           Container(
@@ -543,13 +574,13 @@ class _PermissionPageState extends State<PermissionPage>
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: badgeColor,
-                              borderRadius: BorderRadius.circular(20),
+                              color: badgeBgColor,
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               statusLabel,
                               style: TextStyle(
-                                color: badgeText,
+                                color: badgeTextColor,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -560,22 +591,42 @@ class _PermissionPageState extends State<PermissionPage>
                       const SizedBox(height: 8),
                       Text(
                         dateDisplay,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                        style: TextStyle(color: Colors.grey[500], fontSize: 13),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
                         item.reason,
-                        style: TextStyle(color: Colors.grey[800]),
+                        style: TextStyle(color: Colors.grey[800], fontSize: 14),
                       ),
                       if (item.rejectionReason != null &&
                           item.rejectionReason!.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            'Alasan Ditolak: ${item.rejectionReason}',
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontStyle: FontStyle.italic,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.info_outline,
+                                  size: 16,
+                                  color: Colors.red,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Alasan Ditolak: ${item.rejectionReason}',
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

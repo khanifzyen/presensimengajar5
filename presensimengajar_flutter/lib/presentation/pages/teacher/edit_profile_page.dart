@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_event.dart';
 import '../../blocs/user/user_state.dart';
+import '../../../core/utils/image_picker_helper.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -20,7 +20,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _addressController = TextEditingController();
 
   File? _selectedImage;
-  final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
 
   @override
@@ -44,25 +43,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _pickImage() async {
-    try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
+    final pickedFile = await ImagePickerHelper.pickAndResizeImage(context);
 
-      if (image != null) {
-        setState(() {
-          _selectedImage = File(image.path);
-        });
-      }
-    } catch (e) {
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = pickedFile;
+      });
+
+      // Show file size for debugging
+      final fileSizeMB = await ImagePickerHelper.getFileSizeInMB(pickedFile);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal memilih foto: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            content: Text('Foto dipilih (${fileSizeMB.toStringAsFixed(2)} MB)'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
           ),
         );
       }

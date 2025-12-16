@@ -34,6 +34,22 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   DateTime _selectedWeekStart = _getWeekStart(DateTime.now());
   DateTime _selectedWeekEnd = _getWeekEnd(DateTime.now());
   int _weekOffset = 0; // 0 = current week, -1 = last week, +1 = next week
+  String _selectedDay = _getCurrentDayInIndonesian();
+
+  static String _getCurrentDayInIndonesian() {
+    final now = DateTime.now();
+    final dayOfWeek = now.weekday; // 1 = Monday, 7 = Sunday
+    const days = [
+      'senin',
+      'selasa',
+      'rabu',
+      'kamis',
+      'jumat',
+      'sabtu',
+      'minggu',
+    ];
+    return days[dayOfWeek - 1];
+  }
 
   // Helper methods for week calculation
   static DateTime _getWeekStart(DateTime date) {
@@ -533,49 +549,98 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Week Navigation Header
+                  // Week Navigation Header - Single Row
                   Row(
                     children: [
                       // Left Arrow
                       IconButton(
                         onPressed: () => _navigateWeek(-1),
-                        icon: const Icon(Icons.arrow_back_ios, size: 20),
+                        icon: const Icon(Icons.arrow_back_ios, size: 18),
                         color: const Color(0xFF1E3A8A),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
 
-                      // Week Label and Date Range
+                      const SizedBox(width: 8),
+
+                      // Week Label and Date Range in single row
                       Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              _getWeekLabel(),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1E3A8A),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _getWeekDateRange(),
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                        child: Text(
+                          '${_getWeekLabel()} • ${_getWeekDateRange()}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E3A8A),
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
+
+                      const SizedBox(width: 8),
 
                       // Right Arrow
                       IconButton(
                         onPressed: () => _navigateWeek(1),
-                        icon: const Icon(Icons.arrow_forward_ios, size: 20),
+                        icon: const Icon(Icons.arrow_forward_ios, size: 18),
                         color: const Color(0xFF1E3A8A),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
                     ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Day Filter Tabs
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children:
+                          [
+                            'senin',
+                            'selasa',
+                            'rabu',
+                            'kamis',
+                            'jumat',
+                            'sabtu',
+                          ].map((day) {
+                            final isSelected = day == _selectedDay;
+                            final displayDay =
+                                day[0].toUpperCase() + day.substring(1);
+                            return Container(
+                              margin: const EdgeInsets.only(right: 8),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedDay = day;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isSelected
+                                      ? const Color(0xFF1E3A8A)
+                                      : Colors.white,
+                                  foregroundColor: isSelected
+                                      ? Colors.white
+                                      : Colors.grey[600],
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(
+                                      color: isSelected
+                                          ? const Color(0xFF1E3A8A)
+                                          : Colors.grey[300]!,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                child: Text(displayDay),
+                              ),
+                            );
+                          }).toList(),
+                    ),
                   ),
 
                   const SizedBox(height: 16),
@@ -624,13 +689,10 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                             );
                           }
 
-                          // Filter schedules for current week
-                          final weekSchedules = scheduleState.schedules.where((
-                            schedule,
-                          ) {
-                            // For now, show all schedules. In production, you'd filter by date
-                            return true;
-                          }).toList();
+                          // Filter schedules for selected day
+                          final daySchedules = scheduleState.schedules
+                              .where((schedule) => schedule.day == _selectedDay)
+                              .toList();
 
                           // Nest AttendanceBloc builder to get attendance data
                           return BlocBuilder<AttendanceBloc, AttendanceState>(
@@ -644,9 +706,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                               return ListView.builder(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
-                                itemCount: weekSchedules.length,
+                                itemCount: daySchedules.length,
                                 itemBuilder: (context, index) {
-                                  final schedule = weekSchedules[index];
+                                  final schedule = daySchedules[index];
                                   final attendance = attendanceMap[schedule.id];
 
                                   // Get subject name from expanded data

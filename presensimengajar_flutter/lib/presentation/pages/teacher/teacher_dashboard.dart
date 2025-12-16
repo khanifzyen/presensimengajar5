@@ -549,42 +549,47 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Week Navigation Header - Single Row
+                  // Week Navigation Header
                   Row(
                     children: [
                       // Left Arrow
                       IconButton(
                         onPressed: () => _navigateWeek(-1),
-                        icon: const Icon(Icons.arrow_back_ios, size: 18),
+                        icon: const Icon(Icons.arrow_back_ios, size: 20),
                         color: const Color(0xFF1E3A8A),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
                       ),
 
-                      const SizedBox(width: 8),
-
-                      // Week Label and Date Range in single row
+                      // Week Label and Date Range
                       Expanded(
-                        child: Text(
-                          '${_getWeekLabel()} • ${_getWeekDateRange()}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E3A8A),
-                          ),
-                          textAlign: TextAlign.center,
+                        child: Column(
+                          children: [
+                            Text(
+                              _getWeekLabel(),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1E3A8A),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _getWeekDateRange(),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       ),
-
-                      const SizedBox(width: 8),
 
                       // Right Arrow
                       IconButton(
                         onPressed: () => _navigateWeek(1),
-                        icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                        icon: const Icon(Icons.arrow_forward_ios, size: 20),
                         color: const Color(0xFF1E3A8A),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
                       ),
                     ],
                   ),

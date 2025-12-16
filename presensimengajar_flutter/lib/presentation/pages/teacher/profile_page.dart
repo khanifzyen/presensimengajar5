@@ -6,6 +6,7 @@ import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_state.dart';
+import '../../../core/constants.dart';
 import 'change_password_page.dart';
 import 'edit_profile_page.dart';
 
@@ -39,8 +40,10 @@ class ProfilePage extends StatelessWidget {
                             backgroundColor: Theme.of(context).primaryColor,
                             backgroundImage: teacher.photo.isNotEmpty
                                 ? NetworkImage(
-                                    teacher.photo,
-                                  ) // Ensure full URL handling
+                                    teacher.getPhotoUrl(
+                                      AppConfig.pocketbaseUrl,
+                                    ),
+                                  )
                                 : null,
                             child: teacher.photo.isEmpty
                                 ? Text(

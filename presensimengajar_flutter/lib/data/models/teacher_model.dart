@@ -63,4 +63,14 @@ class TeacherModel {
       'join_date': joinDate,
     };
   }
+
+  /// Get full photo URL from PocketBase
+  /// Format: {baseUrl}/api/files/{collectionName}/{recordId}/{filename}
+  String getPhotoUrl(String baseUrl) {
+    if (photo.isEmpty) return '';
+    // If already a full URL, return as is
+    if (photo.startsWith('http')) return photo;
+    // Construct full URL
+    return '$baseUrl/api/files/teachers/$id/$photo';
+  }
 }

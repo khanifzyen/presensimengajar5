@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_event.dart';
 import '../../blocs/user/user_state.dart';
@@ -72,7 +74,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     try {
       final userState = context.read<UserBloc>().state;
       if (userState is UserLoaded) {
-        context.read<UserBloc>().add(
+        final userBloc = context.read<UserBloc>();
+
+        // Dispatch update event
+        userBloc.add(
           UserUpdateProfile(
             teacherId: userState.teacher.id,
             name: _nameController.text,
@@ -83,25 +88,46 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         );
 
-        // Wait for update to complete
-        await Future.delayed(const Duration(milliseconds: 500));
+        // Wait for update to complete by listening to state changes
+        await for (final state in userBloc.stream) {
+          if (state is UserLoaded) {
+            // Update successful, reload user profile to get fresh data
+            final authState = context.read<AuthBloc>().state;
+            if (authState is AuthAuthenticated) {
+              userBloc.add(UserGetProfile(authState.userId));
 
-        if (mounted) {
-          _showSuccessDialog();
+              // Wait a bit for reload
+              await Future.delayed(const Duration(milliseconds: 300));
+            }
+
+            if (mounted) {
+              setState(() => _isLoading = false);
+              _showSuccessDialog();
+            }
+            break;
+          } else if (state is UserError) {
+            if (mounted) {
+              setState(() => _isLoading = false);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Gagal menyimpan profil: ${state.message}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+            break;
+          }
         }
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Gagal menyimpan profil: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }

@@ -10,3 +10,10 @@ class AppCollections {
   static const String settings = 'settings';
   static const String notifications = 'notifications';
 }
+
+class AppConfig {
+  static const String pocketbaseUrl = String.fromEnvironment(
+    'POCKETBASE_URL',
+    defaultValue: 'https://pb-presensi.pasarjepara.com',
+  );
+}

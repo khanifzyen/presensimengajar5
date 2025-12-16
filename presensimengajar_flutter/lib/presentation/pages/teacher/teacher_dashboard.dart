@@ -17,6 +17,7 @@ import '../../blocs/attendance/attendance_event.dart';
 import '../../blocs/attendance/attendance_state.dart';
 import '../../../data/models/attendance_model.dart';
 import '../../../data/models/weekly_statistics_model.dart';
+import '../../../core/constants.dart';
 import 'profile_page.dart';
 
 class TeacherDashboard extends StatefulWidget {
@@ -293,7 +294,11 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                 radius: 25,
                                 backgroundColor: Colors.white,
                                 backgroundImage: state.teacher.photo.isNotEmpty
-                                    ? NetworkImage(state.teacher.photo)
+                                    ? NetworkImage(
+                                        state.teacher.getPhotoUrl(
+                                          AppConfig.pocketbaseUrl,
+                                        ),
+                                      )
                                     : null,
                                 child: state.teacher.photo.isEmpty
                                     ? Text(

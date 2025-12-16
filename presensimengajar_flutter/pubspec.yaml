@@ -59,7 +59,7 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_pdfview: ^1.4.3
   dio: ^5.9.0
-  image_gallery_saver: ^2.0.3
+  gal: ^2.3.2
 
 
 dev_dependencies:

@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data'; // Add import
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gal/gal.dart';
 
 class AttachmentViewerPage extends StatefulWidget {
   final String url;
@@ -26,7 +26,7 @@ class _AttachmentViewerPageState extends State<AttachmentViewerPage> {
   String? _localPath;
   bool _isLoading = true;
   String? _errorMessage;
-  bool _isDownloading = false; // Fixed variable name
+  bool _isDownloading = false;
 
   @override
   void initState() {
@@ -62,16 +62,16 @@ class _AttachmentViewerPageState extends State<AttachmentViewerPage> {
   }
 
   Future<void> _saveToGalleryOrDownloads() async {
-    setState(() => _isDownloading = true); // Fixed variable name
+    setState(() => _isDownloading = true);
     try {
-      if (Platform.isAndroid) {
-        // Permission logic
+      if (Platform.isAndroid && !widget.isPdf && !await Gal.hasAccess()) {
+        await Gal.requestAccess();
       }
 
       var dio = Dio();
 
       if (widget.isPdf) {
-        // Safe PDF to external Download directory
+        // Save PDF to external Download directory
         Directory? downloadDir;
         if (Platform.isAndroid) {
           downloadDir = Directory('/storage/emulated/0/Download');
@@ -94,33 +94,23 @@ class _AttachmentViewerPageState extends State<AttachmentViewerPage> {
           );
         }
       } else {
-        // Save Image to Gallery
+        // Save Image to Gallery using Gal
         var response = await dio.get(
           widget.url,
           options: Options(responseType: ResponseType.bytes),
         );
-        final result = await ImageGallerySaver.saveImage(
+        await Gal.putImageBytes(
           Uint8List.fromList(response.data),
-          quality: 100,
           name: widget.fileName,
         );
 
         if (mounted) {
-          if (result['isSuccess'] == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Gambar disimpan di Galeri'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Gagal menyimpan gambar'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Gambar disimpan di Galeri'),
+              backgroundColor: Colors.green,
+            ),
+          );
         }
       }
     } catch (e) {
@@ -131,7 +121,7 @@ class _AttachmentViewerPageState extends State<AttachmentViewerPage> {
       }
     } finally {
       if (mounted) {
-        setState(() => _isDownloading = false); // Fixed variable name
+        setState(() => _isDownloading = false);
       }
     }
   }
@@ -155,9 +145,7 @@ class _AttachmentViewerPageState extends State<AttachmentViewerPage> {
                     ),
                   )
                 : const Icon(Icons.download),
-            onPressed: _isDownloading
-                ? null
-                : _saveToGalleryOrDownloads, // Fixed usage
+            onPressed: _isDownloading ? null : _saveToGalleryOrDownloads,
             tooltip: 'Download',
           ),
         ],
@@ -184,10 +172,10 @@ class _AttachmentViewerPageState extends State<AttachmentViewerPage> {
           autoSpacing: false,
           pageFling: false,
           onError: (error) {
-            print(error.toString());
+            debugPrint(error.toString());
           },
           onPageError: (page, error) {
-            print('$page: ${error.toString()}');
+            debugPrint('$page: ${error.toString()}');
           },
         );
       } else {

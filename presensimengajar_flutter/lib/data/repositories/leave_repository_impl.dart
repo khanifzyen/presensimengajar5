@@ -30,11 +30,12 @@ class LeaveRepositoryImpl implements LeaveRepository {
 
     List<http.MultipartFile> files = [];
     if (attachment != null) {
+      final filename = attachment.path.split(Platform.pathSeparator).last;
       files.add(
         http.MultipartFile.fromBytes(
           'attachment',
           await attachment.readAsBytes(),
-          filename: 'attachment.jpg', // Should detect mime type ideally
+          filename: filename,
         ),
       );
     }

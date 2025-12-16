@@ -8,6 +8,14 @@ class AppTheme {
   static const Color backgroundColor = Color(0xFFF3F4F6); // Light Gray
   static const Color errorColor = Color(0xFFEF4444); // Red
 
+  // Stat card colors
+  static const Color statBlue = Color(0xFF3B82F6);
+  static const Color statGreen = Color(0xFF10B981);
+  static const Color statYellow = Color(0xFFF59E0B);
+  static const Color statRed = Color(0xFFEF4444);
+  static const Color statPurple = Color(0xFF8B5CF6);
+  static const Color statOrange = Color(0xFFF97316);
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,

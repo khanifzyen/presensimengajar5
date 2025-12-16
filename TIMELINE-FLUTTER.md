@@ -78,7 +78,7 @@ Based on `migration/src/schema.js`.
 ### Phase 2: Dashboard & Profile
 - [x] **Teacher Dashboard** (`dashboard-guru.html`)
     - Summary widgets (Attendance stats, Next class).
-- [ ] **Admin Dashboard** (`dashboard-admin.html`)
+- [x] **Admin Dashboard** (`dashboard-admin.html`)
     - Overview stats.
 - [x] **Profile & Settings** (`profil.html`, `edit-profil.html`, `ubah-kata-sandi.html`)
     - View and Edit Profile.

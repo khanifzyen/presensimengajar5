@@ -9,6 +9,7 @@ import 'presentation/blocs/user/user_bloc.dart';
 import 'presentation/blocs/schedule/schedule_bloc.dart';
 import 'presentation/blocs/attendance/attendance_bloc.dart';
 import 'presentation/blocs/leave/leave_bloc.dart';
+import 'presentation/blocs/admin/admin_bloc.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => di.sl<ScheduleBloc>()),
         BlocProvider(create: (_) => di.sl<AttendanceBloc>()),
         BlocProvider(create: (_) => di.sl<LeaveBloc>()),
+        BlocProvider(create: (_) => di.sl<AdminBloc>()),
         // Add other global blocs here if needed
       ],
       child: MaterialApp.router(

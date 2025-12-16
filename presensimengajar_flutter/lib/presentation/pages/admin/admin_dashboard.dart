@@ -247,9 +247,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
             crossAxisCount: 4,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.85,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 0.75,
             children: [
               StatCardWidget(
                 value: state.attendanceStats['total'].toString(),
@@ -293,9 +293,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
             crossAxisCount: 4,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.85,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 0.75,
             children: [
               StatCardWidget(
                 value: state.categoryStats['tetap'].toString(),

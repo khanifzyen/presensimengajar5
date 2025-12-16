@@ -16,6 +16,7 @@ import '../../blocs/attendance/attendance_bloc.dart';
 import '../../blocs/attendance/attendance_event.dart';
 import '../../blocs/attendance/attendance_state.dart';
 import '../../../data/models/attendance_model.dart';
+import '../../../data/models/weekly_statistics_model.dart';
 import 'profile_page.dart';
 
 class TeacherDashboard extends StatefulWidget {
@@ -72,11 +73,19 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
       _selectedWeekEnd = _getWeekEnd(newDate);
     });
 
-    // Re-fetch schedules for new week
+    // Re-fetch schedules and statistics for new week
     final userState = context.read<UserBloc>().state;
     if (userState is UserLoaded) {
       context.read<ScheduleBloc>().add(
         ScheduleFetch(teacherId: userState.teacher.id),
+      );
+
+      context.read<AttendanceBloc>().add(
+        AttendanceFetchWeeklyStatistics(
+          teacherId: userState.teacher.id,
+          weekStart: _selectedWeekStart,
+          weekEnd: _selectedWeekEnd,
+        ),
       );
     }
   }
@@ -174,6 +183,15 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
             // Fetch all schedules for the teacher (no day filter for weekly view)
             context.read<ScheduleBloc>().add(
               ScheduleFetch(teacherId: state.teacher.id),
+            );
+
+            // Fetch weekly statistics
+            context.read<AttendanceBloc>().add(
+              AttendanceFetchWeeklyStatistics(
+                teacherId: state.teacher.id,
+                weekStart: _selectedWeekStart,
+                weekEnd: _selectedWeekEnd,
+              ),
             );
           } else if (state is UserError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -536,6 +554,38 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                         ),
                       ],
                     ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Weekly Statistics Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Statistik Minggu Ini',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3A8A),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  BlocBuilder<AttendanceBloc, AttendanceState>(
+                    builder: (context, state) {
+                      if (state is AttendanceStatisticsLoaded) {
+                        return _buildStatisticsGrid(state.statistics);
+                      }
+                      // Show empty state while loading
+                      return _buildStatisticsGrid(
+                        WeeklyStatisticsModel.empty(),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -957,6 +1007,86 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
             const SizedBox(height: 80), // Bottom padding for FAB
           ],
         ),
+      ),
+    );
+  }
+
+  // Helper method to build statistics grid
+  Widget _buildStatisticsGrid(WeeklyStatisticsModel statistics) {
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 1.3,
+      children: [
+        _buildStatBox(
+          label: 'Kelas Diampu',
+          value: statistics.classesAttended,
+          color: Colors.green,
+          icon: Icons.check_circle,
+        ),
+        _buildStatBox(
+          label: 'Terlambat',
+          value: statistics.lateArrivals,
+          color: Colors.orange,
+          icon: Icons.access_time,
+        ),
+        _buildStatBox(
+          label: 'Izin',
+          value: statistics.leaveRequests,
+          color: Colors.blue,
+          icon: Icons.event_note,
+        ),
+        _buildStatBox(
+          label: 'Alpha',
+          value: statistics.alpha,
+          color: Colors.red,
+          icon: Icons.cancel,
+        ),
+      ],
+    );
+  }
+
+  // Helper method to build individual stat box
+  Widget _buildStatBox({
+    required String label,
+    required int value,
+    required Color color,
+    required IconData icon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: color, size: 32),
+          const SizedBox(height: 8),
+          Text(
+            value.toString(),
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 import '../../data/models/attendance_model.dart';
+import '../../data/models/weekly_statistics_model.dart';
 
 abstract class AttendanceRepository {
   Future<AttendanceModel> checkIn({
@@ -29,4 +30,10 @@ abstract class AttendanceRepository {
     DateTime startDate,
     DateTime endDate,
   );
+
+  Future<WeeklyStatisticsModel> getWeeklyStatistics({
+    required String teacherId,
+    required DateTime weekStart,
+    required DateTime weekEnd,
+  });
 }

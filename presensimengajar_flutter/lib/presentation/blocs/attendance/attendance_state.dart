@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../data/models/attendance_model.dart';
+import '../../../data/models/weekly_statistics_model.dart';
 
 abstract class AttendanceState extends Equatable {
   const AttendanceState();
@@ -37,6 +38,15 @@ class AttendanceScheduleMapLoaded extends AttendanceState {
 
   @override
   List<Object> get props => [attendanceMap];
+}
+
+class AttendanceStatisticsLoaded extends AttendanceState {
+  final WeeklyStatisticsModel statistics;
+
+  const AttendanceStatisticsLoaded(this.statistics);
+
+  @override
+  List<Object> get props => [statistics];
 }
 
 class AttendanceError extends AttendanceState {

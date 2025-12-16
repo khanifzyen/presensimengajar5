@@ -12,6 +12,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     on<AttendanceCheckOut>(_onAttendanceCheckOut);
     on<AttendanceFetchHistory>(_onAttendanceFetchHistory);
     on<AttendanceFetchForSchedules>(_onAttendanceFetchForSchedules);
+    on<AttendanceFetchWeeklyStatistics>(_onFetchWeeklyStatistics);
   }
 
   Future<void> _onAttendanceCheckIn(
@@ -81,6 +82,22 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         event.endDate,
       );
       emit(AttendanceScheduleMapLoaded(attendanceMap));
+    } catch (e) {
+      emit(AttendanceError(e.toString()));
+    }
+  }
+
+  Future<void> _onFetchWeeklyStatistics(
+    AttendanceFetchWeeklyStatistics event,
+    Emitter<AttendanceState> emit,
+  ) async {
+    try {
+      final statistics = await attendanceRepository.getWeeklyStatistics(
+        teacherId: event.teacherId,
+        weekStart: event.weekStart,
+        weekEnd: event.weekEnd,
+      );
+      emit(AttendanceStatisticsLoaded(statistics));
     } catch (e) {
       emit(AttendanceError(e.toString()));
     }

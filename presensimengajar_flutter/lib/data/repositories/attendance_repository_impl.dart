@@ -4,6 +4,9 @@ import 'package:http/http.dart' as http;
 import '../../core/constants.dart';
 import '../../domain/repositories/attendance_repository.dart';
 import '../models/attendance_model.dart';
+import '../models/weekly_statistics_model.dart';
+import '../models/schedule_model.dart';
+import '../models/leave_request_model.dart';
 
 class AttendanceRepositoryImpl implements AttendanceRepository {
   final PocketBase pb;
@@ -124,5 +127,169 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
     }
 
     return attendanceMap;
+  }
+
+  @override
+  Future<WeeklyStatisticsModel> getWeeklyStatistics({
+    required String teacherId,
+    required DateTime weekStart,
+    required DateTime weekEnd,
+  }) async {
+    try {
+      // Step 1: Get all schedules for this teacher
+      final scheduleRecords = await pb
+          .collection(AppCollections.schedules)
+          .getFullList(
+            filter: 'teacher_id="$teacherId"',
+            expand: 'subject_id,class_id',
+          );
+
+      if (scheduleRecords.isEmpty) {
+        return WeeklyStatisticsModel.empty();
+      }
+
+      final schedules = scheduleRecords
+          .map((r) => ScheduleModel.fromRecord(r))
+          .toList();
+
+      // Step 2: Calculate which days fall within this week
+      final weekDays = <String>[];
+      final dayNames = [
+        'senin',
+        'selasa',
+        'rabu',
+        'kamis',
+        'jumat',
+        'sabtu',
+        'minggu',
+      ];
+
+      for (int i = 0; i < 7; i++) {
+        final date = weekStart.add(Duration(days: i));
+        if (date.weekday >= 1 && date.weekday <= 7) {
+          weekDays.add(dayNames[date.weekday - 1]);
+        }
+      }
+
+      // Step 3: Count total scheduled classes for this week
+      final totalScheduled = schedules
+          .where((s) => weekDays.contains(s.day.toLowerCase()))
+          .length;
+
+      // Step 4: Get all attendances for this week
+      final startDateStr = weekStart.toIso8601String().split('T')[0];
+      final endDateStr = weekEnd.toIso8601String().split('T')[0];
+
+      final attendanceRecords = await pb
+          .collection(AppCollections.attendances)
+          .getFullList(
+            filter:
+                'teacher_id="$teacherId" && date>="$startDateStr" && date<="$endDateStr"',
+          );
+
+      final attendances = attendanceRecords
+          .map((r) => AttendanceModel.fromRecord(r))
+          .toList();
+
+      // Step 5: Count classes attended (with check-in)
+      final classesAttended = attendances
+          .where((a) => a.checkIn != null)
+          .length;
+
+      // Step 6: Count late arrivals (check-in > start time + 15 minutes)
+      int lateArrivals = 0;
+      final gracePeriodMinutes = 15;
+
+      for (final attendance in attendances) {
+        if (attendance.checkIn == null || attendance.scheduleId == null)
+          continue;
+
+        // Parse checkIn string to DateTime
+        final checkInTime = DateTime.tryParse(attendance.checkIn!);
+        if (checkInTime == null) continue;
+
+        // Find corresponding schedule
+        final schedule = schedules.firstWhere(
+          (s) => s.id == attendance.scheduleId,
+          orElse: () => schedules.first, // Fallback, shouldn't happen
+        );
+
+        // Parse schedule start time (format: "HH:mm")
+        final timeParts = schedule.startTime.split(':');
+        if (timeParts.length != 2) continue;
+
+        final scheduledHour = int.tryParse(timeParts[0]) ?? 0;
+        final scheduledMinute = int.tryParse(timeParts[1]) ?? 0;
+
+        // Create scheduled start time on the attendance date
+        final scheduledStart = DateTime(
+          checkInTime.year,
+          checkInTime.month,
+          checkInTime.day,
+          scheduledHour,
+          scheduledMinute,
+        );
+
+        // Add grace period
+        final graceDeadline = scheduledStart.add(
+          Duration(minutes: gracePeriodMinutes),
+        );
+
+        // Check if late
+        if (checkInTime.isAfter(graceDeadline)) {
+          lateArrivals++;
+        }
+      }
+
+      // Step 7: Get approved leave requests for this week
+      final leaveRecords = await pb
+          .collection(AppCollections.leaveRequests)
+          .getFullList(
+            filter:
+                'teacher_id="$teacherId" && status="approved" && '
+                '((start_date>="$startDateStr" && start_date<="$endDateStr") || '
+                '(end_date>="$startDateStr" && end_date<="$endDateStr") || '
+                '(start_date<="$startDateStr" && end_date>="$endDateStr"))',
+          );
+
+      // Count affected days by leave requests
+      int leaveAffectedClasses = 0;
+      for (final leaveRecord in leaveRecords) {
+        final leave = LeaveRequestModel.fromRecord(leaveRecord);
+
+        // Parse dates
+        final leaveStart = DateTime.tryParse(leave.startDate);
+        final leaveEnd = DateTime.tryParse(leave.endDate);
+
+        if (leaveStart == null || leaveEnd == null) continue;
+
+        // Count how many scheduled classes fall within leave period
+        for (final schedule in schedules) {
+          if (!weekDays.contains(schedule.day.toLowerCase())) continue;
+
+          // Check each day of the week
+          for (int i = 0; i < 7; i++) {
+            final date = weekStart.add(Duration(days: i));
+            final dayName = dayNames[date.weekday - 1];
+
+            if (dayName == schedule.day.toLowerCase() &&
+                !date.isBefore(leaveStart) &&
+                !date.isAfter(leaveEnd)) {
+              leaveAffectedClasses++;
+            }
+          }
+        }
+      }
+
+      return WeeklyStatisticsModel(
+        totalScheduled: totalScheduled,
+        classesAttended: classesAttended,
+        lateArrivals: lateArrivals,
+        leaveRequests: leaveAffectedClasses,
+      );
+    } catch (e) {
+      // Return empty statistics on error
+      return WeeklyStatisticsModel.empty();
+    }
   }
 }

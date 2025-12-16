@@ -10,7 +10,7 @@ import '../../blocs/leave/leave_bloc.dart';
 import '../../blocs/leave/leave_event.dart';
 import '../../blocs/leave/leave_state.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../common/attachment_viewer_page.dart'; // Add this if not present, but it was supposed to be added in previous step.
 import '../../../core/constants.dart';
 
 import '../../blocs/user/user_bloc.dart';
@@ -663,21 +663,23 @@ class _PermissionPageState extends State<PermissionPage>
                           item.attachment!.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         InkWell(
-                          onTap: () async {
+                          onTap: () {
                             final url =
                                 '${dotenv.env['POCKETBASE_URL']}/api/files/${AppCollections.leaveRequests}/${item.id}/${item.attachment}';
-                            if (!await launchUrl(
-                              Uri.parse(url),
-                              mode: LaunchMode.externalApplication,
-                            )) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Gagal membuka lampiran'),
-                                  ),
-                                );
-                              }
-                            }
+                            final isPdf = item.attachment!
+                                .toLowerCase()
+                                .endsWith('.pdf');
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AttachmentViewerPage(
+                                  url: url,
+                                  fileName: item.attachment!,
+                                  isPdf: isPdf,
+                                ),
+                              ),
+                            );
                           },
                           borderRadius: BorderRadius.circular(8),
                           child: Container(
@@ -695,8 +697,12 @@ class _PermissionPageState extends State<PermissionPage>
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
-                                  Icons.attachment,
+                                Icon(
+                                  item.attachment!.toLowerCase().endsWith(
+                                        '.pdf',
+                                      )
+                                      ? Icons.picture_as_pdf
+                                      : Icons.image,
                                   size: 16,
                                   color: Colors.blue,
                                 ),

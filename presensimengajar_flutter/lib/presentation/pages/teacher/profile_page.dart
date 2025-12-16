@@ -26,69 +26,92 @@ class ProfilePage extends StatelessWidget {
                   if (state is UserLoaded) {
                     final teacher = state.teacher;
                     return Container(
-                      padding: const EdgeInsets.all(24),
+                      width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border(
-                          bottom: BorderSide(color: Colors.grey[200]!),
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
                         ),
                       ),
                       child: Column(
                         children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            backgroundImage: teacher.photo.isNotEmpty
-                                ? NetworkImage(
-                                    teacher.getPhotoUrl(
-                                      dotenv.env['POCKETBASE_URL'] ??
-                                          'https://pb-presensi.pasarjepara.com',
-                                    ),
-                                  )
-                                : null,
-                            child: teacher.photo.isEmpty
-                                ? Text(
-                                    teacher.name[0].toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 40,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : null,
+                          const SizedBox(height: 60), // Top padding
+                          // Avatar with white border
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 4),
+                            ),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.white,
+                              backgroundImage: teacher.photo.isNotEmpty
+                                  ? NetworkImage(
+                                      teacher.getPhotoUrl(
+                                        dotenv.env['POCKETBASE_URL'] ??
+                                            'https://pb-presensi.pasarjepara.com',
+                                      ),
+                                    )
+                                  : null,
+                              child: teacher.photo.isEmpty
+                                  ? Text(
+                                      teacher.name
+                                          .split(' ')
+                                          .map((word) => word[0])
+                                          .take(2)
+                                          .join()
+                                          .toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    )
+                                  : null,
+                            ),
                           ),
                           const SizedBox(height: 16),
+                          // Name
                           Text(
                             teacher.name,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).primaryColor,
-                                ),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 4),
+                          // NIP
                           Text(
                             'NIP. ${teacher.nip}',
-                            style: TextStyle(color: Colors.grey[600]),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.white70,
+                            ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
+                          // Badge
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
+                              horizontal: 16,
+                              vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.secondary,
+                              color: Colors.white.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: Text(
+                            child: const Text(
                               'Guru Pengajar',
                               style: TextStyle(
-                                color: Theme.of(context).primaryColor,
+                                color: Colors.white,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
                               ),
                             ),
                           ),
+                          const SizedBox(height: 30), // Bottom padding
                         ],
                       ),
                     );

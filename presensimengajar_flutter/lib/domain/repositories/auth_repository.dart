@@ -8,4 +8,8 @@ abstract class AuthRepository {
   String? get currentUserId;
   String? get currentUserRole;
   Future<UserModel?> getCurrentUser();
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  });
 }

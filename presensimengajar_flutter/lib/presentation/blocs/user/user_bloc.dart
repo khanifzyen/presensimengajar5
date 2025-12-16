@@ -35,7 +35,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(UserLoading());
     try {
       final updatedTeacher = await teacherRepository.updateTeacher(
-        event.teacher,
+        teacherId: event.teacherId,
+        name: event.name,
+        phone: event.phone,
+        address: event.address,
+        photo: event.photo,
       );
       emit(UserLoaded(updatedTeacher));
     } catch (e) {

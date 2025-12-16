@@ -48,4 +48,29 @@ class AuthRepositoryImpl implements AuthRepository {
       return null;
     }
   }
+
+  @override
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    if (!isAuthenticated || currentUserId == null) {
+      throw AuthException('User not authenticated');
+    }
+
+    try {
+      await pb
+          .collection(AppCollections.users)
+          .update(
+            currentUserId!,
+            body: {
+              'password': newPassword,
+              'passwordConfirm': newPassword,
+              'oldPassword': oldPassword,
+            },
+          );
+    } catch (e) {
+      throw AuthException(ErrorHandler.parseError(e));
+    }
+  }
 }

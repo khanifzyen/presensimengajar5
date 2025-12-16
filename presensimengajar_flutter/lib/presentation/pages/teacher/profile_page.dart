@@ -6,6 +6,8 @@ import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_state.dart';
+import 'change_password_page.dart';
+import 'edit_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -102,7 +104,11 @@ class ProfilePage extends StatelessWidget {
                 icon: FontAwesomeIcons.userPen,
                 title: 'Edit Profil',
                 onTap: () {
-                  // TODO: Navigate to Edit Profile
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const EditProfilePage(),
+                    ),
+                  );
                 },
               ),
               _buildMenuItem(
@@ -110,7 +116,11 @@ class ProfilePage extends StatelessWidget {
                 icon: FontAwesomeIcons.lock,
                 title: 'Ubah Kata Sandi',
                 onTap: () {
-                  // TODO: Navigate to Change Password
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ChangePasswordPage(),
+                    ),
+                  );
                 },
               ),
               _buildMenuItem(

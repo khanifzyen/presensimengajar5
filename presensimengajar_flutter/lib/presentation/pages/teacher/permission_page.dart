@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:open_file/open_file.dart'; // Add import at the top
+
 import '../../blocs/leave/leave_bloc.dart';
 import '../../blocs/leave/leave_event.dart';
 import '../../blocs/leave/leave_state.dart';
@@ -398,66 +400,119 @@ class _PermissionPageState extends State<PermissionPage>
   }
 
   Widget _buildUploadField() {
+    bool isImage = false;
+    if (_selectedFile != null) {
+      final ext = _selectedFile!.path.split('.').last.toLowerCase();
+      isImage = ['jpg', 'jpeg', 'png'].contains(ext);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Lampiran', style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        Container(
-          height: 100,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: InkWell(
-            onTap: _pickFile,
+        InkWell(
+          onTap: _pickFile,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: double.infinity,
+            constraints: const BoxConstraints(minHeight: 100),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[300]!),
+            ),
             child: _selectedFile == null
                 ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.cloud_upload_outlined,
-                          size: 40,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Ketuk untuk upload file (PDF/JPG)',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.cloud_upload_outlined,
+                            size: 40,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Ketuk untuk upload file (PDF/JPG)',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
                     ),
                   )
-                : Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.check_circle_outline,
-                          size: 40,
-                          color: Colors.green,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _selectedFile!.path.split('/').last,
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.bold,
+                : Column(
+                    children: [
+                      if (isImage)
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(12),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        Text(
-                          'Ketuk untuk ganti',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
+                          child: Image.file(
+                            _selectedFile!,
+                            width: double.infinity,
+                            fit: BoxFit.contain, // Show full image
+                          ),
+                        )
+                      else
+                        Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.picture_as_pdf,
+                                size: 50,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _selectedFile!.path.split('/').last,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+
+                      // Footer actions
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(12),
+                          ),
+                          border: Border(
+                            top: BorderSide(color: Colors.grey[200]!),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (!isImage) ...[
+                              TextButton.icon(
+                                onPressed: () {
+                                  OpenFile.open(_selectedFile!.path);
+                                },
+                                icon: const Icon(Icons.visibility, size: 18),
+                                label: const Text('Lihat PDF'),
+                              ),
+                              const SizedBox(width: 16),
+                            ],
+                            TextButton.icon(
+                              onPressed: _pickFile,
+                              icon: const Icon(Icons.edit, size: 18),
+                              label: const Text('Ganti File'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
           ),
         ),

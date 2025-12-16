@@ -51,7 +51,7 @@ class LeaveRepositoryImpl implements LeaveRepository {
   Future<List<LeaveRequestModel>> getLeaveHistory(String teacherId) async {
     final records = await pb
         .collection(AppCollections.leaveRequests)
-        .getFullList(filter: 'teacher_id="$teacherId"', sort: '-created');
+        .getFullList(filter: 'teacher_id="$teacherId"', sort: '-start_date');
 
     return records.map((r) => LeaveRequestModel.fromRecord(r)).toList();
   }

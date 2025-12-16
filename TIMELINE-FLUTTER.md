@@ -76,11 +76,11 @@ Based on `migration/src/schema.js`.
     - Drawer/Sidebar for Admin.
 
 ### Phase 2: Dashboard & Profile
-- [ ] **Teacher Dashboard** (`dashboard-guru.html`)
+- [x] **Teacher Dashboard** (`dashboard-guru.html`)
     - Summary widgets (Attendance stats, Next class).
 - [ ] **Admin Dashboard** (`dashboard-admin.html`)
     - Overview stats.
-- [ ] **Profile & Settings** (`profil.html`, `edit-profil.html`, `ubah-kata-sandi.html`)
+- [x] **Profile & Settings** (`profil.html`, `edit-profil.html`, `ubah-kata-sandi.html`)
     - View and Edit Profile.
     - Change Password.
 

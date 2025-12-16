@@ -561,38 +561,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
 
             const SizedBox(height: 24),
 
-            // Weekly Statistics Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Statistik Minggu Ini',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E3A8A),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  BlocBuilder<AttendanceBloc, AttendanceState>(
-                    builder: (context, state) {
-                      if (state is AttendanceStatisticsLoaded) {
-                        return _buildStatisticsGrid(state.statistics);
-                      }
-                      // Show empty state while loading
-                      return _buildStatisticsGrid(
-                        WeeklyStatisticsModel.empty(),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
             // Jadwal Minggu Ini Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1004,6 +972,39 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                 ],
               ),
             ),
+
+            const SizedBox(height: 24),
+
+            // Weekly Statistics Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Statistik Minggu Ini',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3A8A),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  BlocBuilder<AttendanceBloc, AttendanceState>(
+                    builder: (context, state) {
+                      if (state is AttendanceStatisticsLoaded) {
+                        return _buildStatisticsGrid(state.statistics);
+                      }
+                      // Show empty state while loading
+                      return _buildStatisticsGrid(
+                        WeeklyStatisticsModel.empty(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 80), // Bottom padding for FAB
           ],
         ),

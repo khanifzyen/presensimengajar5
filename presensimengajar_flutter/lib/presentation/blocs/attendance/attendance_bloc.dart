@@ -3,6 +3,7 @@ import 'package:safe_device/safe_device.dart';
 import '../../../core/utils/file_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/repositories/attendance_repository.dart';
+import '../../../domain/repositories/settings_repository.dart';
 import '../../../data/models/attendance_model.dart';
 
 import 'attendance_event.dart';
@@ -10,8 +11,9 @@ import 'attendance_state.dart';
 
 class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
   final AttendanceRepository attendanceRepository;
+  final SettingsRepository? settingsRepository;
 
-  AttendanceBloc({required this.attendanceRepository})
+  AttendanceBloc({required this.attendanceRepository, this.settingsRepository})
     : super(AttendanceInitial()) {
     on<AttendanceCheckIn>(_onAttendanceCheckIn);
     on<AttendanceCheckOut>(_onAttendanceCheckOut);
@@ -19,6 +21,25 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     on<AttendanceFetchForSchedules>(_onAttendanceFetchForSchedules);
     on<AttendanceFetchWeeklyStatistics>(_onFetchWeeklyStatistics);
     on<AttendanceFetchDashboardData>(_onFetchDashboardData);
+    on<AttendanceFetchSettings>(_onFetchSettings);
+  }
+
+  Future<void> _onFetchSettings(
+    AttendanceFetchSettings event,
+    Emitter<AttendanceState> emit,
+  ) async {
+    if (settingsRepository == null) return;
+    // Don't emit loading here to avoid flicker if just refreshing settings in BG
+    // Or do emit loading if it's critical. Let's not emit global loading, just emit state when ready.
+    try {
+      final settings = await settingsRepository!.getAttendanceSettings();
+      emit(AttendanceSettingsLoaded(settings));
+    } catch (e) {
+      // For settings, maybe just log error or emit generic error?
+      // Since it's background/init, maybe don't block UI with error screen.
+      // But for now, let's emit error to be safe.
+      emit(AttendanceError('Gagal memuat pengaturan: $e'));
+    }
   }
 
   Future<void> _onAttendanceCheckIn(

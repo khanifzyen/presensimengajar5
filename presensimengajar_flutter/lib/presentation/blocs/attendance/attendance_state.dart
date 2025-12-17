@@ -62,6 +62,15 @@ class AttendanceDashboardLoaded extends AttendanceState {
   List<Object> get props => [statistics, attendanceMap];
 }
 
+class AttendanceSettingsLoaded extends AttendanceState {
+  final Map<String, dynamic> settings;
+
+  const AttendanceSettingsLoaded(this.settings);
+
+  @override
+  List<Object> get props => [settings];
+}
+
 class AttendanceError extends AttendanceState {
   final String message;
 

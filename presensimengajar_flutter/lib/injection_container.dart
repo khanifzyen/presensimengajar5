@@ -10,6 +10,7 @@ import 'data/repositories/schedule_repository_impl.dart';
 import 'data/repositories/attendance_repository_impl.dart';
 import 'data/repositories/leave_repository_impl.dart';
 import 'data/repositories/admin_repository_impl.dart';
+import 'data/repositories/settings_repository_impl.dart';
 
 import 'domain/repositories/auth_repository.dart';
 import 'domain/repositories/teacher_repository.dart';
@@ -17,6 +18,7 @@ import 'domain/repositories/schedule_repository.dart';
 import 'domain/repositories/attendance_repository.dart';
 import 'domain/repositories/leave_repository.dart';
 import 'domain/repositories/admin_repository.dart';
+import 'domain/repositories/settings_repository.dart';
 
 import 'presentation/blocs/auth/auth_bloc.dart';
 import 'presentation/blocs/user/user_bloc.dart';
@@ -51,12 +53,17 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<LeaveRepository>(() => LeaveRepositoryImpl(sl()));
   sl.registerLazySingleton<AdminRepository>(() => AdminRepositoryImpl(sl()));
+  sl.registerLazySingleton<SettingsRepository>(
+    () => SettingsRepositoryImpl(sl()),
+  );
 
   // Blocs
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
   sl.registerFactory(() => UserBloc(teacherRepository: sl()));
   sl.registerFactory(() => ScheduleBloc(scheduleRepository: sl()));
-  sl.registerFactory(() => AttendanceBloc(attendanceRepository: sl()));
+  sl.registerFactory(
+    () => AttendanceBloc(attendanceRepository: sl(), settingsRepository: sl()),
+  );
   sl.registerFactory(() => LeaveBloc(leaveRepository: sl()));
   sl.registerFactory(() => NotificationBloc());
   sl.registerFactory(() => AdminBloc(adminRepository: sl()));

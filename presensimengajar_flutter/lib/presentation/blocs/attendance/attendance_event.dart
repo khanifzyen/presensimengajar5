@@ -8,6 +8,8 @@ abstract class AttendanceEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class AttendanceFetchSettings extends AttendanceEvent {}
+
 class AttendanceCheckIn extends AttendanceEvent {
   final String scheduleId;
   final String teacherId;

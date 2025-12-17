@@ -32,13 +32,55 @@ class _TeachingPageState extends State<TeachingPage> {
   bool _isLoadingLocation = true;
   String _locationStatus = 'Mencari lokasi...';
 
+  // Geofencing Settings
+  double? _officeLat;
+  double? _officeLng;
+  double? _maxRadius; // in meters
+  bool _isWithinRange = false;
+  double _distanceToOffice = 0;
+
   // Camera
   File? _imageFile;
 
   @override
   void initState() {
     super.initState();
+    context.read<AttendanceBloc>().add(AttendanceFetchSettings());
     _determinePosition();
+  }
+
+  void _validateLocation() {
+    if (_currentPosition == null ||
+        _officeLat == null ||
+        _officeLng == null ||
+        _maxRadius == null) {
+      return;
+    }
+
+    final distance = Geolocator.distanceBetween(
+      _currentPosition!.latitude,
+      _currentPosition!.longitude,
+      _officeLat!,
+      _officeLng!,
+    );
+
+    setState(() {
+      _distanceToOffice = distance;
+      _isWithinRange = distance <= _maxRadius!;
+      if (_isWithinRange) {
+        _locationStatus =
+            'Didalam Jangkauan (${distance.toStringAsFixed(0)}m / ${_maxRadius!.toStringAsFixed(0)}m)';
+      } else {
+        _locationStatus =
+            'Diluar Jangkauan! (${distance.toStringAsFixed(0)}m / ${_maxRadius!.toStringAsFixed(0)}m)';
+      }
+    });
+
+    if (!_isWithinRange) {
+      _showErrorDialog(
+        'Anda berada diluar jangkauan presensi (${distance.toStringAsFixed(0)}m). Maksimal ${_maxRadius!.toStringAsFixed(0)}m.',
+      );
+    }
   }
 
   Future<void> _determinePosition() async {
@@ -98,7 +140,6 @@ class _TeachingPageState extends State<TeachingPage> {
         setState(() {
           _currentPosition = position;
           _isLoadingLocation = false;
-          _locationStatus = 'Lokasi ditemukan';
 
           // Update Map
           _markers.clear();
@@ -109,6 +150,20 @@ class _TeachingPageState extends State<TeachingPage> {
               infoWindow: const InfoWindow(title: 'Lokasi Anda'),
             ),
           );
+
+          if (_officeLat != null && _officeLng != null) {
+            _markers.add(
+              Marker(
+                markerId: const MarkerId('officeLocation'),
+                position: LatLng(_officeLat!, _officeLng!),
+                infoWindow: const InfoWindow(title: 'Lokasi Kantor'),
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueBlue,
+                ),
+              ),
+            );
+            // Add circle? Maybe later.
+          }
         });
 
         _mapController?.animateCamera(
@@ -119,6 +174,8 @@ class _TeachingPageState extends State<TeachingPage> {
             ),
           ),
         );
+
+        _validateLocation();
       }
     } catch (e) {
       if (mounted) {
@@ -130,23 +187,7 @@ class _TeachingPageState extends State<TeachingPage> {
     }
   }
 
-  Future<void> _pickImage() async {
-    try {
-      final picker = ImagePicker();
-      final XFile? xFile = await picker.pickImage(
-        source: ImageSource.camera,
-        preferredCameraDevice: CameraDevice.front,
-      );
-
-      if (xFile != null) {
-        setState(() {
-          _imageFile = File(xFile.path);
-        });
-      }
-    } catch (e) {
-      _showErrorDialog('Gagal membuka kamera: $e');
-    }
-  }
+  // ... (keep _pickImage)
 
   void _onSubmit(bool isCheckIn, String? attendanceId) {
     if (_currentPosition == null) {
@@ -154,7 +195,19 @@ class _TeachingPageState extends State<TeachingPage> {
       return;
     }
 
+    // Add Range Check
+    if (isCheckIn && !_isWithinRange && _maxRadius != null) {
+      _showErrorDialog(
+        'Anda berada diluar jangkauan presensi. Tidak dapat melakukan Check-In.',
+      );
+      return;
+    }
+    // Check-Out usually allowed anywhere? Or restricted too? User said "muncul pesan... tombol disabled".
+    // Usually Check-Out implies leaving, so maybe range check not STRICTLY required, but helpful.
+    // Let's enforce for Check-In mainly as requested "tombol kirim presensi disabled".
+
     if (isCheckIn) {
+      // ... (keep CheckIn logic)
       if (_imageFile == null) {
         _showErrorDialog('Harap ambil foto selfie terlebih dahulu.');
         return;
@@ -186,6 +239,26 @@ class _TeachingPageState extends State<TeachingPage> {
     }
   }
 
+  // ... (keep _showErrorDialog)
+
+  Future<void> _pickImage() async {
+    try {
+      final picker = ImagePicker();
+      final XFile? xFile = await picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front,
+      );
+
+      if (xFile != null) {
+        setState(() {
+          _imageFile = File(xFile.path);
+        });
+      }
+    } catch (e) {
+      _showErrorDialog('Gagal membuka kamera: $e');
+    }
+  }
+
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -206,7 +279,14 @@ class _TeachingPageState extends State<TeachingPage> {
   Widget build(BuildContext context) {
     return BlocListener<AttendanceBloc, AttendanceState>(
       listener: (context, state) {
-        if (state is AttendanceSuccess) {
+        if (state is AttendanceSettingsLoaded) {
+          setState(() {
+            _officeLat = state.settings['office_latitude'];
+            _officeLng = state.settings['office_longitude'];
+            _maxRadius = state.settings['radius_meter'];
+          });
+          _validateLocation();
+        } else if (state is AttendanceSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -226,22 +306,27 @@ class _TeachingPageState extends State<TeachingPage> {
       },
       child: BlocBuilder<AttendanceBloc, AttendanceState>(
         builder: (context, state) {
+          // ... (keep existing Attendance logic)
           AttendanceModel? attendance;
           bool isCheckedIn = false;
 
-          // Check if we have map data for this schedule
           if (state is AttendanceScheduleMapLoaded) {
             attendance = state.attendanceMap[widget.schedule.id];
             if (attendance?.checkIn != null && attendance?.checkOut == null) {
               isCheckedIn = true;
             }
           } else if (state is AttendanceSuccess) {
-            // Optimistic update logic if needed, but repo should handle reload
             if (state.attendance.scheduleId == widget.schedule.id) {
               attendance = state.attendance;
               isCheckedIn = attendance.checkOut == null;
             }
           }
+          // Preserve SettingsLoaded state? It might be cleared if bloc emits something else?
+          // AttendanceBloc emits one state at a time.
+          // Wait, if AttendanceBloc emits ScheduleMapLoaded, does it lose settings?
+          // Yes. Since we dispatch FetchSettings, it emits SettingsLoaded, then UI updates local state vars.
+          // That's why we store them in _TeachingPageState. Ideally Bloc should hold multi-state but we are using simple Bloc.
+          // So local state persistence is fine for now.
 
           return Scaffold(
             backgroundColor: Colors.grey[50],
@@ -254,6 +339,7 @@ class _TeachingPageState extends State<TeachingPage> {
               child: Column(
                 children: [
                   // Map Section
+                  // ... (Use _markers which we updated)
                   SizedBox(
                     height: 300,
                     width: double.infinity,
@@ -264,7 +350,7 @@ class _TeachingPageState extends State<TeachingPage> {
                             target: LatLng(
                               -6.5976236,
                               110.6698662,
-                            ), // Default Jepara
+                            ), // Default Jepara (or use office loc if available?)
                             zoom: 14,
                           ),
                           markers: _markers,
@@ -282,6 +368,31 @@ class _TeachingPageState extends State<TeachingPage> {
                               ),
                             ),
                           ),
+                        // Add Overlay for Out of Range?
+                        if (!_isWithinRange &&
+                            _maxRadius != null &&
+                            !_isLoadingLocation &&
+                            _currentPosition != null)
+                          Positioned(
+                            top: 10,
+                            left: 10,
+                            right: 10,
+                            child: Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                "DILUAR JANGKAUAN PRESENSI!",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -295,10 +406,10 @@ class _TeachingPageState extends State<TeachingPage> {
                         Icon(
                           _isLoadingLocation
                               ? Icons.location_searching
-                              : Icons.location_on,
+                              : (_isWithinRange ? Icons.verified : Icons.error),
                           color: _isLoadingLocation
                               ? Colors.grey
-                              : Colors.green,
+                              : (_isWithinRange ? Colors.green : Colors.red),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -308,7 +419,9 @@ class _TeachingPageState extends State<TeachingPage> {
                               Text(
                                 _isLoadingLocation
                                     ? 'Mencari Lokasi...'
-                                    : 'Lokasi Terkunci',
+                                    : (_isWithinRange
+                                          ? 'Lokasi Valid'
+                                          : 'Lokasi Invalid'),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -317,7 +430,9 @@ class _TeachingPageState extends State<TeachingPage> {
                                 _locationStatus,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  color: (_isWithinRange || _isLoadingLocation)
+                                      ? Colors.grey[600]
+                                      : Colors.red,
                                 ),
                               ),
                             ],
@@ -327,9 +442,9 @@ class _TeachingPageState extends State<TeachingPage> {
                     ),
                   ),
 
+                  // ... (Camera Logic for !isCheckedIn)
                   const SizedBox(height: 16),
 
-                  // Camera Section (Only for Check-In)
                   if (!isCheckedIn) ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -372,7 +487,6 @@ class _TeachingPageState extends State<TeachingPage> {
                     ),
                     const SizedBox(height: 24),
                   ] else ...[
-                    // Already Checked In Info
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 24),
                       padding: const EdgeInsets.all(16),
@@ -417,7 +531,11 @@ class _TeachingPageState extends State<TeachingPage> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed:
-                          (state is AttendanceLoading || _isLoadingLocation)
+                          (state is AttendanceLoading ||
+                              _isLoadingLocation ||
+                              (!isCheckedIn &&
+                                  !_isWithinRange &&
+                                  _maxRadius != null))
                           ? null
                           : () => _onSubmit(!isCheckedIn, attendance?.id),
                       style: ElevatedButton.styleFrom(
@@ -427,6 +545,7 @@ class _TeachingPageState extends State<TeachingPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        disabledBackgroundColor: Colors.grey,
                       ),
                       child: state is AttendanceLoading
                           ? const CircularProgressIndicator(color: Colors.white)

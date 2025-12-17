@@ -880,42 +880,62 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                       Color statusColor;
                                       Widget? actionButton;
 
+                                      final scheduleDate = _getScheduleDate(
+                                        _selectedWeekStart,
+                                        schedule.day,
+                                      );
+                                      final scheduleEndTime = _parseTime(
+                                        schedule.endTime,
+                                        scheduleDate,
+                                      );
+                                      final now = DateTime.now();
+
                                       if (attendance == null) {
-                                        // No attendance record
-                                        statusLabel = 'Menunggu';
-                                        statusColor = Colors.grey;
-                                        actionButton = ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    TeachingPage(
-                                                      schedule: schedule,
-                                                    ),
+                                        if (now.isAfter(scheduleEndTime)) {
+                                          // Past Schedule + No Attendance = Alpha
+                                          statusLabel = 'Tidak Hadir (Alpha)';
+                                          statusColor = Colors.red.withValues(
+                                            alpha: 0.8,
+                                          );
+                                          actionButton = null;
+                                        } else {
+                                          // Future/Current Schedule + No Attendance = Waiting
+                                          statusLabel = 'Menunggu';
+                                          statusColor = Colors.grey;
+                                          actionButton = ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TeachingPage(
+                                                        schedule: schedule,
+                                                      ),
+                                                ),
+                                              );
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: const Color(
+                                                0xFF1E3A8A,
                                               ),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(
-                                              0xFF1E3A8A,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 8,
+                                                  ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
                                             ),
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 8,
+                                            child: const Text(
+                                              'Check-In',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
                                             ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            'Check-In',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       } else if (attendance.checkIn != null &&
                                           attendance.checkOut == null) {
                                         // Checked in, not checked out
@@ -953,18 +973,27 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                         );
                                       } else {
                                         // Checked out (completed)
-                                        final checkInTime = DateFormat('HH:mm')
-                                            .format(
-                                              DateTime.parse(
-                                                attendance.checkIn!,
-                                              ),
-                                            );
-                                        final checkOutTime = DateFormat('HH:mm')
-                                            .format(
-                                              DateTime.parse(
-                                                attendance.checkOut!,
-                                              ),
-                                            );
+                                        String checkInTime = '-';
+                                        String checkOutTime = '-';
+
+                                        if (attendance.checkIn != null) {
+                                          checkInTime = DateFormat('HH:mm')
+                                              .format(
+                                                DateTime.parse(
+                                                  attendance.checkIn!,
+                                                ),
+                                              );
+                                        }
+
+                                        if (attendance.checkOut != null) {
+                                          checkOutTime = DateFormat('HH:mm')
+                                              .format(
+                                                DateTime.parse(
+                                                  attendance.checkOut!,
+                                                ),
+                                              );
+                                        }
+
                                         statusLabel =
                                             'Hadir ($checkInTime - $checkOutTime)';
                                         statusColor = const Color(0xFF10B981);
@@ -1328,5 +1357,31 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         ],
       ),
     );
+  }
+
+  DateTime _getScheduleDate(DateTime weekStart, String dayName) {
+    final days = [
+      'senin',
+      'selasa',
+      'rabu',
+      'kamis',
+      'jumat',
+      'sabtu',
+      'minggu',
+    ];
+    final dayIndex = days.indexOf(dayName.toLowerCase());
+    if (dayIndex == -1) return weekStart;
+    return weekStart.add(Duration(days: dayIndex));
+  }
+
+  DateTime _parseTime(String timeStr, DateTime date) {
+    try {
+      final parts = timeStr.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
+      return DateTime(date.year, date.month, date.day, hour, minute);
+    } catch (e) {
+      return date;
+    }
   }
 }

@@ -884,22 +884,30 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                         _selectedWeekStart,
                                         schedule.day,
                                       );
-                                      final scheduleEndTime = _parseTime(
-                                        schedule.endTime,
-                                        scheduleDate,
+                                      // final scheduleEndTime = _parseTime(
+                                      //   schedule.endTime,
+                                      //   scheduleDate,
+                                      // );
+                                      final endOfDay = DateTime(
+                                        scheduleDate.year,
+                                        scheduleDate.month,
+                                        scheduleDate.day,
+                                        23,
+                                        59,
+                                        59,
                                       );
                                       final now = DateTime.now();
 
                                       if (attendance == null) {
-                                        if (now.isAfter(scheduleEndTime)) {
-                                          // Past Schedule + No Attendance = Alpha
+                                        if (now.isAfter(endOfDay)) {
+                                          // Past Day + No Attendance = Alpha
                                           statusLabel = 'Tidak Hadir (Alpha)';
                                           statusColor = Colors.red.withValues(
                                             alpha: 0.8,
                                           );
                                           actionButton = null;
                                         } else {
-                                          // Future/Current Schedule + No Attendance = Waiting
+                                          // Same Day or Future + No Attendance = Waiting
                                           statusLabel = 'Menunggu';
                                           statusColor = Colors.grey;
                                           actionButton = ElevatedButton(
@@ -936,69 +944,98 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                             ),
                                           );
                                         }
-                                      } else if (attendance.checkIn != null &&
-                                          attendance.checkOut == null) {
-                                        // Checked in, not checked out
-                                        statusLabel = 'Sedang Mengajar';
-                                        statusColor = Colors.orange;
-                                        actionButton = ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    TeachingPage(
-                                                      schedule: schedule,
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.red,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 8,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            'Check-Out',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        );
                                       } else {
-                                        // Checked out (completed)
-                                        String checkInTime = '-';
-                                        String checkOutTime = '-';
-
+                                        // Has attendance data
+                                        // Check for lateness
+                                        bool isLate = false;
                                         if (attendance.checkIn != null) {
-                                          checkInTime = DateFormat('HH:mm')
-                                              .format(
-                                                DateTime.parse(
-                                                  attendance.checkIn!,
-                                                ),
-                                              );
+                                          final checkInTime = DateTime.parse(
+                                            attendance.checkIn!,
+                                          );
+                                          final scheduleStartTime = _parseTime(
+                                            schedule.startTime,
+                                            scheduleDate,
+                                          );
+                                          isLate = checkInTime.isAfter(
+                                            scheduleStartTime,
+                                          );
                                         }
 
-                                        if (attendance.checkOut != null) {
-                                          checkOutTime = DateFormat('HH:mm')
-                                              .format(
-                                                DateTime.parse(
-                                                  attendance.checkOut!,
+                                        if (attendance.checkIn != null &&
+                                            attendance.checkOut == null) {
+                                          // Checked in, not checked out
+                                          statusLabel = isLate
+                                              ? 'Sedang Mengajar (Terlambat)'
+                                              : 'Sedang Mengajar';
+                                          statusColor = Colors.orange;
+                                          actionButton = ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TeachingPage(
+                                                        schedule: schedule,
+                                                      ),
                                                 ),
                                               );
-                                        }
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 8,
+                                                  ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              'Check-Out',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          // Checked out (completed)
+                                          String checkInTimeStr = '-';
+                                          String checkOutTimeStr = '-';
 
-                                        statusLabel =
-                                            'Hadir ($checkInTime - $checkOutTime)';
-                                        statusColor = const Color(0xFF10B981);
-                                        actionButton =
-                                            null; // No button for completed
+                                          if (attendance.checkIn != null) {
+                                            checkInTimeStr = DateFormat('HH:mm')
+                                                .format(
+                                                  DateTime.parse(
+                                                    attendance.checkIn!,
+                                                  ),
+                                                );
+                                          }
+
+                                          if (attendance.checkOut != null) {
+                                            checkOutTimeStr =
+                                                DateFormat('HH:mm').format(
+                                                  DateTime.parse(
+                                                    attendance.checkOut!,
+                                                  ),
+                                                );
+                                          }
+
+                                          if (isLate) {
+                                            statusLabel =
+                                                'Terlambat ($checkInTimeStr - $checkOutTimeStr)';
+                                            statusColor = Colors.orange;
+                                          } else {
+                                            statusLabel =
+                                                'Hadir ($checkInTimeStr - $checkOutTimeStr)';
+                                            statusColor = const Color(
+                                              0xFF10B981,
+                                            );
+                                          }
+                                          actionButton =
+                                              null; // No button for completed
+                                        }
                                       }
 
                                       return Container(

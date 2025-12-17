@@ -88,3 +88,20 @@ class AttendanceFetchWeeklyStatistics extends AttendanceEvent {
   @override
   List<Object> get props => [teacherId, weekStart, weekEnd];
 }
+
+class AttendanceFetchDashboardData extends AttendanceEvent {
+  final String teacherId;
+  final List<String> scheduleIds;
+  final DateTime weekStart;
+  final DateTime weekEnd;
+
+  const AttendanceFetchDashboardData({
+    required this.teacherId,
+    required this.scheduleIds,
+    required this.weekStart,
+    required this.weekEnd,
+  });
+
+  @override
+  List<Object> get props => [teacherId, scheduleIds, weekStart, weekEnd];
+}

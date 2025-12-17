@@ -90,14 +90,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
       context.read<ScheduleBloc>().add(
         ScheduleFetch(teacherId: userState.teacher.id),
       );
-
-      context.read<AttendanceBloc>().add(
-        AttendanceFetchWeeklyStatistics(
-          teacherId: userState.teacher.id,
-          weekStart: _selectedWeekStart,
-          weekEnd: _selectedWeekEnd,
-        ),
-      );
+      // Statistics and attendance will be fetched in ScheduleBloc listener
     }
   }
 
@@ -197,15 +190,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
             // Fetch all schedules for the teacher (no day filter for weekly view)
             context.read<ScheduleBloc>().add(
               ScheduleFetch(teacherId: state.teacher.id),
-            );
-
-            // Fetch weekly statistics
-            context.read<AttendanceBloc>().add(
-              AttendanceFetchWeeklyStatistics(
-                teacherId: state.teacher.id,
-                weekStart: _selectedWeekStart,
-                weekEnd: _selectedWeekEnd,
-              ),
             );
           } else if (state is UserError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -790,11 +774,11 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                               final userState = context.read<UserBloc>().state;
                               if (userState is UserLoaded) {
                                 context.read<AttendanceBloc>().add(
-                                  AttendanceFetchForSchedules(
+                                  AttendanceFetchDashboardData(
                                     teacherId: userState.teacher.id,
                                     scheduleIds: scheduleIds,
-                                    startDate: _selectedWeekStart,
-                                    endDate: _selectedWeekEnd,
+                                    weekStart: _selectedWeekStart,
+                                    weekEnd: _selectedWeekEnd,
                                   ),
                                 );
                               }
@@ -859,6 +843,10 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                       {};
                                   if (attendanceState
                                       is AttendanceScheduleMapLoaded) {
+                                    attendanceMap =
+                                        attendanceState.attendanceMap;
+                                  } else if (attendanceState
+                                      is AttendanceDashboardLoaded) {
                                     attendanceMap =
                                         attendanceState.attendanceMap;
                                   }
@@ -1237,6 +1225,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                       return BlocBuilder<AttendanceBloc, AttendanceState>(
                         builder: (context, state) {
                           if (state is AttendanceStatisticsLoaded) {
+                            return _buildStatisticsGrid(state.statistics);
+                          } else if (state is AttendanceDashboardLoaded) {
                             return _buildStatisticsGrid(state.statistics);
                           }
                           // Show empty state while loading

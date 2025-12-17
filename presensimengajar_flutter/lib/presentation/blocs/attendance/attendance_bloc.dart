@@ -3,6 +3,8 @@ import 'package:safe_device/safe_device.dart';
 import '../../../core/utils/file_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/repositories/attendance_repository.dart';
+import '../../../data/models/attendance_model.dart';
+
 import 'attendance_event.dart';
 import 'attendance_state.dart';
 
@@ -16,6 +18,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     on<AttendanceFetchHistory>(_onAttendanceFetchHistory);
     on<AttendanceFetchForSchedules>(_onAttendanceFetchForSchedules);
     on<AttendanceFetchWeeklyStatistics>(_onFetchWeeklyStatistics);
+    on<AttendanceFetchDashboardData>(_onFetchDashboardData);
   }
 
   Future<void> _onAttendanceCheckIn(
@@ -140,6 +143,41 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         weekEnd: event.weekEnd,
       );
       emit(AttendanceStatisticsLoaded(statistics));
+    } catch (e) {
+      emit(AttendanceError(e.toString()));
+    }
+  }
+
+  Future<void> _onFetchDashboardData(
+    AttendanceFetchDashboardData event,
+    Emitter<AttendanceState> emit,
+  ) async {
+    emit(AttendanceLoading());
+    try {
+      final results = await Future.wait([
+        attendanceRepository.getWeeklyStatistics(
+          teacherId: event.teacherId,
+          weekStart: event.weekStart,
+          weekEnd: event.weekEnd,
+        ),
+        attendanceRepository.getAttendanceBySchedules(
+          event.teacherId,
+          event.scheduleIds,
+          event.weekStart,
+          event.weekEnd,
+        ),
+      ]);
+
+      final statistics = results[0] as dynamic; // WeeklyStatisticsModel
+      final attendanceMap =
+          results[1] as Map<String, dynamic>; // Map<String, AttendanceModel>
+
+      emit(
+        AttendanceDashboardLoaded(
+          statistics: statistics,
+          attendanceMap: attendanceMap.cast<String, AttendanceModel>(),
+        ),
+      );
     } catch (e) {
       emit(AttendanceError(e.toString()));
     }

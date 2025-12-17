@@ -49,6 +49,19 @@ class AttendanceStatisticsLoaded extends AttendanceState {
   List<Object> get props => [statistics];
 }
 
+class AttendanceDashboardLoaded extends AttendanceState {
+  final WeeklyStatisticsModel statistics;
+  final Map<String, AttendanceModel> attendanceMap;
+
+  const AttendanceDashboardLoaded({
+    required this.statistics,
+    required this.attendanceMap,
+  });
+
+  @override
+  List<Object> get props => [statistics, attendanceMap];
+}
+
 class AttendanceError extends AttendanceState {
   final String message;
 

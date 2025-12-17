@@ -902,9 +902,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                         if (now.isAfter(endOfDay)) {
                                           // Past Day + No Attendance = Alpha
                                           statusLabel = 'Tidak Hadir (Alpha)';
-                                          statusColor = Colors.red.withValues(
-                                            alpha: 0.8,
-                                          );
+                                          statusColor = const Color(
+                                            0xFFEF4444,
+                                          ); // Red
                                           actionButton = null;
                                         } else {
                                           // Same Day or Future + No Attendance = Waiting
@@ -946,25 +946,13 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                         }
                                       } else {
                                         // Has attendance data
-                                        // Check for lateness
-                                        bool isLate = false;
-                                        if (attendance.checkIn != null) {
-                                          final checkInTime = DateTime.parse(
-                                            attendance.checkIn!,
-                                          );
-                                          final scheduleStartTime = _parseTime(
-                                            schedule.startTime,
-                                            scheduleDate,
-                                          );
-                                          isLate = checkInTime.isAfter(
-                                            scheduleStartTime,
-                                          );
-                                        }
+                                        final status = attendance.status
+                                            .toLowerCase();
 
                                         if (attendance.checkIn != null &&
                                             attendance.checkOut == null) {
                                           // Checked in, not checked out
-                                          statusLabel = isLate
+                                          statusLabel = (status == 'telat')
                                               ? 'Sedang Mengajar (Terlambat)'
                                               : 'Sedang Mengajar';
                                           statusColor = Colors.orange;
@@ -1000,7 +988,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                             ),
                                           );
                                         } else {
-                                          // Checked out (completed)
+                                          // Completed / Others
                                           String checkInTimeStr = '-';
                                           String checkOutTimeStr = '-';
 
@@ -1022,17 +1010,47 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                 );
                                           }
 
-                                          if (isLate) {
-                                            statusLabel =
-                                                'Terlambat ($checkInTimeStr - $checkOutTimeStr)';
-                                            statusColor = Colors.orange;
-                                          } else {
-                                            statusLabel =
-                                                'Hadir ($checkInTimeStr - $checkOutTimeStr)';
-                                            statusColor = const Color(
-                                              0xFF10B981,
-                                            );
+                                          switch (status) {
+                                            case 'hadir':
+                                              statusLabel = 'Hadir';
+                                              statusColor = const Color(
+                                                0xFF10B981,
+                                              ); // Green
+                                              break;
+                                            case 'telat':
+                                              statusLabel = 'Terlambat';
+                                              statusColor = Colors.orange;
+                                              break;
+                                            case 'izin':
+                                              statusLabel = 'Izin';
+                                              statusColor = Colors.blue;
+                                              break;
+                                            case 'sakit':
+                                              statusLabel = 'Sakit';
+                                              statusColor = Colors.blue;
+                                              break;
+                                            case 'alpha':
+                                              statusLabel =
+                                                  'Tidak Hadir (Alpha)';
+                                              statusColor = const Color(
+                                                0xFFEF4444,
+                                              ); // Red
+                                              break;
+                                            default:
+                                              // Capitalize first letter
+                                              statusLabel = status.isEmpty
+                                                  ? 'Hadir'
+                                                  : '${status[0].toUpperCase()}${status.substring(1)}';
+                                              statusColor = Colors.grey;
                                           }
+
+                                          // Append time if relevant (for hadir/telat)
+                                          if (status == 'hadir' ||
+                                              status == 'telat') {
+                                            statusLabel +=
+                                                ' ($checkInTimeStr - $checkOutTimeStr)';
+                                          }
+
                                           actionButton =
                                               null; // No button for completed
                                         }
@@ -1409,16 +1427,5 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     final dayIndex = days.indexOf(dayName.toLowerCase());
     if (dayIndex == -1) return weekStart;
     return weekStart.add(Duration(days: dayIndex));
-  }
-
-  DateTime _parseTime(String timeStr, DateTime date) {
-    try {
-      final parts = timeStr.split(':');
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-      return DateTime(date.year, date.month, date.day, hour, minute);
-    } catch (e) {
-      return date;
-    }
   }
 }

@@ -40,9 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Login Berhasil!')));
             if (state.role == 'admin') {
               context.go('/admin-dashboard');
             } else {

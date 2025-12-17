@@ -9,46 +9,37 @@ abstract class AttendanceEvent extends Equatable {
 }
 
 class AttendanceCheckIn extends AttendanceEvent {
-  final String teacherId;
   final String scheduleId;
-  final double latitude;
-  final double longitude;
-  final File photo;
-  final String? notes;
+  final String teacherId;
+  final double lat;
+  final double lng;
+  final File file;
 
   const AttendanceCheckIn({
-    required this.teacherId,
     required this.scheduleId,
-    required this.latitude,
-    required this.longitude,
-    required this.photo,
-    this.notes,
+    required this.teacherId,
+    required this.lat,
+    required this.lng,
+    required this.file,
   });
 
   @override
-  List<Object?> get props => [
-    teacherId,
-    scheduleId,
-    latitude,
-    longitude,
-    photo,
-    notes,
-  ];
+  List<Object?> get props => [scheduleId, teacherId, lat, lng, file];
 }
 
 class AttendanceCheckOut extends AttendanceEvent {
   final String attendanceId;
-  final double latitude;
-  final double longitude;
+  final double lat;
+  final double lng;
 
   const AttendanceCheckOut({
     required this.attendanceId,
-    required this.latitude,
-    required this.longitude,
+    required this.lat,
+    required this.lng,
   });
 
   @override
-  List<Object> get props => [attendanceId, latitude, longitude];
+  List<Object?> get props => [attendanceId, lat, lng];
 }
 
 class AttendanceFetchHistory extends AttendanceEvent {

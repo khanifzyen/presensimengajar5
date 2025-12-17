@@ -29,6 +29,7 @@ class _TeachingPageState extends State<TeachingPage> {
   GoogleMapController? _mapController;
   Position? _currentPosition;
   final Set<Marker> _markers = {};
+  final Set<Circle> _circles = {}; // Added Circles
   bool _isLoadingLocation = true;
   String _locationStatus = 'Mencari lokasi...';
 
@@ -50,12 +51,23 @@ class _TeachingPageState extends State<TeachingPage> {
   }
 
   void _validateLocation() {
-    if (_currentPosition == null ||
-        _officeLat == null ||
-        _officeLng == null ||
-        _maxRadius == null) {
+    if (_officeLat == null || _officeLng == null || _maxRadius == null) {
+      print('DEBUG: Settings belum dimuat sepenuhnya.');
       return;
     }
+
+    if (_currentPosition == null) {
+      print('DEBUG: Lokasi GPS belum ditemukan.');
+      return;
+    }
+
+    // DEBUG LOGS
+    print('--- DEBUG LOCATION ---');
+    print('Settings Lat: $_officeLat');
+    print('Settings Lng: $_officeLng');
+    print('Settings Radius: $_maxRadius');
+    print('GPS Lat: ${_currentPosition!.latitude}');
+    print('GPS Lng: ${_currentPosition!.longitude}');
 
     final distance = Geolocator.distanceBetween(
       _currentPosition!.latitude,
@@ -63,10 +75,26 @@ class _TeachingPageState extends State<TeachingPage> {
       _officeLat!,
       _officeLng!,
     );
+    print('Calculated Distance: $distance meters');
+    print('----------------------');
 
     setState(() {
       _distanceToOffice = distance;
       _isWithinRange = distance <= _maxRadius!;
+
+      // Update Circles
+      _circles.clear();
+      _circles.add(
+        Circle(
+          circleId: const CircleId('coverageRadius'),
+          center: LatLng(_officeLat!, _officeLng!),
+          radius: _maxRadius!,
+          fillColor: Colors.green.withOpacity(0.2),
+          strokeColor: Colors.green,
+          strokeWidth: 2,
+        ),
+      );
+
       if (_isWithinRange) {
         _locationStatus =
             'Didalam Jangkauan (${distance.toStringAsFixed(0)}m / ${_maxRadius!.toStringAsFixed(0)}m)';
@@ -354,6 +382,7 @@ class _TeachingPageState extends State<TeachingPage> {
                             zoom: 14,
                           ),
                           markers: _markers,
+                          circles: _circles, // Add Circles
                           myLocationEnabled: true,
                           myLocationButtonEnabled: true,
                           onMapCreated: (controller) =>
@@ -361,7 +390,7 @@ class _TeachingPageState extends State<TeachingPage> {
                         ),
                         if (_isLoadingLocation)
                           Container(
-                            color: Colors.black.withValues(alpha: 0.3),
+                            color: Colors.black.withOpacity(0.3),
                             child: const Center(
                               child: CircularProgressIndicator(
                                 color: Colors.white,

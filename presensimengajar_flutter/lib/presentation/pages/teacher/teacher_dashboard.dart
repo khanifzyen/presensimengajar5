@@ -28,6 +28,8 @@ import 'history_page.dart';
 import 'permission_page.dart';
 import 'teaching_page.dart';
 
+import '../../../injection_container.dart' as di;
+
 class TeacherDashboard extends StatefulWidget {
   const TeacherDashboard({super.key});
 
@@ -215,7 +217,10 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
           index: _selectedIndex,
           children: [
             _buildHomeTab(),
-            const HistoryPage(),
+            BlocProvider(
+              create: (context) => di.sl<AttendanceBloc>(),
+              child: const HistoryPage(),
+            ),
             const PermissionPage(),
             const ProfilePage(),
           ],

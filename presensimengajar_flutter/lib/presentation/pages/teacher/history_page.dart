@@ -66,35 +66,42 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildAcademicPeriodWarning(),
-            Expanded(
-              child: BlocBuilder<AttendanceBloc, AttendanceState>(
-                builder: (context, state) {
-                  if (state is AttendanceLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is AttendanceHistoryLoaded) {
-                    return ListView(
-                      padding: const EdgeInsets.all(24),
-                      children: [
-                        _buildStatsGrid(state.history),
-                        const SizedBox(height: 24),
-                        _buildHistoryList(state.history),
-                      ],
-                    );
-                  } else if (state is AttendanceError) {
-                    return Center(child: Text('Error: ${state.message}'));
-                  }
-                  return const SizedBox.shrink();
-                },
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is UserLoaded) {
+          _fetchHistory();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              _buildAcademicPeriodWarning(),
+              Expanded(
+                child: BlocBuilder<AttendanceBloc, AttendanceState>(
+                  builder: (context, state) {
+                    if (state is AttendanceLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is AttendanceHistoryLoaded) {
+                      return ListView(
+                        padding: const EdgeInsets.all(24),
+                        children: [
+                          _buildStatsGrid(state.history),
+                          const SizedBox(height: 24),
+                          _buildHistoryList(state.history),
+                        ],
+                      );
+                    } else if (state is AttendanceError) {
+                      return Center(child: Text('Error: ${state.message}'));
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -378,7 +385,10 @@ class _HistoryPageState extends State<HistoryPage> {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(color: textColor.withValues(alpha: 0.8), fontSize: 14),
+            style: TextStyle(
+              color: textColor.withValues(alpha: 0.8),
+              fontSize: 14,
+            ),
           ),
         ],
       ),

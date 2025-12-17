@@ -16,7 +16,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
           .collection('settings')
           .getFullList(
             filter:
-                'key = "office_latitude" || key = "office_longitude" || key = "radius_meter"',
+                'key = "location_lat" || key = "location_lng" || key = "location_radius"',
           );
 
       final settings = result
@@ -26,11 +26,11 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final Map<String, dynamic> config = {};
 
       for (var setting in settings) {
-        if (setting.key == 'office_latitude') {
+        if (setting.key == 'location_lat') {
           config['office_latitude'] = double.tryParse(setting.value) ?? 0.0;
-        } else if (setting.key == 'office_longitude') {
+        } else if (setting.key == 'location_lng') {
           config['office_longitude'] = double.tryParse(setting.value) ?? 0.0;
-        } else if (setting.key == 'radius_meter') {
+        } else if (setting.key == 'location_radius') {
           config['radius_meter'] = double.tryParse(setting.value) ?? 0.0;
         }
       }

@@ -22,6 +22,7 @@ import '../../../data/models/academic_period_model.dart';
 import '../../blocs/academic_period/academic_period_bloc.dart';
 import '../../blocs/academic_period/academic_period_state.dart';
 import '../../blocs/academic_period/academic_period_event.dart';
+import '../../../data/models/schedule_model.dart';
 
 import 'profile_page.dart';
 import 'history_page.dart';
@@ -475,95 +476,164 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
             const SizedBox(height: 24),
 
             // Kelas Saat Ini Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Kelas Saat Ini',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E3A8A),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: const Border(
-                        left: BorderSide(color: Colors.green, width: 6),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Matematika Wajib',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Kelas XII IPA 1 • 07:00 - 08:30',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: () {},
-                            icon: const Icon(Icons.logout, color: Colors.red),
-                            label: const Text(
-                              'CHECK-OUT KELAS',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.red),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const Center(
-                          child: Text(
-                            'Sedang berlangsung...',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            BlocBuilder<ScheduleBloc, ScheduleState>(
+              builder: (context, scheduleState) {
+                if (scheduleState is ScheduleLoaded) {
+                  return BlocBuilder<AttendanceBloc, AttendanceState>(
+                    builder: (context, attendanceState) {
+                      ScheduleModel? activeSchedule;
+                      AttendanceModel? activeAttendance;
 
-            const SizedBox(height: 24),
+                      if (attendanceState is AttendanceScheduleMapLoaded) {
+                        // Find any scheduled class that is checked in but not checked out.
+                        // User requested "jadwal terakhir" (the last one).
+                        // We iterate through all schedules and keep updating activeSchedule if match found.
+                        for (final schedule in scheduleState.schedules) {
+                          final attendance =
+                              attendanceState.attendanceMap[schedule.id];
+                          if (attendance != null &&
+                              attendance.checkIn != null &&
+                              attendance.checkOut == null) {
+                            activeSchedule = schedule;
+                            activeAttendance = attendance;
+                            // Don't break, keep looking for later ones (assuming list is sorted by time)
+                            // If list is not sorted, we might need to compare times.
+                          }
+                        }
+                      }
+
+                      if (activeSchedule != null && activeAttendance != null) {
+                        final schedule = activeSchedule!;
+                        // Extract names safely
+                        final subjectName =
+                            schedule.subject?.getStringValue('name') ??
+                            'Mata Pelajaran';
+                        final className =
+                            schedule.classInfo?.getStringValue('name') ??
+                            'Kelas';
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Kelas Saat Ini',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1E3A8A),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: const Border(
+                                    left: BorderSide(
+                                      color: Colors.green,
+                                      width: 6,
+                                    ),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      subjectName,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '$className • ${schedule.startTime} - ${schedule.endTime}',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: OutlinedButton.icon(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TeachingPage(
+                                                    schedule: schedule,
+                                                    attendance:
+                                                        activeAttendance,
+                                                  ),
+                                            ),
+                                          );
+                                        },
+                                        icon: const Icon(
+                                          Icons.logout,
+                                          color: Colors.red,
+                                        ),
+                                        label: const Text(
+                                          'CHECK-OUT KELAS',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          side: const BorderSide(
+                                            color: Colors.red,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Center(
+                                      child: Text(
+                                        'Sedang berlangsung...',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
 
             // Jadwal Minggu Ini Section
             Padding(

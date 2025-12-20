@@ -36,4 +36,6 @@ abstract class AttendanceRepository {
     required DateTime weekStart,
     required DateTime weekEnd,
   });
+
+  Future<AttendanceModel?> getOngoingAttendance(String teacherId);
 }

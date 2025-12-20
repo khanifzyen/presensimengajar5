@@ -6,7 +6,7 @@ abstract class AttendanceState extends Equatable {
   const AttendanceState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class AttendanceInitial extends AttendanceState {}
@@ -52,14 +52,16 @@ class AttendanceStatisticsLoaded extends AttendanceState {
 class AttendanceDashboardLoaded extends AttendanceState {
   final WeeklyStatisticsModel statistics;
   final Map<String, AttendanceModel> attendanceMap;
+  final AttendanceModel? ongoingAttendance;
 
   const AttendanceDashboardLoaded({
     required this.statistics,
     required this.attendanceMap,
+    this.ongoingAttendance,
   });
 
   @override
-  List<Object> get props => [statistics, attendanceMap];
+  List<Object?> get props => [statistics, attendanceMap, ongoingAttendance];
 }
 
 class AttendanceSettingsLoaded extends AttendanceState {

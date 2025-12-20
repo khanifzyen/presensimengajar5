@@ -1,3 +1,4 @@
+import '../models/schedule_model.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class AttendanceModel {
@@ -14,6 +15,7 @@ class AttendanceModel {
   final String? locationAddress;
   final String? photo;
   final String? notes;
+  final ScheduleModel? schedule;
 
   AttendanceModel({
     required this.id,
@@ -29,9 +31,21 @@ class AttendanceModel {
     this.locationAddress,
     this.photo,
     this.notes,
+    this.schedule,
   });
 
   factory AttendanceModel.fromRecord(RecordModel record) {
+    ScheduleModel? scheduleData;
+    try {
+      // expand is Map<String, List<RecordModel>>
+      final schedules = record.expand['schedule_id'];
+      if (schedules != null && schedules.isNotEmpty) {
+        scheduleData = ScheduleModel.fromRecord(schedules.first);
+      }
+    } catch (e) {
+      // ignore expansion errors
+    }
+
     return AttendanceModel(
       id: record.id,
       teacherId: record.getStringValue('teacher_id'),
@@ -56,6 +70,7 @@ class AttendanceModel {
       locationAddress: record.getStringValue('location_address'),
       photo: record.getStringValue('photo'),
       notes: record.getStringValue('notes'),
+      schedule: scheduleData,
     );
   }
 

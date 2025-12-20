@@ -484,27 +484,15 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                       ScheduleModel? activeSchedule;
                       AttendanceModel? activeAttendance;
 
-                      if (attendanceState is AttendanceScheduleMapLoaded) {
-                        // Find any scheduled class that is checked in but not checked out.
-                        // User requested "jadwal terakhir" (the last one).
-                        // We iterate through all schedules and keep updating activeSchedule if match found.
-                        for (final schedule in scheduleState.schedules) {
-                          final attendance =
-                              attendanceState.attendanceMap[schedule.id];
-                          if (attendance != null &&
-                              attendance.checkIn != null &&
-                              attendance.checkOut == null) {
-                            activeSchedule = schedule;
-                            activeAttendance = attendance;
-                            // Don't break, keep looking for later ones (assuming list is sorted by time)
-                            // If list is not sorted, we might need to compare times.
-                          }
-                        }
+                      if (attendanceState is AttendanceDashboardLoaded) {
+                        activeAttendance = attendanceState.ongoingAttendance;
+                        activeSchedule = activeAttendance?.schedule;
                       }
 
                       if (activeSchedule != null && activeAttendance != null) {
-                        final schedule = activeSchedule!;
-                        // Extract names safely
+                        final schedule =
+                            activeSchedule!; // Local var for promotion
+                        // Extract names safely from the embedded schedule model or its expanded relations
                         final subjectName =
                             schedule.subject?.getStringValue('name') ??
                             'Mata Pelajaran';

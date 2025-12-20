@@ -187,16 +187,18 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
           event.weekStart,
           event.weekEnd,
         ),
+        attendanceRepository.getOngoingAttendance(event.teacherId),
       ]);
 
-      final statistics = results[0] as dynamic; // WeeklyStatisticsModel
-      final attendanceMap =
-          results[1] as Map<String, dynamic>; // Map<String, AttendanceModel>
+      final statistics = results[0] as WeeklyStatisticsModel;
+      final attendanceMap = results[1] as Map<String, AttendanceModel>;
+      final ongoingAttendance = results[2] as AttendanceModel?;
 
       emit(
         AttendanceDashboardLoaded(
           statistics: statistics,
-          attendanceMap: attendanceMap.cast<String, AttendanceModel>(),
+          attendanceMap: attendanceMap,
+          ongoingAttendance: ongoingAttendance,
         ),
       );
     } catch (e) {

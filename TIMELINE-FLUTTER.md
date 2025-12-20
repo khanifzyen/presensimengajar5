@@ -93,7 +93,7 @@ Based on `migration/src/schema.js`.
     - Check-in/Check-out.
 
 ### Phase 4: Permissions (Izin)
-- [/] **Permission Screen** (`izin.html` -> `permission_page.dart`)
+- [x] **Permission Screen** (`izin.html` -> `permission_page.dart`)
     - Tabs: Form & History.
     - Form: Date, Type, Reason, Attachment.
     - History List: Status (Pending, Approved, Rejected).

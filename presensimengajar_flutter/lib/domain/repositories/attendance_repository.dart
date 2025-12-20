@@ -37,5 +37,5 @@ abstract class AttendanceRepository {
     required DateTime weekEnd,
   });
 
-  Future<AttendanceModel?> getOngoingAttendance(String teacherId);
+  Future<List<AttendanceModel>> getOngoingAttendance(String teacherId);
 }

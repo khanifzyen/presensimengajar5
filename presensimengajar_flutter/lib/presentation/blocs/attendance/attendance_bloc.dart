@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/repositories/attendance_repository.dart';
 import '../../../domain/repositories/settings_repository.dart';
 import '../../../data/models/attendance_model.dart';
+import '../../../data/models/weekly_statistics_model.dart';
 
 import 'attendance_event.dart';
 import 'attendance_state.dart';
@@ -192,13 +193,13 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
 
       final statistics = results[0] as WeeklyStatisticsModel;
       final attendanceMap = results[1] as Map<String, AttendanceModel>;
-      final ongoingAttendance = results[2] as AttendanceModel?;
+      final ongoingAttendances = results[2] as List<AttendanceModel>;
 
       emit(
         AttendanceDashboardLoaded(
           statistics: statistics,
           attendanceMap: attendanceMap,
-          ongoingAttendance: ongoingAttendance,
+          ongoingAttendances: ongoingAttendances,
         ),
       );
     } catch (e) {

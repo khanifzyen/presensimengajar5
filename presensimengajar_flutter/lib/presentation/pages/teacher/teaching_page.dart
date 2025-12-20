@@ -39,7 +39,6 @@ class _TeachingPageState extends State<TeachingPage> {
   double? _officeLng;
   double? _maxRadius; // in meters
   bool _isWithinRange = false;
-  double _distanceToOffice = 0;
 
   // Camera
   File? _imageFile;
@@ -80,7 +79,6 @@ class _TeachingPageState extends State<TeachingPage> {
     print('----------------------');
 
     setState(() {
-      _distanceToOffice = distance;
       _isWithinRange = distance <= _maxRadius!;
 
       // Update Circles

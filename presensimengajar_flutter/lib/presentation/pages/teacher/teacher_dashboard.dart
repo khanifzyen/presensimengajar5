@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -241,15 +240,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Navigate to Scan/Attendance
-        },
-        backgroundColor: Theme.of(context).primaryColor,
-        shape: const CircleBorder(),
-        child: const Icon(FontAwesomeIcons.camera, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -481,141 +471,348 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                 if (scheduleState is ScheduleLoaded) {
                   return BlocBuilder<AttendanceBloc, AttendanceState>(
                     builder: (context, attendanceState) {
-                      ScheduleModel? activeSchedule;
-                      AttendanceModel? activeAttendance;
+                      List<AttendanceModel> ongoingAttendances = [];
 
                       if (attendanceState is AttendanceDashboardLoaded) {
-                        activeAttendance = attendanceState.ongoingAttendance;
-                        activeSchedule = activeAttendance?.schedule;
+                        ongoingAttendances = attendanceState.ongoingAttendances;
                       }
 
-                      if (activeSchedule != null && activeAttendance != null) {
-                        final schedule =
-                            activeSchedule!; // Local var for promotion
-                        // Extract names safely from the embedded schedule model or its expanded relations
-                        final subjectName =
-                            schedule.subject?.getStringValue('name') ??
-                            'Mata Pelajaran';
-                        final className =
-                            schedule.classInfo?.getStringValue('name') ??
-                            'Kelas';
+                      if (ongoingAttendances.isEmpty) {
+                        // Priority 2: Check for Today's Schedule (Check-In)
+                        if (scheduleState is ScheduleLoaded) {
+                          final now = DateTime.now();
+                          final todayName = DateFormat(
+                            'EEEE',
+                            'id_ID',
+                          ).format(now).toLowerCase();
+                          final todaySchedules = scheduleState.schedules
+                              .where((s) => s.day.toLowerCase() == todayName)
+                              .toList();
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Kelas Saat Ini',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1E3A8A),
-                                ),
+                          // Safely access attendanceMap
+                          Map<String, dynamic> attendanceMap = {};
+                          if (attendanceState is AttendanceDashboardLoaded) {
+                            attendanceMap = attendanceState.attendanceMap;
+                          } else if (attendanceState
+                              is AttendanceScheduleMapLoaded) {
+                            attendanceMap = attendanceState.attendanceMap;
+                          }
+
+                          // Find first schedule that is NOT checked in
+                          final upcomingSchedule = todaySchedules.firstWhere(
+                            (s) => !attendanceMap.containsKey(s.id),
+                            orElse: () => ScheduleModel(
+                              id: '',
+                              day: '',
+                              startTime: '',
+                              endTime: '',
+                              subjectId: '',
+                              classId: '',
+                              periodId: '',
+                              teacherId: '',
+                              room: '',
+                            ), // Dummy
+                          );
+
+                          if (upcomingSchedule.id.isNotEmpty) {
+                            final subjectName =
+                                upcomingSchedule.subject?.getStringValue(
+                                  'name',
+                                ) ??
+                                'Mata Pelajaran';
+                            final className =
+                                upcomingSchedule.classInfo?.getStringValue(
+                                  'name',
+                                ) ??
+                                'Kelas';
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
                               ),
-                              const SizedBox(height: 16),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: const Border(
-                                    left: BorderSide(
-                                      color: Colors.green,
-                                      width: 6,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Kelas Saat Ini',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF1E3A8A),
                                     ),
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      subjectName,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      '$className • ${schedule.startTime} - ${schedule.endTime}',
-                                      style: TextStyle(
-                                        color: Colors.grey[600],
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: OutlinedButton.icon(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  TeachingPage(
-                                                    schedule: schedule,
-                                                    attendance:
-                                                        activeAttendance,
-                                                  ),
-                                            ),
-                                          );
-                                        },
-                                        icon: const Icon(
-                                          Icons.logout,
-                                          color: Colors.red,
+                                  const SizedBox(height: 16),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: const Border(
+                                        left: BorderSide(
+                                          color: Color(
+                                            0xFF10B981,
+                                          ), // Green for Check-In
+                                          width: 6,
                                         ),
-                                        label: const Text(
-                                          'CHECK-OUT KELAS',
-                                          style: TextStyle(
-                                            color: Colors.red,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.05,
+                                          ),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          subjectName,
+                                          style: const TextStyle(
+                                            fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(
-                                            color: Colors.red,
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          '$className • ${upcomingSchedule.startTime} - ${upcomingSchedule.endTime}',
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontSize: 14,
                                           ),
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: OutlinedButton.icon(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TeachingPage(
+                                                        schedule:
+                                                            upcomingSchedule,
+                                                        attendance:
+                                                            null, // Null means Check-In mode
+                                                      ),
+                                                ),
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.login,
+                                              color: Color(0xFF10B981),
+                                            ),
+                                            label: const Text(
+                                              'CHECK-IN KELAS',
+                                              style: TextStyle(
+                                                color: Color(0xFF10B981),
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            style: OutlinedButton.styleFrom(
+                                              side: const BorderSide(
+                                                color: Color(0xFF10B981),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                  ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
+                                        const SizedBox(height: 12),
+                                        const Center(
+                                          child: Text(
+                                            'Siap untuk dimulai...',
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 12),
-                                    const Center(
+                                  ),
+                                  const SizedBox(height: 24),
+                                ],
+                              ),
+                            );
+                          }
+                        }
+
+                        return const SizedBox.shrink();
+                      }
+
+                      final activeAttendance = ongoingAttendances.first;
+                      final schedule = activeAttendance.schedule;
+
+                      if (schedule == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final subjectName =
+                          schedule.subject?.getStringValue('name') ??
+                          'Mata Pelajaran';
+                      final className =
+                          schedule.classInfo?.getStringValue('name') ?? 'Kelas';
+
+                      final remaining = ongoingAttendances.length - 1;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Kelas Saat Ini',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1E3A8A),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Warning Banner
+                            if (ongoingAttendances.length > 1)
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Colors.orange.shade200,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: Colors.orange.shade800,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
                                       child: Text(
-                                        'Sedang berlangsung...',
+                                        'Anda belum checkout di ${ongoingAttendances.length} mapel. Selesaikan satu per satu.',
                                         style: TextStyle(
-                                          color: Colors.green,
-                                          fontStyle: FontStyle.italic,
+                                          color: Colors.orange.shade900,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 24),
-                            ],
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
+
+                            // Active Class Card
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: const Border(
+                                  left: BorderSide(
+                                    color: Colors.green,
+                                    width: 6,
+                                  ),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    subjectName,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '$className • ${schedule.startTime} - ${schedule.endTime}',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => TeachingPage(
+                                              schedule: schedule,
+                                              attendance: activeAttendance,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(
+                                        Icons.logout,
+                                        color: Colors.red,
+                                      ),
+                                      label: const Text(
+                                        'CHECK-OUT KELAS',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                          color: Colors.red,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Center(
+                                    child: Text(
+                                      remaining > 0
+                                          ? 'Selesaikan ini untuk melihat $remaining jadwal lainnya...'
+                                          : 'Sedang berlangsung...',
+                                      style: const TextStyle(
+                                        color: Colors.green,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                      );
                     },
                   );
                 }

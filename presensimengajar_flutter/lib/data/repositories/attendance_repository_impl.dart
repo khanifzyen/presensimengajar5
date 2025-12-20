@@ -85,7 +85,11 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
 
     final records = await pb
         .collection(AppCollections.attendances)
-        .getFullList(filter: filter, sort: '-date');
+        .getFullList(
+          filter: filter,
+          sort: '-date',
+          expand: 'schedule_id,schedule_id.subject_id,schedule_id.class_id',
+        );
 
     return records.map((r) => AttendanceModel.fromRecord(r)).toList();
   }
@@ -295,24 +299,20 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   }
 
   @override
-  Future<AttendanceModel?> getOngoingAttendance(String teacherId) async {
+  Future<List<AttendanceModel>> getOngoingAttendance(String teacherId) async {
     try {
       final records = await pb
           .collection(AppCollections.attendances)
-          .getList(
-            filter: 'teacher_id="$teacherId" && check_out=""',
+          .getFullList(
+            filter: 'teacher_id="$teacherId" && check_out="" && check_in!=""',
             sort: '-check_in',
-            perPage: 1,
             expand: 'schedule_id,schedule_id.subject_id,schedule_id.class_id',
           );
 
-      if (records.items.isNotEmpty) {
-        return AttendanceModel.fromRecord(records.items.first);
-      }
-      return null;
+      return records.map((r) => AttendanceModel.fromRecord(r)).toList();
     } catch (e) {
       print('Error fetching ongoing attendance: $e');
-      return null;
+      return [];
     }
   }
 }

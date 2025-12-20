@@ -434,6 +434,11 @@ class _HistoryPageState extends State<HistoryPage> {
           statusText = 'Alpha';
         }
 
+        final schedule = attendance.schedule;
+        final subjectName =
+            schedule?.subject?.getStringValue('name') ?? 'Mata Pelajaran';
+        final className = schedule?.classInfo?.getStringValue('name') ?? '-';
+
         final date = DateTime.parse(attendance.date);
 
         return Container(
@@ -484,16 +489,27 @@ class _HistoryPageState extends State<HistoryPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      timeText,
+                      '$subjectName - $className',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      timeText,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       statusText,
-                      style: TextStyle(color: statusColor, fontSize: 14),
+                      style: TextStyle(
+                        color: statusColor,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),

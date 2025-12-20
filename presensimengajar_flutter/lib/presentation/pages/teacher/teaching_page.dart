@@ -369,6 +369,19 @@ class _TeachingPageState extends State<TeachingPage> {
               title: const Text('Konfirmasi Presensi'),
               backgroundColor: Theme.of(context).primaryColor,
               foregroundColor: Colors.white,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () {
+                    // Update state to show loading immediately
+                    setState(() {
+                      _isLoadingLocation = true;
+                      _locationStatus = 'Memperbarui lokasi...';
+                    });
+                    _determinePosition();
+                  },
+                ),
+              ],
             ),
             body: SingleChildScrollView(
               child: Column(

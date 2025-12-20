@@ -17,8 +17,9 @@ import '../../../data/models/attendance_model.dart';
 
 class TeachingPage extends StatefulWidget {
   final ScheduleModel schedule;
+  final AttendanceModel? attendance;
 
-  const TeachingPage({super.key, required this.schedule});
+  const TeachingPage({super.key, required this.schedule, this.attendance});
 
   @override
   State<TeachingPage> createState() => _TeachingPageState();
@@ -334,19 +335,25 @@ class _TeachingPageState extends State<TeachingPage> {
       },
       child: BlocBuilder<AttendanceBloc, AttendanceState>(
         builder: (context, state) {
-          // ... (keep existing Attendance logic)
-          AttendanceModel? attendance;
-          bool isCheckedIn = false;
+          // Initialize with passed attendance (if any)
+          AttendanceModel? attendance = widget.attendance;
+          bool isCheckedIn =
+              attendance?.checkIn != null && attendance?.checkOut == null;
 
           if (state is AttendanceScheduleMapLoaded) {
-            attendance = state.attendanceMap[widget.schedule.id];
-            if (attendance?.checkIn != null && attendance?.checkOut == null) {
-              isCheckedIn = true;
+            final mapAttendance = state.attendanceMap[widget.schedule.id];
+            if (mapAttendance != null) {
+              attendance = mapAttendance;
+              isCheckedIn =
+                  attendance?.checkIn != null && attendance?.checkOut == null;
             }
           } else if (state is AttendanceSuccess) {
             if (state.attendance.scheduleId == widget.schedule.id) {
               attendance = state.attendance;
-              isCheckedIn = attendance.checkOut == null;
+              // If success implies check-in success, then we are checked in.
+              // If check-out success, isCheckedIn becomes false.
+              // AttendanceSuccess usually returns the updated record.
+              isCheckedIn = state.attendance.checkOut == null;
             }
           }
           // Preserve SettingsLoaded state? It might be cleared if bloc emits something else?

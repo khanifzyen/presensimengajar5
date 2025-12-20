@@ -964,6 +964,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                   builder: (context) =>
                                                       TeachingPage(
                                                         schedule: schedule,
+                                                        attendance: attendance,
                                                       ),
                                                 ),
                                               );

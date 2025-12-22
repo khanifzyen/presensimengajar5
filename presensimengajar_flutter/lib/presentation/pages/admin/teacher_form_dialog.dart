@@ -64,6 +64,10 @@ class _TeacherFormDialogState extends State<TeacherFormDialog> {
       _addressController.text = t.address;
       _selectedSubject =
           t.subjectId; // storing name in subjectId for now based on lofi?
+      // Fix: If subjectId (likely an ID from DB) is not in our hardcoded list, add it to prevent crash.
+      if (_selectedSubject != null && !_subjects.contains(_selectedSubject)) {
+        _subjects.add(_selectedSubject!);
+      }
       // Model has subjectId. Repo create uses subjectId.
       // If subjectId is name in my implementation (simple string), fine.
       _selectedStatus = t.status;

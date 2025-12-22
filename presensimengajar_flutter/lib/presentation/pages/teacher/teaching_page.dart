@@ -249,6 +249,8 @@ class _TeachingPageState extends State<TeachingPage> {
             lat: _currentPosition!.latitude,
             lng: _currentPosition!.longitude,
             file: _imageFile!,
+            scheduleStartTime: widget.schedule.startTime,
+            scheduleEndTime: widget.schedule.endTime,
           ),
         );
       }
@@ -261,6 +263,7 @@ class _TeachingPageState extends State<TeachingPage> {
           attendanceId: attendanceId,
           lat: _currentPosition!.latitude,
           lng: _currentPosition!.longitude,
+          checkInTime: DateTime.parse(widget.attendance!.checkIn!).toLocal(),
         ),
       );
     }
@@ -274,6 +277,8 @@ class _TeachingPageState extends State<TeachingPage> {
       final XFile? xFile = await picker.pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.front,
+        maxWidth: 600,
+        imageQuality: 50,
       );
 
       if (xFile != null) {
@@ -559,7 +564,7 @@ class _TeachingPageState extends State<TeachingPage> {
                                 ),
                                 if (attendance?.checkIn != null)
                                   Text(
-                                    'Masuk: ${DateFormat('HH:mm').format(DateTime.parse(attendance!.checkIn!))}',
+                                    'Masuk: ${DateFormat('HH:mm').format(DateTime.parse(attendance!.checkIn!).toLocal())}',
                                     style: const TextStyle(fontSize: 12),
                                   ),
                               ],

@@ -16,6 +16,8 @@ class AttendanceCheckIn extends AttendanceEvent {
   final double lat;
   final double lng;
   final File file;
+  final String scheduleStartTime;
+  final String scheduleEndTime;
 
   const AttendanceCheckIn({
     required this.scheduleId,
@@ -23,25 +25,37 @@ class AttendanceCheckIn extends AttendanceEvent {
     required this.lat,
     required this.lng,
     required this.file,
+    required this.scheduleStartTime,
+    required this.scheduleEndTime,
   });
 
   @override
-  List<Object?> get props => [scheduleId, teacherId, lat, lng, file];
+  List<Object?> get props => [
+    scheduleId,
+    teacherId,
+    lat,
+    lng,
+    file,
+    scheduleStartTime,
+    scheduleEndTime,
+  ];
 }
 
 class AttendanceCheckOut extends AttendanceEvent {
   final String attendanceId;
   final double lat;
   final double lng;
+  final DateTime checkInTime;
 
   const AttendanceCheckOut({
     required this.attendanceId,
     required this.lat,
     required this.lng,
+    required this.checkInTime,
   });
 
   @override
-  List<Object?> get props => [attendanceId, lat, lng];
+  List<Object?> get props => [attendanceId, lat, lng, checkInTime];
 }
 
 class AttendanceFetchHistory extends AttendanceEvent {

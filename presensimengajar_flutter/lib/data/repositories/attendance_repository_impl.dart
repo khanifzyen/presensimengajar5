@@ -21,14 +21,15 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
     required double longitude,
     required File photo,
     String? notes,
+    String? status,
   }) async {
     final body = {
       'teacher_id': teacherId,
       'schedule_id': scheduleId,
       'date': DateTime.now().toIso8601String().split('T')[0], // YYYY-MM-DD
       'type': 'class', // Default to class for now, logic might change
-      'check_in': DateTime.now().toIso8601String(),
-      'status': 'hadir', // Default, logic should determine this
+      'check_in': DateTime.now().toUtc().toIso8601String(),
+      'status': status ?? 'hadir',
       'latitude': latitude,
       'longitude': longitude,
       'notes': notes ?? '',
@@ -57,7 +58,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
     required double longitude,
   }) async {
     final body = {
-      'check_out': DateTime.now().toIso8601String(),
+      'check_out': DateTime.now().toUtc().toIso8601String(),
       // potentially update lat/long out if schema supported it, but it only has one set.
       // Assuming lat/long is for check-in location.
     };
@@ -168,17 +169,33 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
         'minggu',
       ];
 
+      int totalScheduled = 0;
+      final now = DateTime.now();
+
+      // Normalize now to start of day for fair comparison if weekStart is start of day
+      // But actually we just want to know if date > today.
+      // Let's use string comparison YYYY-MM-DD to check "is Future Day".
+      final todayStr = now.toIso8601String().split('T')[0];
+
       for (int i = 0; i < 7; i++) {
         final date = weekStart.add(Duration(days: i));
+        final dateStr = date.toIso8601String().split('T')[0];
+
+        // If date is in future (after today), skip
+        // Standard String comparison works for ISO dates (YYYY-MM-DD)
+        if (dateStr.compareTo(todayStr) > 0) {
+          continue;
+        }
+
         if (date.weekday >= 1 && date.weekday <= 7) {
-          weekDays.add(dayNames[date.weekday - 1]);
+          final dayName = dayNames[date.weekday - 1];
+          // Count schedules for this day
+          final dailySchedules = schedules
+              .where((s) => s.day.toLowerCase() == dayName)
+              .length;
+          totalScheduled += dailySchedules;
         }
       }
-
-      // Step 3: Count total scheduled classes for this week
-      final totalScheduled = schedules
-          .where((s) => weekDays.contains(s.day.toLowerCase()))
-          .length;
 
       // Step 4: Get all attendances for this week
       final startDateStr = weekStart.toIso8601String().split('T')[0];
@@ -286,11 +303,60 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
         }
       }
 
+      // Calculate Alpha
+      // Alpha = Passed Scheduled - Passed Attended - Passed Leaves
+      // Note: totalScheduled logic was already updated to count only "Past/Current" schedules.
+      // Current classesAttended only counts attendances that happened (which are by definition past/current).
+      // But leaveRequests might count FUTURE leaves.
+      // So we need "passedLeaveRequests" for Alpha calculation.
+
+      // Recalculate passedLeaveRequests for Alpha accuracy
+      int passedLeaveAffectedClasses = 0;
+
+      for (final leaveRecord in leaveRecords) {
+        final leave = LeaveRequestModel.fromRecord(leaveRecord);
+        final leaveStart = DateTime.tryParse(leave.startDate);
+        final leaveEnd = DateTime.tryParse(leave.endDate);
+
+        if (leaveStart == null || leaveEnd == null) continue;
+
+        for (final schedule in schedules) {
+          // Basic Check: Is this schedule's day relevant?
+          if (!weekDays.contains(schedule.day.toLowerCase()))
+            continue; // weekDays contains all 7 days list
+
+          for (int i = 0; i < 7; i++) {
+            final date = weekStart.add(Duration(days: i));
+            final dateStr = date.toIso8601String().split('T')[0];
+            final dayName = dayNames[date.weekday - 1];
+
+            // Check if this date is "Passed or Today"
+            bool isPassed = dateStr.compareTo(todayStr) <= 0;
+
+            if (dayName == schedule.day.toLowerCase() &&
+                !date.isBefore(leaveStart) &&
+                !date.isAfter(leaveEnd)) {
+              // This is a leave day.
+              // If it's a passed day, count it towards passedLeaveRequests
+              if (isPassed) {
+                passedLeaveAffectedClasses++;
+              }
+            }
+          }
+        }
+      }
+
+      int alphaCount =
+          totalScheduled - classesAttended - passedLeaveAffectedClasses;
+      if (alphaCount < 0) alphaCount = 0;
+
       return WeeklyStatisticsModel(
         totalScheduled: totalScheduled,
         classesAttended: classesAttended,
         lateArrivals: lateArrivals,
-        leaveRequests: leaveAffectedClasses,
+        leaveRequests:
+            leaveAffectedClasses, // Show TOTAL (Future incl) for "Izin" box
+        alpha: alphaCount, // Show only Passed Alpha for "Alpha" box
       );
     } catch (e) {
       // Return empty statistics on error

@@ -49,7 +49,55 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
   ) async {
     emit(AttendanceLoading());
     try {
-      // 1. Check Developer Mode (Android)
+      // 0. Fetch Settings for Tolerance
+      int toleranceMinutes = 15; // Default
+      if (settingsRepository != null) {
+        final settings = await settingsRepository!.getAttendanceSettings();
+        if (settings.containsKey('tolerance_minutes')) {
+          toleranceMinutes = settings['tolerance_minutes'] as int;
+        }
+      }
+
+      final now = DateTime.now();
+
+      // 1. Time Window Validation
+      String attendanceStatus = 'hadir';
+      final startTimeParts = event.scheduleStartTime.split(':');
+      final endTimeParts = event.scheduleEndTime.split(':');
+
+      if (startTimeParts.length == 2 && endTimeParts.length == 2) {
+        final startDateTime = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          int.parse(startTimeParts[0]),
+          int.parse(startTimeParts[1]),
+        );
+
+        final earliestCheckIn = startDateTime.subtract(
+          Duration(minutes: toleranceMinutes),
+        );
+
+        // Late threshold: Start + tolerance
+        final lateThreshold = startDateTime.add(
+          Duration(minutes: toleranceMinutes),
+        );
+
+        if (now.isBefore(earliestCheckIn)) {
+          emit(
+            AttendanceError(
+              'Belum waktunya check-in. Harap tunggu hingga ${toleranceMinutes} menit sebelum jadwal dimulai.',
+            ),
+          );
+          return;
+        }
+
+        if (now.isAfter(lateThreshold)) {
+          attendanceStatus = 'telat';
+        }
+      }
+
+      // 2. Check Developer Mode (Android)
       if (Platform.isAndroid) {
         bool isDevMode = await SafeDevice.isDevelopmentModeEnable;
         if (isDevMode) {
@@ -62,19 +110,28 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         }
       }
 
-      // 2. Check Active Session
-      // Fetch today's history locally first or from API
-      // Since we don't have a reliable local state of all schedules, we ask the server/repo
-      final today = DateTime.now();
+      // 3. Get History for Duplication & Active Session Check
       final history = await attendanceRepository.getAttendanceHistory(
         event.teacherId,
-        startDate: DateTime(today.year, today.month, today.day),
-        endDate: DateTime(today.year, today.month, today.day, 23, 59, 59),
+        startDate: DateTime(now.year, now.month, now.day),
+        endDate: DateTime(now.year, now.month, now.day, 23, 59, 59),
       );
 
-      // Check if any attendance has NO check-out (active)
-      // Limit this check to check-ins that are NOT the current one (obviously we haven't checked in yet)
-      // But if we have an active session for Schedule A, we can't check in to Schedule B.
+      // Check Duplicate for THIS schedule
+      final isDuplicate = history.any(
+        (a) => a.scheduleId == event.scheduleId && a.checkIn != null,
+      );
+      if (isDuplicate) {
+        emit(
+          const AttendanceError(
+            'Anda sudah pernah check-in untuk jadwal ini hari ini.',
+          ),
+        );
+        return;
+      }
+
+      // Check Active Session in OTHER schedules
+      // If I have an active session (no checkout), I cannot start another.
       final hasActiveSession = history.any((a) => a.checkOut == null);
       if (hasActiveSession) {
         emit(
@@ -85,16 +142,17 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         return;
       }
 
-      // 3. Resize Image
+      // 4. Resize Image
       final compressedFile = await FileUtils.compressImage(event.file);
 
-      // 4. Call Repository
+      // 5. Call Repository
       final attendance = await attendanceRepository.checkIn(
         teacherId: event.teacherId,
         scheduleId: event.scheduleId,
         latitude: event.lat,
         longitude: event.lng,
         photo: compressedFile,
+        status: attendanceStatus,
       );
       emit(AttendanceSuccess(attendance));
     } catch (e) {
@@ -106,6 +164,18 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     AttendanceCheckOut event,
     Emitter<AttendanceState> emit,
   ) async {
+    final now = DateTime.now();
+    final difference = now.difference(event.checkInTime).inMinutes;
+
+    if (difference < 10) {
+      emit(
+        AttendanceError(
+          'Anda baru bisa melakukan Check-Out setelah 10 menit check-in. Sisa waktu: ${10 - difference} menit.',
+        ),
+      );
+      return;
+    }
+
     emit(AttendanceLoading());
     try {
       final attendance = await attendanceRepository.checkOut(

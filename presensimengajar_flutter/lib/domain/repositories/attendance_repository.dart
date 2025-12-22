@@ -10,6 +10,7 @@ abstract class AttendanceRepository {
     required double longitude,
     required File photo,
     String? notes,
+    String? status,
   });
 
   Future<AttendanceModel> checkOut({

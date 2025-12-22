@@ -16,7 +16,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
           .collection('settings')
           .getFullList(
             filter:
-                'key = "location_lat" || key = "location_lng" || key = "location_radius"',
+                'key = "location_lat" || key = "location_lng" || key = "location_radius" || key = "tolerance_minutes"',
           );
 
       final settings = result
@@ -32,6 +32,8 @@ class SettingsRepositoryImpl implements SettingsRepository {
           config['office_longitude'] = double.tryParse(setting.value) ?? 0.0;
         } else if (setting.key == 'location_radius') {
           config['radius_meter'] = double.tryParse(setting.value) ?? 0.0;
+        } else if (setting.key == 'tolerance_minutes') {
+          config['tolerance_minutes'] = int.tryParse(setting.value) ?? 15;
         }
       }
 

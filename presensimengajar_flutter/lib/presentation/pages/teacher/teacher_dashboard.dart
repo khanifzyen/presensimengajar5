@@ -589,8 +589,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                         SizedBox(
                                           width: double.infinity,
                                           child: OutlinedButton.icon(
-                                            onPressed: () {
-                                              Navigator.push(
+                                            onPressed: () async {
+                                              await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -602,6 +602,28 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                       ),
                                                 ),
                                               );
+                                              if (context.mounted) {
+                                                final userState = context
+                                                    .read<UserBloc>()
+                                                    .state;
+                                                if (userState is UserLoaded) {
+                                                  final scheduleIds =
+                                                      scheduleState.schedules
+                                                          .map((s) => s.id)
+                                                          .toList();
+
+                                                  context.read<AttendanceBloc>().add(
+                                                    AttendanceFetchDashboardData(
+                                                      teacherId:
+                                                          userState.teacher.id,
+                                                      scheduleIds: scheduleIds,
+                                                      weekStart:
+                                                          _selectedWeekStart,
+                                                      weekEnd: _selectedWeekEnd,
+                                                    ),
+                                                  );
+                                                }
+                                              }
                                             },
                                             icon: const Icon(
                                               Icons.login,
@@ -803,8 +825,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                   SizedBox(
                                     width: double.infinity,
                                     child: OutlinedButton.icon(
-                                      onPressed: () {
-                                        Navigator.push(
+                                      onPressed: () async {
+                                        await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => TeachingPage(
@@ -813,6 +835,18 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                             ),
                                           ),
                                         );
+                                        if (context.mounted) {
+                                          final userState = context
+                                              .read<UserBloc>()
+                                              .state;
+                                          if (userState is UserLoaded) {
+                                            context.read<ScheduleBloc>().add(
+                                              ScheduleFetch(
+                                                teacherId: userState.teacher.id,
+                                              ),
+                                            );
+                                          }
+                                        }
                                       },
                                       icon: const Icon(
                                         Icons.logout,
@@ -1212,8 +1246,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                           statusLabel = 'Menunggu';
                                           statusColor = Colors.grey;
                                           actionButton = ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.push(
+                                            onPressed: () async {
+                                              await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -1222,6 +1256,22 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                       ),
                                                 ),
                                               );
+                                              if (context.mounted) {
+                                                final userState = context
+                                                    .read<UserBloc>()
+                                                    .state;
+                                                if (userState is UserLoaded) {
+                                                  context
+                                                      .read<ScheduleBloc>()
+                                                      .add(
+                                                        ScheduleFetch(
+                                                          teacherId: userState
+                                                              .teacher
+                                                              .id,
+                                                        ),
+                                                      );
+                                                }
+                                              }
                                             },
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: const Color(
@@ -1258,8 +1308,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                               : 'Sedang Mengajar';
                                           statusColor = Colors.orange;
                                           actionButton = ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.push(
+                                            onPressed: () async {
+                                              await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -1269,6 +1319,22 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                       ),
                                                 ),
                                               );
+                                              if (context.mounted) {
+                                                final userState = context
+                                                    .read<UserBloc>()
+                                                    .state;
+                                                if (userState is UserLoaded) {
+                                                  context
+                                                      .read<ScheduleBloc>()
+                                                      .add(
+                                                        ScheduleFetch(
+                                                          teacherId: userState
+                                                              .teacher
+                                                              .id,
+                                                        ),
+                                                      );
+                                                }
+                                              }
                                             },
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.red,
@@ -1299,7 +1365,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                 .format(
                                                   DateTime.parse(
                                                     attendance.checkIn!,
-                                                  ),
+                                                  ).toLocal(),
                                                 );
                                           }
 
@@ -1308,7 +1374,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                 DateFormat('HH:mm').format(
                                                   DateTime.parse(
                                                     attendance.checkOut!,
-                                                  ),
+                                                  ).toLocal(),
                                                 );
                                           }
 
@@ -1462,7 +1528,12 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                       ],
                                                     ),
                                                     const SizedBox(height: 8),
-                                                    Row(
+                                                    Wrap(
+                                                      crossAxisAlignment:
+                                                          WrapCrossAlignment
+                                                              .center,
+                                                      spacing: 8,
+                                                      runSpacing: 4,
                                                       children: [
                                                         Container(
                                                           padding:
@@ -1493,12 +1564,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                           ),
                                                         ),
                                                         if (actionButton !=
-                                                            null) ...[
-                                                          const SizedBox(
-                                                            width: 8,
-                                                          ),
+                                                            null)
                                                           actionButton,
-                                                        ],
                                                       ],
                                                     ),
                                                   ],

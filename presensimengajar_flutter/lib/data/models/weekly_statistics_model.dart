@@ -4,18 +4,15 @@ class WeeklyStatisticsModel {
   final int lateArrivals; // Terlambat (check-in > start time + grace)
   final int leaveRequests; // Izin (approved leave requests)
 
+  final int alpha; // Calculated Alpha based on passed days
+
   WeeklyStatisticsModel({
     required this.totalScheduled,
     required this.classesAttended,
     required this.lateArrivals,
     required this.leaveRequests,
+    required this.alpha,
   });
-
-  // Calculated field: Alpha = Total Scheduled - (Attended + Leave)
-  int get alpha {
-    final absences = totalScheduled - (classesAttended + leaveRequests);
-    return absences < 0 ? 0 : absences; // Ensure non-negative
-  }
 
   // For debugging
   @override
@@ -31,6 +28,7 @@ class WeeklyStatisticsModel {
       classesAttended: 0,
       lateArrivals: 0,
       leaveRequests: 0,
+      alpha: 0,
     );
   }
 }

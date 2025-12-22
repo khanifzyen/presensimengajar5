@@ -7,6 +7,7 @@ import '../../widgets/stat_card_widget.dart';
 import '../../widgets/teacher_monitoring_item.dart';
 import '../../../core/theme.dart';
 import '../../../data/models/teacher_model.dart';
+import 'teacher_management_page.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -54,85 +55,94 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      body: SafeArea(
-        child: BlocBuilder<AdminBloc, AdminState>(
-          builder: (context, state) {
-            if (state is AdminLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (state is AdminError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(state.message),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<AdminBloc>().add(const AdminRefreshData());
-                      },
-                      child: const Text('Coba Lagi'),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            if (state is AdminLoaded) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<AdminBloc>().add(const AdminRefreshData());
-                  // Wait a bit for the refresh to complete
-                  await Future.delayed(const Duration(milliseconds: 500));
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header
-                      _buildHeader(context),
-
-                      const SizedBox(height: 20),
-
-                      // Attendance Statistics Section
-                      _buildAttendanceSection(context, state),
-
-                      const SizedBox(height: 20),
-
-                      // Teacher Category Statistics
-                      _buildCategorySection(context, state),
-
-                      const SizedBox(height: 20),
-
-                      // Leave Request Alert
-                      _buildLeaveRequestAlert(context, state),
-
-                      const SizedBox(height: 20),
-
-                      // Real-time Monitoring
-                      _buildMonitoringSection(context, state),
-
-                      const SizedBox(height: 80), // Bottom padding for nav bar
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            // Initial state
-            return const Center(child: CircularProgressIndicator());
-          },
-        ),
-      ),
+      body: SafeArea(child: _buildBody()),
       bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildDashboardView();
+      case 1:
+        return const TeacherManagementPage();
+      default:
+        return const Center(child: Text('Coming Soon'));
+    }
+  }
+
+  Widget _buildDashboardView() {
+    return BlocBuilder<AdminBloc, AdminState>(
+      builder: (context, state) {
+        if (state is AdminLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is AdminError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text(state.message),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<AdminBloc>().add(const AdminRefreshData());
+                  },
+                  child: const Text('Coba Lagi'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (state is AdminLoaded) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<AdminBloc>().add(const AdminRefreshData());
+              // Wait a bit for the refresh to complete
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  _buildHeader(context),
+
+                  const SizedBox(height: 20),
+
+                  // Attendance Statistics Section
+                  _buildAttendanceSection(context, state),
+
+                  const SizedBox(height: 20),
+
+                  // Teacher Category Statistics
+                  _buildCategorySection(context, state),
+
+                  const SizedBox(height: 20),
+
+                  // Leave Request Alert
+                  _buildLeaveRequestAlert(context, state),
+
+                  const SizedBox(height: 20),
+
+                  // Real-time Monitoring
+                  _buildMonitoringSection(context, state),
+
+                  const SizedBox(height: 80), // Bottom padding for nav bar
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Initial state
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 

@@ -258,12 +258,28 @@ class _TeachingPageState extends State<TeachingPage> {
       // Check Out
       if (attendanceId == null) return;
 
+      final checkInTime = DateTime.parse(widget.attendance!.checkIn!).toLocal();
+      final now = DateTime.now();
+
+      if (now.difference(checkInTime).inMinutes < 10) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Anda baru bisa checkout setelah 10 menit mengajar.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       context.read<AttendanceBloc>().add(
         AttendanceCheckOut(
           attendanceId: attendanceId,
           lat: _currentPosition!.latitude,
           lng: _currentPosition!.longitude,
-          checkInTime: DateTime.parse(widget.attendance!.checkIn!).toLocal(),
+          checkInTime: checkInTime,
         ),
       );
     }

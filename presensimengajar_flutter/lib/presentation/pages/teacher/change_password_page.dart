@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../domain/repositories/auth_repository.dart';
+import '../../../../injection_container.dart' as di;
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -95,7 +96,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     setState(() => _isLoading = true);
 
     try {
-      final authRepo = context.read<AuthRepository>();
+      final authRepo = di.sl<AuthRepository>();
       await authRepo.changePassword(
         oldPassword: _currentPasswordController.text,
         newPassword: _newPasswordController.text,

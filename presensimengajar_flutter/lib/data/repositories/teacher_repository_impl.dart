@@ -45,7 +45,7 @@ class TeacherRepositoryImpl implements TeacherRepository {
 
     final records = await pb
         .collection(AppCollections.teachers)
-        .getFullList(filter: filter, sort: '-created');
+        .getFullList(filter: filter, sort: 'name');
 
     return records.map((r) => TeacherModel.fromRecord(r)).toList();
   }

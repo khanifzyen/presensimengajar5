@@ -9,13 +9,18 @@ abstract class AdminTeacherEvent extends Equatable {
 }
 
 class AdminTeacherFetchList extends AdminTeacherEvent {
-  final String? query;
-  final String? status;
+  // Now purely for fetching/refetching from DB. No params.
+  const AdminTeacherFetchList();
 
-  const AdminTeacherFetchList({
-    this.query,
-    this.status,
-  }); // 'all', 'active', 'inactive'
+  @override
+  List<Object?> get props => [];
+}
+
+class AdminTeacherFilter extends AdminTeacherEvent {
+  final String query;
+  final String status;
+
+  const AdminTeacherFilter({this.query = '', this.status = 'all'});
 
   @override
   List<Object?> get props => [query, status];
@@ -26,6 +31,7 @@ class AdminTeacherAdd extends AdminTeacherEvent {
   final String password;
   final String nip;
   final String name;
+  final String position;
   final String phone;
   final String address;
   final String attendanceCategory;
@@ -39,6 +45,7 @@ class AdminTeacherAdd extends AdminTeacherEvent {
     required this.password,
     required this.nip,
     required this.name,
+    required this.position,
     required this.phone,
     required this.address,
     required this.attendanceCategory,
@@ -68,6 +75,7 @@ class AdminTeacherUpdate extends AdminTeacherEvent {
   final String teacherId;
   final String nip;
   final String name;
+  final String position;
   final String phone;
   final String address;
   final String attendanceCategory;
@@ -81,6 +89,7 @@ class AdminTeacherUpdate extends AdminTeacherEvent {
     required this.teacherId,
     required this.nip,
     required this.name,
+    required this.position,
     required this.phone,
     required this.address,
     required this.attendanceCategory,
@@ -96,6 +105,7 @@ class AdminTeacherUpdate extends AdminTeacherEvent {
     teacherId,
     nip,
     name,
+    position,
     phone,
     address,
     attendanceCategory,

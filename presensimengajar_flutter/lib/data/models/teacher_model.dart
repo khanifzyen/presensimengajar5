@@ -9,6 +9,7 @@ class TeacherModel {
   final String address;
   final String photo;
   final String? subjectId;
+  final String? subjectName; // From expand
   final String position; // 'guru', 'kepala_sekolah', etc.
   final String attendanceCategory; // 'tetap', 'jadwal'
   final String status; // 'active', 'inactive'
@@ -23,6 +24,7 @@ class TeacherModel {
     required this.address,
     required this.photo,
     this.subjectId,
+    this.subjectName,
     required this.position,
     required this.attendanceCategory,
     required this.status,
@@ -41,6 +43,11 @@ class TeacherModel {
       subjectId: record.getStringValue('subject_id').isEmpty
           ? null
           : record.getStringValue('subject_id'),
+      subjectName: record.expand.containsKey('subject_id')
+          ? (record.expand['subject_id']?.first as RecordModel).getStringValue(
+              'name',
+            )
+          : null,
       position: record.getStringValue('position'),
       attendanceCategory: record.getStringValue('attendance_category'),
       status: record.getStringValue('status'),
@@ -57,6 +64,7 @@ class TeacherModel {
       'address': address,
       'photo': photo,
       'subject_id': subjectId,
+      'subject_name': subjectName,
       'position': position,
       'attendance_category': attendanceCategory,
       'status': status,

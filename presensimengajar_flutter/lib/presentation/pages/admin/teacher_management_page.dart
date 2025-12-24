@@ -4,11 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../core/theme.dart';
 import '../../../data/models/teacher_model.dart';
+import '../../../data/models/master_models.dart';
 import '../../blocs/admin_teacher/admin_teacher_bloc.dart';
 import '../../blocs/admin_teacher/admin_teacher_event.dart';
 import '../../blocs/admin_teacher/admin_teacher_state.dart';
 import '../../widgets/stat_card_widget.dart';
-import 'teacher_form_dialog.dart';
+import 'package:open_file/open_file.dart';
+import 'package:share_plus/share_plus.dart';
+import 'teacher_form_page.dart';
 
 class TeacherManagementPage extends StatefulWidget {
   const TeacherManagementPage({super.key});
@@ -31,8 +34,21 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
     setState(() {
       _searchQuery = value;
     });
+    // No network call here, only local filter on submit or manual trigger?
+    // Requirement: "menunggu pengguna tekan enter baru proses pencarian"
+    // AND "langsung pencarian di lokal saja"
+    // So we can do local search immediately OR on Enter?
+    // "buat agar menunggu pengguna tekan enter" implies explicit action.
+    // However, fast local search is usually real-time.
+    // But since User explicitly asked for "Enter", I will respect that.
+    // Wait, "pencarian di lokal saja" suggests performance is fine.
+    // But "menunggu enter" suggests they don't want it jumping around.
+    // I will enforce "Enter" key trigger but it will be a local filter operation.
+  }
+
+  void _onSubmitSearch(String value) {
     context.read<AdminTeacherBloc>().add(
-      AdminTeacherFetchList(query: _searchQuery, status: _statusFilter),
+      AdminTeacherFilter(query: value, status: _statusFilter),
     );
   }
 
@@ -41,58 +57,27 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
       _statusFilter = status;
     });
     context.read<AdminTeacherBloc>().add(
-      AdminTeacherFetchList(query: _searchQuery, status: _statusFilter),
+      AdminTeacherFilter(query: _searchQuery, status: _statusFilter),
     );
   }
 
-  void _showTeacherForm(BuildContext context, {TeacherModel? teacher}) async {
-    final result = await showDialog(
-      context: context,
-      builder: (context) => TeacherFormDialog(teacher: teacher),
-    );
-
-    if (result != null && mounted) {
-      // Result is Map
-      final data = result as Map<String, dynamic>;
-
-      if (teacher == null) {
-        // Add
-        context.read<AdminTeacherBloc>().add(
-          AdminTeacherAdd(
-            name: data['name'],
-            nip: data['nip'],
-            email: data['email'],
-            password: data['password'],
-            phone: data['phone'],
-            address: data['address'],
-            status: data['status'],
-            attendanceCategory: data['category'],
-            joinDate: data['joinDate'],
-            subjectId: data['subjectId'],
-            photo: data['photo'],
-          ),
-        );
-      } else {
-        // Update
-        context.read<AdminTeacherBloc>().add(
-          AdminTeacherUpdate(
-            teacherId: teacher.id,
-            name: data['name'],
-            nip: data['nip'],
-            phone: data['phone'],
-            address: data['address'],
-            status: data['status'],
-            attendanceCategory: data['category'],
-            joinDate: data['joinDate'],
-            subjectId: data['subjectId'],
-            password: data['password']?.isNotEmpty == true
-                ? data['password']
-                : null,
-            photo: data['photo'],
-          ),
-        );
-      }
+  void _showTeacherForm(BuildContext context, {TeacherModel? teacher}) {
+    // Get subjects from current state
+    final state = context.read<AdminTeacherBloc>().state;
+    List<SubjectModel> subjects = [];
+    if (state is AdminTeacherLoaded) {
+      subjects = state.subjects;
     }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<AdminTeacherBloc>(),
+          child: TeacherFormPage(teacher: teacher, subjects: subjects),
+        ),
+      ),
+    );
   }
 
   @override
@@ -104,6 +89,77 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
             SnackBar(
               content: Text(state.message),
               backgroundColor: Colors.green,
+            ),
+          );
+        } else if (state is AdminTeacherExportSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'Buka',
+                textColor: Colors.white,
+                onPressed: () {
+                  OpenFile.open(state.path);
+                },
+              ),
+            ),
+          );
+          // Also show a bottom sheet or another option to share?
+          // User asked for "pilihan share / open". A SnackBar usually has one action.
+          // Let's show a Dialog or ModalBottomSheet for better UX if both distinct options are needed.
+          // Or just Open in SnackBar, and rely on OpenFile's capability?
+          // Actually, let's use a Modal here to be explicit as requested.
+
+          showModalBottomSheet(
+            context: context,
+            builder: (ctx) => Container(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Ekspor Berhasil',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text('File disimpan di: ${state.path}'),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            OpenFile.open(state.path);
+                          },
+                          icon: const Icon(Icons.open_in_new),
+                          label: const Text('Buka File'),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            Share.shareXFiles([
+                              XFile(state.path),
+                            ], text: 'Data Guru');
+                          },
+                          icon: const Icon(Icons.share),
+                          label: const Text('Bagikan'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         } else if (state is AdminTeacherError) {
@@ -121,10 +177,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
           content = RefreshIndicator(
             onRefresh: () async {
               context.read<AdminTeacherBloc>().add(
-                AdminTeacherFetchList(
-                  query: _searchQuery,
-                  status: _statusFilter,
-                ),
+                const AdminTeacherFetchList(),
               );
             },
             child: SingleChildScrollView(
@@ -288,6 +341,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
       children: [
         TextField(
           onChanged: _onSearchChanged,
+          onSubmitted: _onSubmitSearch,
           decoration: InputDecoration(
             hintText: 'Cari nama atau NIP...',
             prefixIcon: const Icon(Icons.search),
@@ -445,8 +499,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      teacher.subjectId ??
-                          'Guru Umum', // TODO: Map Subject ID to Name
+                      teacher.subjectName ?? teacher.subjectId ?? 'Guru Umum',
                       style: const TextStyle(
                         color: AppTheme.primaryColor,
                         fontWeight: FontWeight.w500,

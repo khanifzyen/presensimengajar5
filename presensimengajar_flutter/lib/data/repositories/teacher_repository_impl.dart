@@ -3,6 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:http/http.dart' as http;
 import '../../core/constants.dart';
 import '../../domain/repositories/teacher_repository.dart';
+import '../models/master_models.dart';
 import '../models/teacher_model.dart';
 
 class TeacherRepositoryImpl implements TeacherRepository {
@@ -45,7 +46,7 @@ class TeacherRepositoryImpl implements TeacherRepository {
 
     final records = await pb
         .collection(AppCollections.teachers)
-        .getFullList(filter: filter, sort: 'name');
+        .getFullList(filter: filter, sort: 'name', expand: 'subject_id');
 
     return records.map((r) => TeacherModel.fromRecord(r)).toList();
   }
@@ -56,6 +57,7 @@ class TeacherRepositoryImpl implements TeacherRepository {
     required String password,
     required String nip,
     required String name,
+    required String position,
     required String phone,
     required String address,
     required String attendanceCategory,
@@ -87,7 +89,7 @@ class TeacherRepositoryImpl implements TeacherRepository {
       'attendance_category': attendanceCategory,
       'status': status,
       'join_date': joinDate,
-      'position': 'guru', // Default
+      'position': position,
       if (subjectId != null) 'subject_id': subjectId,
     };
 
@@ -114,6 +116,7 @@ class TeacherRepositoryImpl implements TeacherRepository {
     required String teacherId,
     required String nip,
     required String name,
+    required String position,
     required String phone,
     required String address,
     required String attendanceCategory,
@@ -226,5 +229,13 @@ class TeacherRepositoryImpl implements TeacherRepository {
               : [],
         );
     return TeacherModel.fromRecord(record);
+  }
+
+  @override
+  Future<List<SubjectModel>> getSubjects() async {
+    final records = await pb
+        .collection(AppCollections.subjects)
+        .getFullList(sort: 'name');
+    return records.map((r) => SubjectModel.fromRecord(r)).toList();
   }
 }

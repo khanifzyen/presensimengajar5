@@ -1,8 +1,10 @@
 import 'dart:io';
 import '../../data/models/teacher_model.dart';
+import '../../data/models/master_models.dart';
 
 abstract class TeacherRepository {
   Future<TeacherModel?> getTeacherByUserId(String userId);
+  Future<List<SubjectModel>> getSubjects();
 
   Future<List<TeacherModel>> getTeachers({
     String? query,
@@ -14,6 +16,7 @@ abstract class TeacherRepository {
     required String password,
     required String nip,
     required String name,
+    required String position,
     required String phone,
     required String address,
     required String attendanceCategory,
@@ -27,6 +30,7 @@ abstract class TeacherRepository {
     required String teacherId,
     required String nip,
     required String name,
+    required String position,
     required String phone,
     required String address,
     required String attendanceCategory,

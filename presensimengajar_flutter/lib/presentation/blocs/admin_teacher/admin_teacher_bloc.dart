@@ -2,8 +2,9 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../../../data/models/teacher_model.dart';
 import '../../../domain/repositories/teacher_repository.dart';
 import 'admin_teacher_event.dart';
 import 'admin_teacher_state.dart';
@@ -14,6 +15,7 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
   AdminTeacherBloc({required this.teacherRepository})
     : super(AdminTeacherInitial()) {
     on<AdminTeacherFetchList>(_onFetchList);
+    on<AdminTeacherFilter>(_onFilter);
     on<AdminTeacherAdd>(_onAddTeacher);
     on<AdminTeacherUpdate>(_onUpdateTeacher);
     on<AdminTeacherDelete>(_onDeleteTeacher);
@@ -27,18 +29,56 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
   ) async {
     emit(AdminTeacherLoading());
     try {
+      // Fetch ALL teachers
       final teachers = await teacherRepository.getTeachers(
-        query: event.query,
-        status: event.status,
+        query: null,
+        status: null,
       );
+
+      // Fetch ALL subjects
+      final subjects = await teacherRepository.getSubjects();
+
       emit(
         AdminTeacherLoaded(
           teachers: teachers,
-          filterStatus: event.status ?? 'all',
+          allTeachers: teachers, // Set source of truth
+          subjects: subjects,
+          filterStatus: 'all',
         ),
       );
     } catch (e) {
       emit(AdminTeacherError(e.toString()));
+    }
+  }
+
+  void _onFilter(AdminTeacherFilter event, Emitter<AdminTeacherState> emit) {
+    if (state is AdminTeacherLoaded) {
+      final currentState = state as AdminTeacherLoaded;
+      final allTeachers = currentState.allTeachers;
+
+      List<TeacherModel> filtered = allTeachers.where((t) {
+        bool matchQuery = true;
+        if (event.query.isNotEmpty) {
+          final q = event.query.toLowerCase();
+          matchQuery = t.name.toLowerCase().contains(q) || t.nip.contains(q);
+        }
+
+        bool matchStatus = true;
+        if (event.status != 'all') {
+          matchStatus = t.status == event.status;
+        }
+
+        return matchQuery && matchStatus;
+      }).toList();
+
+      emit(
+        AdminTeacherLoaded(
+          teachers: filtered,
+          allTeachers: allTeachers, // Keep source of truth
+          subjects: currentState.subjects, // Preserve subjects
+          filterStatus: event.status,
+        ),
+      );
     }
   }
 
@@ -53,6 +93,7 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
         password: event.password,
         nip: event.nip,
         name: event.name,
+        position: event.position,
         phone: event.phone,
         address: event.address,
         attendanceCategory: event.attendanceCategory,
@@ -66,12 +107,6 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
       add(const AdminTeacherFetchList());
     } catch (e) {
       emit(AdminTeacherError(e.toString()));
-      // Re-fetch to show list even after error? Or just stay in Error state?
-      // Better to stay in Error state or go back to Loaded?
-      // UI usually handles error state by showing snackbar.
-      // But if we stay in Error state, the list disappears.
-      // So maybe we should just emit Error and then reload?
-      // For now, simple error state.
     }
   }
 
@@ -85,6 +120,7 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
         teacherId: event.teacherId,
         nip: event.nip,
         name: event.name,
+        position: event.position,
         phone: event.phone,
         address: event.address,
         attendanceCategory: event.attendanceCategory,
@@ -119,9 +155,42 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
     AdminTeacherExport event,
     Emitter<AdminTeacherState> emit,
   ) async {
-    // Keep current loaded state if possible, but for now Loading
     emit(AdminTeacherLoading());
     try {
+      // Platform specific path customization
+      String? directoryPath;
+
+      if (Platform.isAndroid) {
+        // Request Storage Permission
+        var status = await Permission.storage.status;
+        if (!status.isGranted) {
+          status = await Permission.storage.request();
+        }
+
+        // For Android 11+ (API 30+) usually need MANAGE_EXTERNAL_STORAGE for generic files
+        // OR just save to standard public dir.
+        // Let's try standard Download dir.
+        if (status.isGranted ||
+            await Permission.manageExternalStorage.isGranted ||
+            status.isLimited) {
+          directoryPath = '/storage/emulated/0/Download';
+        } else {
+          // Fallback path
+          directoryPath = '/storage/emulated/0/Download';
+        }
+
+        // Verify existence
+        final dir = Directory(directoryPath);
+        if (!await dir.exists()) {
+          // Fallback to app directory
+          final appDir = await getApplicationDocumentsDirectory();
+          directoryPath = appDir.path;
+        }
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        directoryPath = directory.path;
+      }
+
       final teachers = await teacherRepository.getTeachers();
       List<List<dynamic>> rows = [];
       rows.add([
@@ -136,13 +205,10 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
       ]);
 
       for (var t in teachers) {
-        // Note: Email is in User record, not directly in TeacherModel usually unless joined.
-        // TeacherModel currently doesn't have email.
-        // We'll skip email for now or leave empty.
         rows.add([
           t.nip,
           t.name,
-          '', // Email not available in TeacherModel
+          '',
           t.phone,
           t.address,
           t.status,
@@ -153,14 +219,14 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
 
       String csv = const ListToCsvConverter().convert(rows);
 
-      final directory = await getTemporaryDirectory();
-      final path = '${directory.path}/data_guru.csv';
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final path = '$directoryPath/data_guru_$timestamp.csv';
+
       final file = File(path);
       await file.writeAsString(csv);
 
-      await Share.shareXFiles([XFile(path)], text: 'Data Guru');
+      emit(AdminTeacherExportSuccess(path, 'File tersimpan di: $path'));
 
-      // Reload list to restore UI
       add(const AdminTeacherFetchList());
     } catch (e) {
       emit(AdminTeacherError('Gagal ekspor: $e'));
@@ -171,10 +237,6 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
     AdminTeacherImport event,
     Emitter<AdminTeacherState> emit,
   ) async {
-    // No Loading state initially to avoid UI flicker if cancel?
-    // Usually BLoC sits behind UI. UI calls Pick File using FilePicker?
-    // If we do FilePicker here, it blocks ISolate? No, it's async.
-
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -192,36 +254,30 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
 
         if (rows.isEmpty) throw Exception('File kosong');
 
-        // Assume Header Row 0
         int success = 0;
         int failed = 0;
 
-        // Start from 1
         for (int i = 1; i < rows.length; i++) {
           try {
             final row = rows[i];
-            // Setup expected columns: NIP, Name, Email, Phone, Address, Status, Category, JoinDate, Password
-            // If User provides exact format from Export, Index 2 is Email (which was empty in export).
-            // We need a template.
-
-            // Simple robust check
-            if (row.length < 8) continue; // Skip incomplete
+            if (row.length < 8) continue;
 
             final nip = row[0].toString();
             final name = row[1].toString();
-            final email = row[2].toString(); // Needs email for create
+            final email = row[2].toString();
             final phone = row[3].toString();
             final address = row[4].toString();
             final status = row[5].toString();
             final category = row[6].toString();
             final joinDate = row[7].toString();
-            // Password default or generic?
-            // Let's assume generic '12345678' if not provided or generate.
+            String position = 'Guru Pengajar';
+            if (row.length > 8) {
+              position = row[8].toString();
+            }
+
             final password = 'password123';
 
             if (email.isEmpty) {
-              // Generate fake email if missing? No, createTeacher needs email.
-              // We'll skip if no email.
               failed++;
               continue;
             }
@@ -231,6 +287,7 @@ class AdminTeacherBloc extends Bloc<AdminTeacherEvent, AdminTeacherState> {
               password: password,
               nip: nip,
               name: name,
+              position: position,
               phone: phone,
               address: address,
               attendanceCategory: category,

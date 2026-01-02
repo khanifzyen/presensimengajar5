@@ -8,6 +8,11 @@ import '../../blocs/admin_schedule/admin_schedule_state.dart';
 import '../../../core/theme.dart';
 import '../../../data/models/schedule_model.dart';
 
+import '../../blocs/academic_period/academic_period_bloc.dart';
+import '../../blocs/academic_period/academic_period_state.dart';
+import '../../blocs/academic_period/academic_period_event.dart';
+import '../../../data/models/academic_period_model.dart';
+
 class AdminSchedulePage extends StatefulWidget {
   final TeacherModel teacher;
 
@@ -18,12 +23,15 @@ class AdminSchedulePage extends StatefulWidget {
 }
 
 class _AdminSchedulePageState extends State<AdminSchedulePage> {
+  String? _selectedPeriodId;
+
   @override
   void initState() {
     super.initState();
     context.read<AdminScheduleBloc>().add(
           AdminScheduleFetch(widget.teacher.id),
         );
+    context.read<AcademicPeriodBloc>().add(FetchAcademicPeriods());
   }
 
   void _showDeleteDialog(String id) {
@@ -102,98 +110,171 @@ class _AdminSchedulePageState extends State<AdminSchedulePage> {
           );
         }
       },
-      child: BlocBuilder<AdminScheduleBloc, AdminScheduleState>(
-        builder: (context, state) {
-          if (state is AdminScheduleLoaded) {
-            // Deduplicate schedules by ID
-            final uniqueSchedules = {
-              for (var s in state.schedules) s.id: s
-            }.values.toList();
-
-            // Group data
-            final grouped = _groupSchedulesByDay(uniqueSchedules);
-            final sortedDays = _getSortedDays(grouped.keys.toList());
-
-            if (sortedDays.isEmpty) {
-              return _buildScaffold(
-                body: const Center(child: Text('Belum ada jadwal')),
-              );
+      child: BlocBuilder<AcademicPeriodBloc, AcademicPeriodState>(
+        builder: (context, periodState) {
+          List<AcademicPeriodModel> periods = [];
+          if (periodState is AcademicPeriodLoaded) {
+            periods = periodState.periods;
+            if (_selectedPeriodId == null && periods.isNotEmpty) {
+              try {
+                _selectedPeriodId =
+                    periods.firstWhere((p) => p.isActive).id;
+              } catch (_) {
+                _selectedPeriodId = periods.first.id;
+              }
             }
+          }
 
-            return DefaultTabController(
-              length: sortedDays.length,
-              child: _buildScaffold(
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(50),
-                  child: Container(
-                    height: 40,
-                    margin: const EdgeInsets.only(bottom: 10),
-                    child: TabBar(
-                      isScrollable: true,
-                      tabAlignment: TabAlignment.start,
-                      indicatorSize: TabBarIndicatorSize.label,
-                      indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.white,
-                      ),
-                      labelColor: AppTheme.primaryColor,
-                      unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
-                      dividerColor: Colors.transparent,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      tabs: sortedDays
-                          .map(
-                            (day) => Tab(
-                              child: Container(
+          return BlocBuilder<AdminScheduleBloc, AdminScheduleState>(
+            builder: (context, state) {
+              if (state is AdminScheduleLoaded) {
+                // Deduplicate schedules by ID
+                final uniqueSchedules = {
+                  for (var s in state.schedules) s.id: s
+                }.values.toList();
+
+                // Filter by selected Period
+                final filteredSchedules = uniqueSchedules.where((s) {
+                  return _selectedPeriodId == null ||
+                      s.periodId == _selectedPeriodId;
+                }).toList();
+
+                // Group data
+                final grouped = _groupSchedulesByDay(filteredSchedules);
+                final sortedDays = _getSortedDays(grouped.keys.toList());
+
+                // Build Scaffold with TabBar
+                return DefaultTabController(
+                  length: sortedDays.isEmpty ? 1 : sortedDays.length,
+                  child: _buildScaffold(
+                    periods: periods,
+                    bottom: sortedDays.isEmpty
+                        ? null
+                        : PreferredSize(
+                            preferredSize: const Size.fromHeight(50),
+                            child: Container(
+                              height: 40,
+                              margin: const EdgeInsets.only(bottom: 10),
+                              child: TabBar(
+                                isScrollable: true,
+                                tabAlignment: TabAlignment.start,
+                                indicatorSize: TabBarIndicatorSize.label,
+                                indicator: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: Colors.white,
+                                ),
+                                labelColor: AppTheme.primaryColor,
+                                unselectedLabelColor:
+                                    Colors.white.withValues(alpha: 0.7),
+                                dividerColor: Colors.transparent,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.3),
-                                  ),
-                                ),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text(day.toUpperCase()),
-                                ),
+                                tabs: sortedDays
+                                    .map(
+                                      (day) => Tab(
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            border: Border.all(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.3,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(day.toUpperCase()),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
                               ),
                             ),
-                          )
-                          .toList(),
-                    ),
+                          ),
+                    body: sortedDays.isEmpty
+                        ? const Center(child: Text('Belum ada jadwal'))
+                        : TabBarView(
+                            children: sortedDays.map((day) {
+                              final daySchedules = grouped[day]!;
+                              // Sort by time
+                              daySchedules.sort(
+                                (a, b) => a.startTime.compareTo(b.startTime),
+                              );
+                              return _buildScheduleList(daySchedules);
+                            }).toList(),
+                          ),
                   ),
-                ),
-                body: TabBarView(
-                  children: sortedDays.map((day) {
-                    final daySchedules = grouped[day]!;
-                    // Sort by time
-                    daySchedules.sort(
-                      (a, b) => a.startTime.compareTo(b.startTime),
-                    );
-                    return _buildScheduleList(daySchedules);
-                  }).toList(),
-                ),
-              ),
-            );
-          } else if (state is AdminScheduleLoading) {
-            return _buildScaffold(
-              body: const Center(child: CircularProgressIndicator()),
-            );
-          } else {
-            return _buildScaffold(
-              body: const Center(child: Text('Gagal memuat jadwal')),
-            );
-          }
+                );
+              } else if (state is AdminScheduleLoading) {
+                return _buildScaffold(
+                  periods: periods,
+                  body: const Center(child: CircularProgressIndicator()),
+                );
+              } else {
+                return _buildScaffold(
+                  periods: periods,
+                  body: const Center(child: Text('Gagal memuat jadwal')),
+                );
+              }
+            },
+          );
         },
       ),
     );
   }
 
-  Widget _buildScaffold({PreferredSizeWidget? bottom, Widget? body}) {
+  Widget _buildScaffold({
+    PreferredSizeWidget? bottom,
+    Widget? body,
+    List<AcademicPeriodModel> periods = const [],
+  }) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Jadwal ${widget.teacher.name}'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Jadwal ${widget.teacher.name}',
+              style: const TextStyle(fontSize: 16),
+            ),
+            if (periods.isNotEmpty)
+              DropdownButton<String>(
+                value: _selectedPeriodId,
+                dropdownColor: AppTheme.primaryColor,
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+                underline: Container(), // Remove underline
+                icon: const Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.white70,
+                  size: 16,
+                ),
+                isDense: true,
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _selectedPeriodId = newValue;
+                    });
+                  }
+                },
+                items: periods.map<DropdownMenuItem<String>>(
+                  (AcademicPeriodModel period) {
+                    return DropdownMenuItem<String>(
+                      value: period.id,
+                      child: Text(
+                        period.name + (period.isActive ? ' (Aktif)' : ''),
+                      ),
+                    );
+                  },
+                ).toList(),
+              ),
+          ],
+        ),
         backgroundColor: AppTheme.primaryColor,
         foregroundColor: Colors.white,
         bottom: bottom,

@@ -105,15 +105,15 @@ Based on `migration/src/schema.js`.
     - Submit Check-in/Check-out.
 
 ### Phase 5: Leave Management (Izin)
-- [ ] **Leave Request** (`izin.html`)
+- [x] **Leave Request** (`izin.html`)
     - Form to request leave (Date, Reason, Attachment).
-- [ ] **Leave Approval** (`approval-izin.html`)
+- [x] **Leave Approval** (`approval-izin.html`)
     - Admin view to approve/reject requests.
 
 ### Phase 6: Admin Features & Reports
-- [ ] **Teacher Management** (`manajemen-guru.html`)
+- [x] **Teacher Management** (`manajemen-guru.html`)
     - CRUD Teachers.
-- [ ] **Reports** (`laporan.html`)
+- [x] **Reports** (`laporan.html`)
     - Generate/View attendance reports.
 
 ### Phase 7: Polish & Info

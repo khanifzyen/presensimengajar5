@@ -8,6 +8,7 @@ import '../presentation/pages/teacher/edit_profile_page.dart';
 import '../presentation/pages/teacher/change_password_page.dart';
 import '../presentation/pages/teacher/guide_page.dart';
 import '../presentation/pages/teacher/about_page.dart';
+import '../presentation/pages/teacher/notification_page.dart';
 import '../presentation/pages/common/attachment_viewer_page.dart';
 import '../presentation/pages/admin/admin_dashboard.dart';
 import '../presentation/pages/admin/teacher_form_page.dart';
@@ -53,6 +54,10 @@ class AppRouter {
       GoRoute(
         path: '/about',
         builder: (context, state) => const AboutPage(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationPage(),
       ),
       GoRoute(
         path: '/attachment-viewer',

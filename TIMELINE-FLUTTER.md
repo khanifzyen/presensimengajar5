@@ -117,8 +117,8 @@ Based on `migration/src/schema.js`.
     - Generate/View attendance reports.
 
 ### Phase 7: Polish & Info
-- [ ] **Static Pages** (`panduan.html`, `tentang-aplikasi.html`)
-- [ ] **Notifications**
+- [x] **Static Pages** (`panduan.html`, `tentang-aplikasi.html`)
+- [x] **Notifications**
     - Display in-app notifications.
 
 ## 5. Testing & Deployment

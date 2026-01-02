@@ -323,25 +323,29 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                 ],
                               ),
                               const Spacer(),
-                              Stack(
-                                children: [
-                                  const Icon(
-                                    Icons.notifications,
-                                    color: Colors.white,
-                                    size: 28,
-                                  ),
-                                  Positioned(
-                                    right: 2,
-                                    top: 2,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.red,
-                                        shape: BoxShape.circle,
+                              InkWell(
+                                onTap: () => context.push('/notifications'),
+                                child: Stack(
+                                  children: [
+                                    const Icon(
+                                      Icons.notifications,
+                                      color: Colors.white,
+                                      size: 28,
+                                    ),
+                                    // TODO: Show dot only if unread
+                                    Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ],
                           );

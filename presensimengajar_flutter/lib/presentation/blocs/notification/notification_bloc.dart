@@ -1,13 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/repositories/notification_repository.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
-  // Add NotificationRepository dependency when created
-  // final NotificationRepository notificationRepository;
+  final NotificationRepository notificationRepository;
 
-  NotificationBloc() : super(NotificationInitial()) {
+  NotificationBloc({required this.notificationRepository}) : super(NotificationInitial()) {
     on<NotificationFetch>(_onNotificationFetch);
+    on<NotificationMarkRead>(_onNotificationMarkRead);
   }
 
   Future<void> _onNotificationFetch(
@@ -16,13 +17,25 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   ) async {
     emit(NotificationLoading());
     try {
-      // TODO: Implement actual fetch logic
-      // final notifications = await notificationRepository.getNotifications(event.userId);
-      // emit(NotificationLoaded(notifications));
-      await Future.delayed(const Duration(seconds: 1)); // Mock delay
-      emit(const NotificationLoaded([])); // Mock empty list
+      final notifications = await notificationRepository.getNotifications(event.userId);
+      emit(NotificationLoaded(notifications));
     } catch (e) {
       emit(NotificationError(e.toString()));
+    }
+  }
+
+  Future<void> _onNotificationMarkRead(
+    NotificationMarkRead event,
+    Emitter<NotificationState> emit,
+  ) async {
+    try {
+      await notificationRepository.markAsRead(event.notificationId);
+      // We could re-fetch or optimistically update. 
+      // For simplicity, let's just trigger a re-fetch if needed or assume UI handles it locally?
+      // Better to re-fetch to ensure consistency.
+      add(NotificationFetch(event.userId));
+    } catch (e) {
+      // Ignore error
     }
   }
 }

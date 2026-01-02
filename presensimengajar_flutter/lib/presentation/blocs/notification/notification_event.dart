@@ -15,3 +15,13 @@ class NotificationFetch extends NotificationEvent {
   @override
   List<Object> get props => [userId];
 }
+
+class NotificationMarkRead extends NotificationEvent {
+  final String userId;
+  final String notificationId;
+
+  const NotificationMarkRead(this.userId, this.notificationId);
+
+  @override
+  List<Object> get props => [userId, notificationId];
+}

@@ -136,7 +136,9 @@ class _TeachingPageState extends State<TeachingPage> {
             _locationStatus = 'Izin lokasi ditolak';
             _isLoadingLocation = false;
           });
-          _showErrorDialog('Izin lokasi ditolak.');
+          // Only show dialog if this wasn't an automatic check during init
+          // For now we just return.
+          // _showErrorDialog('Izin lokasi ditolak.');
         }
         return;
       }
@@ -160,6 +162,7 @@ class _TeachingPageState extends State<TeachingPage> {
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
         ),
       );
 
@@ -424,12 +427,23 @@ class _TeachingPageState extends State<TeachingPage> {
                           circles: _circles, // Add Circles
                           myLocationEnabled: true,
                           myLocationButtonEnabled: true,
-                          onMapCreated: (controller) =>
-                              _mapController = controller,
+                          onMapCreated: (controller) {
+                            _mapController = controller;
+                            if (_currentPosition != null) {
+                                _mapController?.animateCamera(
+                                    CameraUpdate.newCameraPosition(
+                                        CameraPosition(
+                                            target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+                                            zoom: 18,
+                                        ),
+                                    ),
+                                );
+                            }
+                          },
                         ),
                         if (_isLoadingLocation)
                           Container(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withValues(alpha: 0.3),
                             child: const Center(
                               child: CircularProgressIndicator(
                                 color: Colors.white,
@@ -446,12 +460,12 @@ class _TeachingPageState extends State<TeachingPage> {
                             left: 10,
                             right: 10,
                             child: Container(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.red,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text(
+                              child: const Text(
                                 "DILUAR JANGKAUAN PRESENSI!",
                                 style: TextStyle(
                                   color: Colors.white,

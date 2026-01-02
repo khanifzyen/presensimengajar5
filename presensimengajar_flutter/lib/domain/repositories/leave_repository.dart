@@ -12,4 +12,9 @@ abstract class LeaveRepository {
   });
 
   Future<List<LeaveRequestModel>> getLeaveHistory(String teacherId);
+
+  // Admin Methods
+  Future<List<LeaveRequestModel>> getAllLeaves({String? status, String? query});
+  Future<void> approveLeave(String leaveId, String adminId);
+  Future<void> rejectLeave(String leaveId, String reason, String adminId);
 }

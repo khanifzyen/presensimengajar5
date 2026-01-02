@@ -7,6 +7,7 @@ class AppTheme {
   static const Color accentColor = Color(0xFF3B82F6); // Blue
   static const Color backgroundColor = Color(0xFFF3F4F6); // Light Gray
   static const Color errorColor = Color(0xFFEF4444); // Red
+  static const Color successColor = Color(0xFF10B981); // Green
 
   // Stat card colors
   static const Color statBlue = Color(0xFF3B82F6);

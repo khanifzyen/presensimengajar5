@@ -8,6 +8,7 @@ import '../../widgets/teacher_monitoring_item.dart';
 import '../../../core/theme.dart';
 import '../../../data/models/teacher_model.dart';
 import 'teacher_management_page.dart';
+import 'admin_leave_approval_page.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -66,6 +67,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
         return _buildDashboardView();
       case 1:
         return const TeacherManagementPage();
+      case 2:
+        return const AdminLeaveApprovalPage();
       default:
         return const Center(child: Text('Coming Soon'));
     }

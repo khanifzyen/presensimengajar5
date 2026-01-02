@@ -12,6 +12,8 @@ class LeaveRequestModel {
   final String? approvedBy;
   final String? approvedAt;
   final String? rejectionReason;
+  final String? teacherName;
+  final String? teacherPhoto;
 
   LeaveRequestModel({
     required this.id,
@@ -25,9 +27,24 @@ class LeaveRequestModel {
     this.approvedBy,
     this.approvedAt,
     this.rejectionReason,
+    this.teacherName,
+    this.teacherPhoto,
   });
 
   factory LeaveRequestModel.fromRecord(RecordModel record) {
+    String? name;
+    String? photo;
+
+    // Check expansion
+    if (record.expand.containsKey('teacher_id')) {
+      final teacherRecords = record.expand['teacher_id'];
+      if (teacherRecords != null && teacherRecords.isNotEmpty) {
+        final teacher = teacherRecords.first;
+        name = teacher.getStringValue('name');
+        photo = teacher.getStringValue('photo');
+      }
+    }
+
     return LeaveRequestModel(
       id: record.id,
       teacherId: record.getStringValue('teacher_id'),
@@ -40,6 +57,8 @@ class LeaveRequestModel {
       approvedBy: record.getStringValue('approved_by'),
       approvedAt: record.getStringValue('approved_at'),
       rejectionReason: record.getStringValue('rejection_reason'),
+      teacherName: name,
+      teacherPhoto: photo,
     );
   }
 

@@ -93,6 +93,96 @@ class _AdminSchedulePageState extends State<AdminSchedulePage> {
     return days;
   }
 
+  void _showCopyDialog(List<AcademicPeriodModel> periods) {
+    if (periods.length < 2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Butuh minimal 2 periode untuk menyalin')),
+      );
+      return;
+    }
+
+    String? sourceId;
+    String? targetId = _selectedPeriodId;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Salin Jadwal'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Salin semua jadwal dari satu periode ke periode lain untuk guru ini.',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: sourceId,
+                  decoration: const InputDecoration(
+                    labelText: 'Dari Periode (Sumber)',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: periods.map((p) {
+                    return DropdownMenuItem(value: p.id, child: Text(p.name));
+                  }).toList(),
+                  onChanged: (val) => setState(() => sourceId = val),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: targetId,
+                  decoration: const InputDecoration(
+                    labelText: 'Ke Periode (Target)',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: periods.map((p) {
+                    return DropdownMenuItem(
+                      value: p.id,
+                      child: Text(
+                        p.name + (p.isActive ? ' (Aktif)' : ''),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (val) => setState(() => targetId = val),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => ctx.pop(),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (sourceId == null || targetId == null) return;
+                  if (sourceId == targetId) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Sumber dan Target tidak boleh sama'),
+                      ),
+                    );
+                    return;
+                  }
+
+                  context.read<AdminScheduleBloc>().add(
+                        AdminScheduleCopy(
+                          teacherId: widget.teacher.id,
+                          sourcePeriodId: sourceId!,
+                          targetPeriodId: targetId!,
+                        ),
+                      );
+                  ctx.pop();
+                },
+                child: const Text('Salin'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AdminScheduleBloc, AdminScheduleState>(
@@ -278,6 +368,14 @@ class _AdminSchedulePageState extends State<AdminSchedulePage> {
         backgroundColor: AppTheme.primaryColor,
         foregroundColor: Colors.white,
         bottom: bottom,
+        actions: [
+          if (periods.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.copy),
+              tooltip: 'Salin Jadwal',
+              onPressed: () => _showCopyDialog(periods),
+            ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

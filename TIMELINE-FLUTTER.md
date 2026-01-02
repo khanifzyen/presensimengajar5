@@ -99,7 +99,7 @@ Based on `migration/src/schema.js`.
     - History List: Status (Pending, Approved, Rejected).
 
 ### Phase 5: Attendance (Core Feature)
-- [ ] **Attendance Screen** (`presensi.html`)
+- [x] **Attendance Screen** (`presensi.html`)
     - Geolocation check.
     - Camera integration for selfie.
     - Submit Check-in/Check-out.

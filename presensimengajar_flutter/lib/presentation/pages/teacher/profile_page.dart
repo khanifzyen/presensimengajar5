@@ -9,6 +9,8 @@ import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_state.dart';
 import 'change_password_page.dart';
 import 'edit_profile_page.dart';
+import 'guide_page.dart';
+import 'about_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -155,7 +157,11 @@ class ProfilePage extends StatelessWidget {
                 icon: FontAwesomeIcons.circleQuestion,
                 title: 'Bantuan',
                 onTap: () {
-                  // TODO: Navigate to Help
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const GuidePage(),
+                    ),
+                  );
                 },
               ),
               _buildMenuItem(
@@ -163,7 +169,11 @@ class ProfilePage extends StatelessWidget {
                 icon: FontAwesomeIcons.circleInfo,
                 title: 'Tentang Aplikasi',
                 onTap: () {
-                  // TODO: Navigate to About
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const AboutPage(),
+                    ),
+                  );
                 },
               ),
 

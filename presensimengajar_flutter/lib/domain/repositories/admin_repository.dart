@@ -15,4 +15,11 @@ abstract class AdminRepository {
   /// Get real-time monitoring data for teachers on a specific date
   /// Returns list of maps containing teacher info, attendance status, etc.
   Future<List<Map<String, dynamic>>> getRealtimeMonitoring(DateTime date);
+
+  /// Get monthly attendance report for all teachers
+  /// Returns list of maps containing teacher and their stats (present, late, permission, alpha)
+  Future<List<Map<String, dynamic>>> getMonthlyAttendanceReport(
+    int month,
+    int year,
+  );
 }

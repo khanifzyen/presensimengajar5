@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart'; // For web attachments
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -67,11 +68,11 @@ class _AdminLeaveApprovalPageState extends State<AdminLeaveApprovalPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+            onPressed: () => context.pop(false),
             child: const Text('Batal'),
           ),
           ElevatedButton.icon(
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () => context.pop(true),
             icon: const Icon(Icons.check),
             label: const Text('Ya, Setujui'),
             style: ElevatedButton.styleFrom(
@@ -127,7 +128,7 @@ class _AdminLeaveApprovalPageState extends State<AdminLeaveApprovalPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => context.pop(),
             child: const Text('Batal'),
           ),
           ElevatedButton.icon(
@@ -138,7 +139,7 @@ class _AdminLeaveApprovalPageState extends State<AdminLeaveApprovalPage> {
                 );
                 return;
               }
-              Navigator.pop(ctx, reasonController.text);
+              context.pop(reasonController.text);
             },
             icon: const Icon(Icons.close),
             label: const Text('Ya, Tolak'),

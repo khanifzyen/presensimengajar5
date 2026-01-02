@@ -4,14 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../core/theme.dart';
 import '../../../data/models/teacher_model.dart';
-import '../../../data/models/master_models.dart';
 import '../../blocs/admin_teacher/admin_teacher_bloc.dart';
 import '../../blocs/admin_teacher/admin_teacher_event.dart';
 import '../../blocs/admin_teacher/admin_teacher_state.dart';
 import '../../widgets/stat_card_widget.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
-import 'teacher_form_page.dart';
 
 class TeacherManagementPage extends StatefulWidget {
   const TeacherManagementPage({super.key});
@@ -62,22 +61,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
   }
 
   void _showTeacherForm(BuildContext context, {TeacherModel? teacher}) {
-    // Get subjects from current state
-    final state = context.read<AdminTeacherBloc>().state;
-    List<SubjectModel> subjects = [];
-    if (state is AdminTeacherLoaded) {
-      subjects = state.subjects;
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: context.read<AdminTeacherBloc>(),
-          child: TeacherFormPage(teacher: teacher, subjects: subjects),
-        ),
-      ),
-    );
+    context.push('/teacher-form', extra: teacher);
   }
 
   @override
@@ -132,7 +116,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            Navigator.pop(ctx);
+                            context.pop();
                             OpenFile.open(state.path);
                           },
                           icon: const Icon(Icons.open_in_new),
@@ -143,7 +127,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            Navigator.pop(ctx);
+                            context.pop();
                             Share.shareXFiles([
                               XFile(state.path),
                             ], text: 'Data Guru');
@@ -546,7 +530,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.pop(ctx),
+                              onPressed: () => context.pop(),
                               child: const Text('Batal'),
                             ),
                             TextButton(
@@ -554,7 +538,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
                                 context.read<AdminTeacherBloc>().add(
                                   AdminTeacherDelete(teacher.id),
                                 );
-                                Navigator.pop(ctx);
+                                context.pop();
                               },
                               style: TextButton.styleFrom(
                                 foregroundColor: Colors.red,

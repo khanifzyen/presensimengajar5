@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -52,22 +53,16 @@ class _TeachingPageState extends State<TeachingPage> {
 
   void _validateLocation() {
     if (_officeLat == null || _officeLng == null || _maxRadius == null) {
-      print('DEBUG: Settings belum dimuat sepenuhnya.');
+      debugPrint('DEBUG: Settings belum dimuat sepenuhnya.');
       return;
     }
 
     if (_currentPosition == null) {
-      print('DEBUG: Lokasi GPS belum ditemukan.');
+      debugPrint('DEBUG: Lokasi GPS belum ditemukan.');
       return;
     }
 
-    // DEBUG LOGS
-    print('--- DEBUG LOCATION ---');
-    print('Settings Lat: $_officeLat');
-    print('Settings Lng: $_officeLng');
-    print('Settings Radius: $_maxRadius');
-    print('GPS Lat: ${_currentPosition!.latitude}');
-    print('GPS Lng: ${_currentPosition!.longitude}');
+
 
     final distance = Geolocator.distanceBetween(
       _currentPosition!.latitude,
@@ -75,8 +70,8 @@ class _TeachingPageState extends State<TeachingPage> {
       _officeLat!,
       _officeLng!,
     );
-    print('Calculated Distance: $distance meters');
-    print('----------------------');
+    debugPrint('Calculated Distance: $distance meters');
+    debugPrint('----------------------');
 
     setState(() {
       _isWithinRange = distance <= _maxRadius!;
@@ -318,7 +313,7 @@ class _TeachingPageState extends State<TeachingPage> {
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             child: const Text('OK'),
           ),
         ],
@@ -349,7 +344,7 @@ class _TeachingPageState extends State<TeachingPage> {
             ),
           );
           if (state.attendance.checkOut != null) {
-            Navigator.pop(context); // Close page on checkout success
+            context.pop(); // Close page on checkout success
           }
         } else if (state is AttendanceError) {
           _showErrorDialog(state.message);

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:permission_handler/permission_handler.dart';
@@ -110,7 +111,7 @@ class ImagePickerHelper {
                 ),
                 title: const Text('Kamera'),
                 subtitle: const Text('Ambil foto baru'),
-                onTap: () => Navigator.pop(context, ImageSource.camera),
+                onTap: () => context.pop(ImageSource.camera),
               ),
               const SizedBox(height: 8),
               ListTile(
@@ -124,13 +125,13 @@ class ImagePickerHelper {
                 ),
                 title: const Text('Galeri'),
                 subtitle: const Text('Pilih dari galeri'),
-                onTap: () => Navigator.pop(context, ImageSource.gallery),
+                onTap: () => context.pop(ImageSource.gallery),
               ),
             ],
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text('Batal'),
             ),
           ],

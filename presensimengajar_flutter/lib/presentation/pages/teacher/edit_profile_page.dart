@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../blocs/auth/auth_bloc.dart';
@@ -171,8 +172,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close dialog
-                  Navigator.of(context).pop(); // Go back to profile
+                  context.pop(); // Close dialog
+                  context.pop(); // Go back to profile
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
@@ -205,7 +206,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
         title: const Text('Edit Profil', style: TextStyle(color: Colors.white)),
         centerTitle: true,

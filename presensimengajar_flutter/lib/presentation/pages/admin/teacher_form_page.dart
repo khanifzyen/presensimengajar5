@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,9 +13,8 @@ import '../../blocs/admin_teacher/admin_teacher_state.dart';
 
 class TeacherFormPage extends StatefulWidget {
   final TeacherModel? teacher;
-  final List<SubjectModel> subjects;
 
-  const TeacherFormPage({super.key, this.teacher, this.subjects = const []});
+  const TeacherFormPage({super.key, this.teacher});
 
   @override
   State<TeacherFormPage> createState() => _TeacherFormPageState();
@@ -65,13 +65,10 @@ class _TeacherFormPageState extends State<TeacherFormPage> {
 
       // Subject Selection
       _selectedSubject = t.subjectId;
-      if (_selectedSubject != null && widget.subjects.isNotEmpty) {
-        final exists = widget.subjects.any((s) => s.id == _selectedSubject);
-        if (!exists) {
-          _selectedSubject = null;
-        }
-      }
-
+      // We will validate subject existence in build or assume it's valid for now.
+      // Accessing bloc in initState to check subjects might be racy or unclean.
+      // Better to rely on the dropdown list in build.
+      
       _selectedStatus = t.status;
       _selectedCategory = t.attendanceCategory;
       _joinDateController.text = t.joinDate;
@@ -109,7 +106,7 @@ class _TeacherFormPageState extends State<TeacherFormPage> {
     return BlocListener<AdminTeacherBloc, AdminTeacherState>(
       listener: (context, state) {
         if (state is AdminTeacherOperationSuccess) {
-          Navigator.pop(context); // Go back on success
+          context.pop(); // Go back on success
         }
       },
       child: Scaffold(
@@ -416,6 +413,13 @@ class _TeacherFormPageState extends State<TeacherFormPage> {
   }
 
   Widget _buildSubjectDropdown() {
+    // Get subjects from Bloc
+    final state = context.read<AdminTeacherBloc>().state;
+    List<SubjectModel> subjects = [];
+    if (state is AdminTeacherLoaded) {
+      subjects = state.subjects;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -427,7 +431,7 @@ class _TeacherFormPageState extends State<TeacherFormPage> {
         DropdownButtonFormField<String>(
           value: _selectedSubject,
           isExpanded: true,
-          items: widget.subjects.map((s) {
+          items: subjects.map((s) {
             return DropdownMenuItem(
               value: s.id,
               child: Text(s.name, overflow: TextOverflow.ellipsis, maxLines: 1),

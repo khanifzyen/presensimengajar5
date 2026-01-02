@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../blocs/auth/auth_bloc.dart';
@@ -26,7 +27,6 @@ import '../../../data/models/schedule_model.dart';
 import 'profile_page.dart';
 import 'history_page.dart';
 import 'permission_page.dart';
-import 'teaching_page.dart';
 
 import '../../../injection_container.dart' as di;
 
@@ -944,14 +944,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                           statusColor = Colors.grey;
                                           actionButton = ElevatedButton(
                                             onPressed: () async {
-                                              await Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TeachingPage(
-                                                        schedule: schedule,
-                                                      ),
-                                                ),
+                                              await context.push(
+                                                '/teaching',
+                                                extra: {'schedule': schedule},
                                               );
                                               if (context.mounted) {
                                                 final userState = context
@@ -1028,15 +1023,12 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                           statusColor = Colors.orange;
                                           actionButton = ElevatedButton(
                                             onPressed: () async {
-                                              await Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TeachingPage(
-                                                        schedule: schedule,
-                                                        attendance: attendance,
-                                                      ),
-                                                ),
+                                              await context.push(
+                                                '/teaching',
+                                                extra: {
+                                                  'schedule': schedule,
+                                                  'attendance': attendance,
+                                                },
                                               );
                                               if (context.mounted) {
                                                 final userState = context

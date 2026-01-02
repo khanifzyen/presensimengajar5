@@ -7,10 +7,6 @@ import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_state.dart';
-import 'change_password_page.dart';
-import 'edit_profile_page.dart';
-import 'guide_page.dart';
-import 'about_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -133,11 +129,7 @@ class ProfilePage extends StatelessWidget {
                 icon: FontAwesomeIcons.userPen,
                 title: 'Edit Profil',
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const EditProfilePage(),
-                    ),
-                  );
+                  context.push('/edit-profile');
                 },
               ),
               _buildMenuItem(
@@ -145,11 +137,7 @@ class ProfilePage extends StatelessWidget {
                 icon: FontAwesomeIcons.lock,
                 title: 'Ubah Kata Sandi',
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const ChangePasswordPage(),
-                    ),
-                  );
+                  context.push('/change-password');
                 },
               ),
               _buildMenuItem(
@@ -157,11 +145,7 @@ class ProfilePage extends StatelessWidget {
                 icon: FontAwesomeIcons.circleQuestion,
                 title: 'Bantuan',
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const GuidePage(),
-                    ),
-                  );
+                  context.push('/guide');
                 },
               ),
               _buildMenuItem(
@@ -169,11 +153,7 @@ class ProfilePage extends StatelessWidget {
                 icon: FontAwesomeIcons.circleInfo,
                 title: 'Tentang Aplikasi',
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const AboutPage(),
-                    ),
-                  );
+                  context.push('/about');
                 },
               ),
 

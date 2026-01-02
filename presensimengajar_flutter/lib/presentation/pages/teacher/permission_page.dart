@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_file/open_file.dart'; // Add import at the top
 
 import '../../blocs/leave/leave_bloc.dart';
 import '../../blocs/leave/leave_event.dart';
 import '../../blocs/leave/leave_state.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../common/attachment_viewer_page.dart'; // Add this if not present, but it was supposed to be added in previous step.
+// import '../common/attachment_viewer_page.dart'; // Add this if not present, but it was supposed to be added in previous step.
 import '../../../core/constants.dart';
 
 import '../../blocs/user/user_bloc.dart';
@@ -71,7 +72,7 @@ class _PermissionPageState extends State<PermissionPage>
               leading: const Icon(Icons.camera_alt),
               title: const Text('Ambil Foto (Kamera)'),
               onTap: () async {
-                Navigator.pop(context);
+                context.pop();
                 final picker = ImagePicker();
                 final xFile = await picker.pickImage(
                   source: ImageSource.camera,
@@ -87,7 +88,7 @@ class _PermissionPageState extends State<PermissionPage>
               leading: const Icon(Icons.image),
               title: const Text('Pilih Foto (Galeri)'),
               onTap: () async {
-                Navigator.pop(context);
+                context.pop();
                 final picker = ImagePicker();
                 final xFile = await picker.pickImage(
                   source: ImageSource.gallery,
@@ -103,7 +104,7 @@ class _PermissionPageState extends State<PermissionPage>
               leading: const Icon(Icons.picture_as_pdf),
               title: const Text('Pilih Dokumen (PDF)'),
               onTap: () async {
-                Navigator.pop(context);
+                context.pop();
                 FilePickerResult? result = await FilePicker.platform.pickFiles(
                   type: FileType.custom,
                   allowedExtensions: ['pdf'],
@@ -670,15 +671,13 @@ class _PermissionPageState extends State<PermissionPage>
                                 .toLowerCase()
                                 .endsWith('.pdf');
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AttachmentViewerPage(
-                                  url: url,
-                                  fileName: item.attachment!,
-                                  isPdf: isPdf,
-                                ),
-                              ),
+                            context.push(
+                              '/attachment-viewer',
+                              extra: {
+                                'url': url,
+                                'fileName': item.attachment!,
+                                'isPdf': isPdf,
+                              },
                             );
                           },
                           borderRadius: BorderRadius.circular(8),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/repositories/auth_repository.dart';
 import '../../../../injection_container.dart' as di;
@@ -159,8 +160,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close dialog
-                  Navigator.of(context).pop(); // Go back to profile
+                  context.pop(); // Close dialog
+                  context.pop(); // Go back to profile
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
@@ -193,7 +194,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
         title: const Text(
           'Ubah Kata Sandi',

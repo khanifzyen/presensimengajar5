@@ -44,3 +44,18 @@ class AdminScheduleDelete extends AdminScheduleEvent {
   @override
   List<Object> get props => [id, teacherId];
 }
+
+class AdminScheduleCopy extends AdminScheduleEvent {
+  final String teacherId;
+  final String sourcePeriodId;
+  final String targetPeriodId;
+
+  const AdminScheduleCopy({
+    required this.teacherId,
+    required this.sourcePeriodId,
+    required this.targetPeriodId,
+  });
+
+  @override
+  List<Object> get props => [teacherId, sourcePeriodId, targetPeriodId];
+}

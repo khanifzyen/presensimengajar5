@@ -11,4 +11,9 @@ abstract class ScheduleRepository {
   Future<ScheduleModel> createSchedule(ScheduleModel schedule);
   Future<ScheduleModel> updateSchedule(ScheduleModel schedule);
   Future<void> deleteSchedule(String id);
+  Future<void> copySchedules({
+    required String teacherId,
+    required String sourcePeriodId,
+    required String targetPeriodId,
+  });
 }

@@ -12,6 +12,7 @@ class AdminScheduleBloc extends Bloc<AdminScheduleEvent, AdminScheduleState> {
     on<AdminScheduleAdd>(_onAddSchedule);
     on<AdminScheduleUpdate>(_onUpdateSchedule);
     on<AdminScheduleDelete>(_onDeleteSchedule);
+    on<AdminScheduleCopy>(_onCopySchedule);
   }
 
   Future<void> _onFetchSchedules(
@@ -65,6 +66,24 @@ class AdminScheduleBloc extends Bloc<AdminScheduleEvent, AdminScheduleState> {
     try {
       await scheduleRepository.deleteSchedule(event.id);
       emit(const AdminScheduleOperationSuccess('Jadwal berhasil dihapus'));
+      add(AdminScheduleFetch(event.teacherId));
+    } catch (e) {
+      emit(AdminScheduleError(e.toString()));
+    }
+  }
+
+  Future<void> _onCopySchedule(
+    AdminScheduleCopy event,
+    Emitter<AdminScheduleState> emit,
+  ) async {
+    emit(AdminScheduleLoading());
+    try {
+      await scheduleRepository.copySchedules(
+        teacherId: event.teacherId,
+        sourcePeriodId: event.sourcePeriodId,
+        targetPeriodId: event.targetPeriodId,
+      );
+      emit(const AdminScheduleOperationSuccess('Jadwal berhasil disalin'));
       add(AdminScheduleFetch(event.teacherId));
     } catch (e) {
       emit(AdminScheduleError(e.toString()));

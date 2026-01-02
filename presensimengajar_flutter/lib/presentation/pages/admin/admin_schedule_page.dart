@@ -105,8 +105,13 @@ class _AdminSchedulePageState extends State<AdminSchedulePage> {
       child: BlocBuilder<AdminScheduleBloc, AdminScheduleState>(
         builder: (context, state) {
           if (state is AdminScheduleLoaded) {
+            // Deduplicate schedules by ID
+            final uniqueSchedules = {
+              for (var s in state.schedules) s.id: s
+            }.values.toList();
+
             // Group data
-            final grouped = _groupSchedulesByDay(state.schedules);
+            final grouped = _groupSchedulesByDay(uniqueSchedules);
             final sortedDays = _getSortedDays(grouped.keys.toList());
 
             if (sortedDays.isEmpty) {
@@ -118,21 +123,54 @@ class _AdminSchedulePageState extends State<AdminSchedulePage> {
             return DefaultTabController(
               length: sortedDays.length,
               child: _buildScaffold(
-                bottom: TabBar(
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  indicatorColor: Colors.white,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.white70,
-                  tabs: sortedDays
-                      .map((day) => Tab(text: day.toUpperCase()))
-                      .toList(),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(50),
+                  child: Container(
+                    height: 40,
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: TabBar(
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      indicator: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.white,
+                      ),
+                      labelColor: AppTheme.primaryColor,
+                      unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
+                      dividerColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      tabs: sortedDays
+                          .map(
+                            (day) => Tab(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(day.toUpperCase()),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
                 ),
                 body: TabBarView(
                   children: sortedDays.map((day) {
                     final daySchedules = grouped[day]!;
                     // Sort by time
-                    daySchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
+                    daySchedules.sort(
+                      (a, b) => a.startTime.compareTo(b.startTime),
+                    );
                     return _buildScheduleList(daySchedules);
                   }).toList(),
                 ),

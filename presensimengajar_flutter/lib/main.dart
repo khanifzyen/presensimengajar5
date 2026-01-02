@@ -12,6 +12,10 @@ import 'presentation/blocs/leave/leave_bloc.dart';
 import 'presentation/blocs/admin/admin_bloc.dart';
 import 'presentation/blocs/academic_period/academic_period_bloc.dart';
 import 'presentation/blocs/admin_teacher/admin_teacher_bloc.dart';
+import 'presentation/blocs/admin_leave/admin_leave_bloc.dart';
+import 'presentation/blocs/admin_report/admin_report_bloc.dart';
+import 'presentation/blocs/admin_schedule/admin_schedule_bloc.dart';
+import 'presentation/blocs/notification/notification_bloc.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -38,6 +42,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => di.sl<AdminBloc>()),
         BlocProvider(create: (_) => di.sl<AcademicPeriodBloc>()),
         BlocProvider(create: (_) => di.sl<AdminTeacherBloc>()),
+        BlocProvider(create: (_) => di.sl<AdminLeaveBloc>()),
+        BlocProvider(create: (_) => di.sl<AdminReportBloc>()),
+        BlocProvider(create: (_) => di.sl<AdminScheduleBloc>()),
+        BlocProvider(create: (_) => di.sl<NotificationBloc>()),
         // Add other global blocs here if needed
       ],
       child: MaterialApp.router(

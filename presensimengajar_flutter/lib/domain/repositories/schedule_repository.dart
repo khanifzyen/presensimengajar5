@@ -6,4 +6,9 @@ abstract class ScheduleRepository {
     String? day,
   });
   Future<ScheduleModel?> getScheduleById(String id);
+
+  // Admin Methods
+  Future<ScheduleModel> createSchedule(ScheduleModel schedule);
+  Future<ScheduleModel> updateSchedule(ScheduleModel schedule);
+  Future<void> deleteSchedule(String id);
 }

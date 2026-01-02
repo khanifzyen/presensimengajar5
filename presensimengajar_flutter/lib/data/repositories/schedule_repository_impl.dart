@@ -40,4 +40,26 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       return null;
     }
   }
+
+  @override
+  Future<ScheduleModel> createSchedule(ScheduleModel schedule) async {
+    final record = await pb.collection(AppCollections.schedules).create(
+          body: schedule.toJson(),
+        );
+    return ScheduleModel.fromRecord(record);
+  }
+
+  @override
+  Future<ScheduleModel> updateSchedule(ScheduleModel schedule) async {
+    final record = await pb.collection(AppCollections.schedules).update(
+          schedule.id,
+          body: schedule.toJson(),
+        );
+    return ScheduleModel.fromRecord(record);
+  }
+
+  @override
+  Future<void> deleteSchedule(String id) async {
+    await pb.collection(AppCollections.schedules).delete(id);
+  }
 }

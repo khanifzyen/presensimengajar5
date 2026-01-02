@@ -12,6 +12,8 @@ import '../presentation/pages/teacher/notification_page.dart';
 import '../presentation/pages/common/attachment_viewer_page.dart';
 import '../presentation/pages/admin/admin_dashboard.dart';
 import '../presentation/pages/admin/teacher_form_page.dart';
+import '../presentation/pages/admin/admin_schedule_page.dart';
+import '../presentation/pages/admin/admin_schedule_form_page.dart';
 import '../data/models/schedule_model.dart';
 import '../data/models/attendance_model.dart';
 import '../data/models/teacher_model.dart';
@@ -82,6 +84,23 @@ class AppRouter {
         builder: (context, state) {
           final teacher = state.extra as TeacherModel?;
           return TeacherFormPage(teacher: teacher);
+        },
+      ),
+      GoRoute(
+        path: '/admin-schedule',
+        builder: (context, state) {
+          final teacher = state.extra as TeacherModel;
+          return AdminSchedulePage(teacher: teacher);
+        },
+      ),
+      GoRoute(
+        path: '/admin-schedule-form',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return AdminScheduleFormPage(
+            teacher: extra['teacher'] as TeacherModel,
+            schedule: extra['schedule'] as ScheduleModel?,
+          );
         },
       ),
     ],

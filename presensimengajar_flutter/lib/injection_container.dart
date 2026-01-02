@@ -33,6 +33,7 @@ import 'presentation/blocs/academic_period/academic_period_bloc.dart';
 import 'presentation/blocs/admin_teacher/admin_teacher_bloc.dart';
 import 'presentation/blocs/admin_leave/admin_leave_bloc.dart';
 import 'presentation/blocs/admin_report/admin_report_bloc.dart';
+import 'presentation/blocs/admin_schedule/admin_schedule_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -79,4 +80,5 @@ Future<void> init() async {
   sl.registerFactory(() => AdminTeacherBloc(teacherRepository: sl()));
   sl.registerFactory(() => AdminLeaveBloc(leaveRepository: sl()));
   sl.registerFactory(() => AdminReportBloc(adminRepository: sl()));
+  sl.registerFactory(() => AdminScheduleBloc(scheduleRepository: sl()));
 }

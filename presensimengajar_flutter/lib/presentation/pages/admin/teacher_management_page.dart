@@ -520,6 +520,13 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
                   ),
                   IconButton(
                     onPressed: () {
+                      context.push('/admin-schedule', extra: teacher);
+                    },
+                    icon: const Icon(Icons.calendar_month, color: Colors.blue),
+                    tooltip: 'Atur Jadwal',
+                  ),
+                  IconButton(
+                    onPressed: () {
                       // Confirm Delete
                       showDialog(
                         context: context,

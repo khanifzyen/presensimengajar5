@@ -10,6 +10,8 @@ class ScheduleModel {
   final String startTime;
   final String endTime;
   final String room;
+  final String type; // regular, replacement, additional
+  final String? specificDate; // YYYY-MM-DD
 
   // Expand relations if needed
   final RecordModel? subject;
@@ -26,6 +28,8 @@ class ScheduleModel {
     required this.startTime,
     required this.endTime,
     required this.room,
+    this.type = 'regular',
+    this.specificDate,
     this.subject,
     this.classInfo,
     this.expand,
@@ -53,13 +57,32 @@ class ScheduleModel {
       startTime: record.getStringValue('start_time'),
       endTime: record.getStringValue('end_time'),
       room: record.getStringValue('room'),
-      subject: record
-          .get<List<RecordModel>>('expand.subject_id', [])
-          .firstOrNull,
+      type: record.getStringValue('type').isEmpty
+          ? 'regular'
+          : record.getStringValue('type'),
+      specificDate: record.getStringValue('specific_date').isEmpty
+          ? null
+          : record.getStringValue('specific_date'),
+      subject: record.get<List<RecordModel>>('expand.subject_id', []).firstOrNull,
       classInfo: record
           .get<List<RecordModel>>('expand.class_id', [])
           .firstOrNull,
       expand: expandData,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'teacher_id': teacherId,
+      'subject_id': subjectId,
+      'class_id': classId,
+      'period_id': periodId,
+      'day': day,
+      'start_time': startTime,
+      'end_time': endTime,
+      'room': room,
+      'type': type,
+      'specific_date': specificDate,
+    };
   }
 }

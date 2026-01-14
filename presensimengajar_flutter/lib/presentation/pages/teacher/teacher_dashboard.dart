@@ -439,7 +439,20 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                           },
                           child: BlocBuilder<ScheduleBloc, ScheduleState>(
                             builder: (context, scheduleState) {
-                              // Use local _attendanceMap here instead of BlocBuilder
+                              // Resolve attendance map reactively
+                              final attendanceState = context
+                                  .watch<AttendanceBloc>()
+                                  .state;
+                              Map<String, AttendanceModel> attendanceMap =
+                                  _attendanceMap;
+                              if (attendanceState
+                                  is AttendanceDashboardLoaded) {
+                                attendanceMap = attendanceState.attendanceMap;
+                              } else if (attendanceState
+                                  is AttendanceScheduleMapLoaded) {
+                                attendanceMap = attendanceState.attendanceMap;
+                              }
+
                               String timeText = '-';
                               String statusText = 'Tidak Ada Jadwal';
                               Color statusColor = Colors.grey;
@@ -465,75 +478,188 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                 );
 
                                 if (todaySchedules.isNotEmpty) {
-                                  // Use local map
-                                  final attendanceMap = _attendanceMap;
+                                  // Use resolved attendanceMap
 
-                                  // 1. Check for Ongoing (Checked In, Not Checked Out)
-                                  ScheduleModel? ongoing;
+                                  // Priority 1: Check for Strict Ongoing (Checked In AND Not Checked Out)
+                                  ScheduleModel? strictOngoing;
                                   try {
-                                    ongoing = todaySchedules.firstWhere((s) {
+                                    strictOngoing = todaySchedules.firstWhere((
+                                      s,
+                                    ) {
                                       if (!attendanceMap.containsKey(s.id))
                                         return false;
                                       final att =
                                           attendanceMap[s.id]
                                               as AttendanceModel;
-                                      return att.checkOut == null;
+                                      // Must have checked in, and not checked out
+                                      return att.checkIn != null &&
+                                          att.checkOut == null;
                                     });
                                   } catch (e) {
-                                    ongoing = null;
+                                    strictOngoing = null;
                                   }
 
-                                  if (ongoing != null) {
+                                  if (strictOngoing != null) {
                                     timeText =
-                                        '${ongoing.startTime} - ${ongoing.endTime}';
-                                    statusText = 'Sedang Mengajar';
-                                    statusColor = Colors.blue;
+                                        '${strictOngoing.startTime} - ${strictOngoing.endTime}';
+
+                                    final att =
+                                        attendanceMap[strictOngoing.id]
+                                            as AttendanceModel;
+                                    final isLate = att.status == 'telat';
+
+                                    statusText = isLate
+                                        ? 'Sedang Mengajar (Terlambat)'
+                                        : 'Sedang Mengajar';
+                                    statusColor = isLate
+                                        ? Colors.orange
+                                        : Colors.blue;
                                   } else {
-                                    // 2. Check for Upcoming or Late
-                                    // Find first schedule NOT checked in
-                                    ScheduleModel? nextSchedule;
-                                    try {
-                                      nextSchedule = todaySchedules.firstWhere(
-                                        (s) => !attendanceMap.containsKey(s.id),
-                                      );
-                                    } catch (e) {
-                                      nextSchedule = null;
+                                    // Priority 2: Check for ANY schedule that has an attendance row without check-in/out (Alpha/Izin/Sakit)
+                                    // We only show this if it's the "current" relevant one or if we want to show it as status.
+                                    // Let's find the first schedule that is NOT "Done" (Checked Out).
+                                    // If it has status Alpha/Izin, we show that.
+                                    // If it has no status, we show "Upcoming/Late".
+
+                                    ScheduleModel? activeDisplaySchedule;
+
+                                    // Find first schedule that is NOT fully completed (checked out)
+                                    // But wait, Alpha/Izin are also "completed" in a sense.
+                                    // Let's find the first schedule where we haven't "finished" it.
+                                    // Actually, if I was Alpha at 7am, and it's 10am now, I don't want to see "Alpha" for the 7am class forever.
+                                    // I want to see the 10am class.
+
+                                    // So, look for the first schedule that is either:
+                                    // 1. In the future
+                                    // 2. Currently happening
+                                    // 3. Or, if all are past, maybe the last status? (Usually 'All Done')
+
+                                    final now = DateTime.now();
+                                    final currentTimeVal =
+                                        now.hour * 60 + now.minute;
+
+                                    // Helper to parse time string "HH:mm" to minutes
+                                    int toMinutes(String t) {
+                                      final p = t
+                                          .split(':')
+                                          .map(int.parse)
+                                          .toList();
+                                      return p[0] * 60 + p[1];
                                     }
 
-                                    if (nextSchedule != null) {
+                                    // Find the "Current or Next" schedule
+                                    try {
+                                      activeDisplaySchedule = todaySchedules.firstWhere((
+                                        s,
+                                      ) {
+                                        final endMin = toMinutes(s.endTime);
+                                        // Keep this schedule if it's not "long past".
+                                        // Or simpler: Find first schedule that we haven't "passed" yet OR is the current one.
+                                        // If we have an attendance record (even Alpha), is it "passed"?
+                                        // Usually yes.
+
+                                        // BUT user specifically asked: "ketika dia sudah memiliki row attendance... status di time card juga mengikuti".
+                                        // This implies they want to see "Alpha" if that is the status of the *current* slot.
+
+                                        // So:
+                                        final startMin = toMinutes(s.startTime);
+
+                                        // If we are currently WITHIN this schedule's timeframe
+                                        if (currentTimeVal >= startMin &&
+                                            currentTimeVal <= endMin) {
+                                          return true;
+                                        }
+
+                                        // If this schedule is in the FUTURE
+                                        if (currentTimeVal < startMin) {
+                                          return true;
+                                        }
+
+                                        // If we are PAST this schedule (currentTime > endMin)
+                                        // We normally skip it.
+                                        // UNLESS it's the last one? No.
+
+                                        // Exception: If we have NOT checked out (already handled by strictOngoing)
+
+                                        return false;
+                                      });
+                                    } catch (e) {
+                                      activeDisplaySchedule = null;
+                                    }
+
+                                    if (activeDisplaySchedule != null) {
                                       timeText =
-                                          '${nextSchedule.startTime} - ${nextSchedule.endTime}';
+                                          '${activeDisplaySchedule.startTime} - ${activeDisplaySchedule.endTime}';
 
-                                      // Check Late logic
-                                      final startParts =
-                                          (nextSchedule.startTime)
-                                              .split(':')
-                                              .map(int.parse)
-                                              .toList();
-                                      final scheduleStart = DateTime(
-                                        now.year,
-                                        now.month,
-                                        now.day,
-                                        startParts[0],
-                                        startParts[1],
-                                      );
+                                      // Check if we have attendance data for this active schedule
+                                      if (attendanceMap.containsKey(
+                                        activeDisplaySchedule.id,
+                                      )) {
+                                        final att =
+                                            attendanceMap[activeDisplaySchedule
+                                                    .id]
+                                                as AttendanceModel;
 
-                                      if (now
-                                              .difference(scheduleStart)
-                                              .inMinutes >
-                                          15) {
-                                        statusText = 'Terlambat';
-                                        statusColor = Colors.orange;
-                                      } else if (now.isAfter(scheduleStart)) {
-                                        statusText =
-                                            'Segera Masuk'; // 0-15 mins late
-                                        statusColor = Colors.orange.shade700;
+                                        // Handle statuses like Alpha, Izin, Sakit
+                                        // Case: CheckIn/Out null, but status exists
+                                        String statusLabel = att.status;
+                                        if (statusLabel == 'alpha')
+                                          statusLabel = 'Tidak Hadir (Alpha)';
+                                        else if (statusLabel == 'izin')
+                                          statusLabel = 'Izin';
+                                        else if (statusLabel == 'sakit')
+                                          statusLabel = 'Sakit';
+                                        else if (statusLabel.isNotEmpty)
+                                          statusLabel =
+                                              '${statusLabel[0].toUpperCase()}${statusLabel.substring(1)}';
+
+                                        statusText = statusLabel;
+
+                                        if (att.status == 'alpha')
+                                          statusColor = Colors.red;
+                                        else if (att.status == 'izin' ||
+                                            att.status == 'sakit')
+                                          statusColor = Colors.blue;
+                                        else if (att.status == 'hadir')
+                                          statusColor = Colors
+                                              .green; // Rare here if strictOngoing failed (maybe checked out?)
+                                        // If checked out (finished), maybe show "Selesai" for this specific class?
+                                        // If checked out:
+                                        if (att.checkOut != null) {
+                                          statusText = 'Selesai';
+                                          statusColor = Colors.green;
+                                        }
                                       } else {
-                                        statusText = 'Menunggu Jadwal';
-                                        statusColor = Colors.grey;
+                                        // No attendance data -> Logic for Late / Enter / Upcoming
+                                        final startParts = activeDisplaySchedule
+                                            .startTime
+                                            .split(':')
+                                            .map(int.parse)
+                                            .toList();
+                                        final scheduleStart = DateTime(
+                                          now.year,
+                                          now.month,
+                                          now.day,
+                                          startParts[0],
+                                          startParts[1],
+                                        );
+
+                                        if (now
+                                                .difference(scheduleStart)
+                                                .inMinutes >
+                                            15) {
+                                          statusText = 'Terlambat';
+                                          statusColor = Colors.orange;
+                                        } else if (now.isAfter(scheduleStart)) {
+                                          statusText = 'Segera Masuk';
+                                          statusColor = Colors.orange.shade700;
+                                        } else {
+                                          statusText = 'Menunggu Jadwal';
+                                          statusColor = Colors.grey;
+                                        }
                                       }
                                     } else {
-                                      // 3. All Done
+                                      // No active or future schedules found -> All Done
                                       timeText = 'Selesai';
                                       statusText = 'Semua Tuntas';
                                       statusColor = Colors.green;
@@ -1102,7 +1228,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                 .format(
                                                   DateTime.parse(
                                                     attendance.checkIn!,
-                                                  ).toLocal(),
+                                                  ),
                                                 );
                                           }
 
@@ -1111,7 +1237,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                                 DateFormat('HH:mm').format(
                                                   DateTime.parse(
                                                     attendance.checkOut!,
-                                                  ).toLocal(),
+                                                  ),
                                                 );
                                           }
 

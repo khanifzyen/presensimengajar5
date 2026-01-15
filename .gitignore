@@ -1,0 +1,50 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment Variables
+.env
+migration/.env
+manual-book/.env
+
+# Flutter / standard
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+.pub-cache/
+.pub/
+
+# VS Code
+.vscode/
+.history/
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Presensi Mengajar Flutter specific
+presensimengajar_flutter/.dart_tool/
+presensimengajar_flutter/build/
+presensimengajar_flutter/.flutter-plugins
+presensimengajar_flutter/.flutter-plugins-dependencies
+presensimengajar_flutter/ios/Flutter/App.framework
+presensimengajar_flutter/ios/Flutter/Flutter.framework
+presensimengajar_flutter/ios/Flutter/Generated.xcconfig
+presensimengajar_flutter/ios/Flutter/app.flx
+presensimengajar_flutter/ios/Flutter/app.zip
+presensimengajar_flutter/ios/Flutter/flutter_assets/
+presensimengajar_flutter/ios/ServiceDefinitions.json
+presensimengajar_flutter/ios/Runner/GeneratedPluginRegistrant.*
+presensimengajar_flutter/android/local.properties
+
+# Screenshots (Optional, but usually we keep them for manual. Uncomment if you want to ignore them)
+# manual-book/images/

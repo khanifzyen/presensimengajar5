@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'injection_container.dart' as di;
-import 'core/theme.dart';
-import 'routes/app_router.dart';
-import 'presentation/blocs/auth/auth_bloc.dart';
-import 'presentation/blocs/user/user_bloc.dart';
-import 'presentation/blocs/schedule/schedule_bloc.dart';
-import 'presentation/blocs/attendance/attendance_bloc.dart';
-import 'presentation/blocs/leave/leave_bloc.dart';
-import 'presentation/blocs/admin/admin_bloc.dart';
-import 'presentation/blocs/academic_period/academic_period_bloc.dart';
-import 'presentation/blocs/admin_teacher/admin_teacher_bloc.dart';
-import 'presentation/blocs/admin_leave/admin_leave_bloc.dart';
-import 'presentation/blocs/admin_report/admin_report_bloc.dart';
-import 'presentation/blocs/admin_schedule/admin_schedule_bloc.dart';
-import 'presentation/blocs/notification/notification_bloc.dart';
+import 'core/di/injection.dart' as di;
+import 'core/theme/app_theme.dart';
+import 'core/router/app_router.dart';
+import 'features/auth/presentation/blocs/auth/auth_bloc.dart';
+import 'features/profile/presentation/blocs/user/user_bloc.dart';
+import 'features/schedules/presentation/blocs/schedule/schedule_bloc.dart';
+import 'features/attendance/presentation/blocs/attendance/attendance_bloc.dart';
+import 'features/leave/presentation/blocs/leave/leave_bloc.dart';
+import 'features/admin/presentation/blocs/admin/admin_bloc.dart';
+import 'features/schedules/presentation/blocs/academic_period/academic_period_bloc.dart';
+import 'features/teachers/presentation/blocs/admin_teacher/admin_teacher_bloc.dart';
+import 'features/leave/presentation/blocs/admin_leave/admin_leave_bloc.dart';
+import 'features/admin/presentation/blocs/admin_report/admin_report_bloc.dart';
+import 'features/schedules/presentation/blocs/admin_schedule/admin_schedule_bloc.dart';
+import 'features/notification/presentation/blocs/notification/notification_bloc.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 

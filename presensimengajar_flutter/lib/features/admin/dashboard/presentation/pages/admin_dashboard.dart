@@ -121,8 +121,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
               await Future.delayed(const Duration(milliseconds: 500));
             },
             child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1200),
+              child: SizedBox(
+                width: double.infinity,
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 80),

@@ -11,6 +11,8 @@ import 'package:presensimengajar_flutter/features/teachers/data/models/teacher_m
 import 'package:presensimengajar_flutter/features/admin/teachers/presentation/pages/teacher_management_page.dart';
 import 'package:presensimengajar_flutter/features/leave/presentation/pages/admin_leave_approval_page.dart';
 import '../../../../schedules/presentation/pages/admin_period_management_page.dart';
+import '../../../../../core/di/injection.dart';
+import '../../../../settings/presentation/blocs/admin_settings/admin_settings_bloc.dart';
 import '../../../../settings/presentation/pages/admin_settings_page.dart';
 import 'admin_report_page.dart';
 
@@ -56,7 +58,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
         // Navigate to settings
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const AdminSettingsPage()),
+          MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (context) => sl<AdminSettingsBloc>(),
+              child: const AdminSettingsPage(),
+            ),
+          ),
         );
         break;
     }

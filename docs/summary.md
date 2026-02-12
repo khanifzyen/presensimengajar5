@@ -79,7 +79,8 @@ Kode kini dalam keadaan bersih dari error statis dan siap untuk pengujian runtim
   - Update `feature_gap_analysis.md`: Semua fitur Lofi kini statusnya **Terimplementasi**.
   - Verifikasi akhir dengan `flutter analyze`: 0 errors.
 
-### Sesi: UI Refinement (Admin Dashboard Width)
+### Sesi: UI Refinement & Bug Fixes
 - **Admin Dashboard:** Menghapus batasan `maxWidth: 1200` pada `AdminDashboard` agar tampilan menggunakan lebar penuh (100%).
+- **Bug Fix:** Memperbaiki `ProviderNotFoundException` pada navigasi ke Halaman Pengaturan dengan membungkus `AdminSettingsPage` menggunakan `BlocProvider` dan DI (`sl`).
 
 ---

@@ -42,4 +42,68 @@ class SettingsRepositoryImpl implements SettingsRepository {
       throw Exception('Failed to load settings: $e');
     }
   }
+
+  @override
+  Future<void> updateSettings(Map<String, dynamic> settings) async {
+    try {
+      // We need to find the record ID for each setting key
+      final result = await pb
+          .collection('settings')
+          .getFullList(
+            filter:
+                'key = "location_lat" || key = "location_lng" || key = "location_radius" || key = "tolerance_minutes"',
+          );
+
+      // Map key to ID
+      final Map<String, String> keyToId = {
+        for (var item in result) item.getStringValue('key'): item.id,
+      };
+
+      // Helper to update or create
+      Future<void> updateOrCreate(String key, String value) async {
+        if (keyToId.containsKey(key)) {
+          await pb
+              .collection('settings')
+              .update(keyToId[key]!, body: {'value': value});
+        } else {
+          await pb
+              .collection('settings')
+              .create(
+                body: {
+                  'key': key,
+                  'value': value,
+                  'description': 'System setting for $key',
+                },
+              );
+        }
+      }
+
+      if (settings.containsKey('office_latitude')) {
+        await updateOrCreate(
+          'location_lat',
+          settings['office_latitude'].toString(),
+        );
+      }
+      if (settings.containsKey('office_longitude')) {
+        await updateOrCreate(
+          'location_lng',
+          settings['office_longitude'].toString(),
+        );
+      }
+      if (settings.containsKey('radius_meter')) {
+        await updateOrCreate(
+          'location_radius',
+          settings['radius_meter'].toString(),
+        );
+      }
+      if (settings.containsKey('tolerance_minutes')) {
+        await updateOrCreate(
+          'tolerance_minutes',
+          settings['tolerance_minutes'].toString(),
+        );
+      }
+    } catch (e) {
+      throw Exception('Failed to update settings: $e');
+    }
+  }
 }

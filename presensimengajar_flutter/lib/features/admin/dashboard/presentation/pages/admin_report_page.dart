@@ -5,6 +5,7 @@ import 'package:presensimengajar_flutter/core/theme/app_theme.dart';
 import 'package:presensimengajar_flutter/features/admin/dashboard/presentation/blocs/admin_report/admin_report_bloc.dart';
 import 'package:presensimengajar_flutter/features/admin/dashboard/presentation/blocs/admin_report/admin_report_event.dart';
 import 'package:presensimengajar_flutter/features/admin/dashboard/presentation/blocs/admin_report/admin_report_state.dart';
+import '../utils/report_export_service.dart';
 
 class AdminReportPage extends StatefulWidget {
   const AdminReportPage({super.key});
@@ -15,6 +16,7 @@ class AdminReportPage extends StatefulWidget {
 
 class _AdminReportPageState extends State<AdminReportPage> {
   late DateTime _selectedDate;
+  String? _selectedCategory;
 
   @override
   void initState() {
@@ -23,9 +25,98 @@ class _AdminReportPageState extends State<AdminReportPage> {
     _fetchReport();
   }
 
-  void _fetchReport() {
-    context.read<AdminReportBloc>().add(
-      AdminReportFetch(month: _selectedDate.month, year: _selectedDate.year),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(),
+            _buildMonthSelector(),
+            _buildFilters(),
+            Expanded(child: _buildReportContent()),
+          ],
+        ),
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: 'export_pdf',
+            onPressed: () => _exportReport('pdf'),
+            label: const Text('PDF'),
+            icon: const Icon(Icons.picture_as_pdf),
+            backgroundColor: Colors.red,
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton.extended(
+            heroTag: 'export_csv',
+            onPressed: () => _exportReport('csv'),
+            label: const Text('Excel/CSV'),
+            icon: const Icon(Icons.table_chart),
+            backgroundColor: Colors.green,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _exportReport(String type) async {
+    final state = context.read<AdminReportBloc>().state;
+    if (state is AdminReportLoaded && state.reportData.isNotEmpty) {
+      if (type == 'csv') {
+        await ReportExportService.exportToCsv(
+          state.reportData,
+          _selectedDate.month,
+          _selectedDate.year,
+        );
+      } else if (type == 'pdf') {
+        await ReportExportService.exportToPdf(
+          state.reportData,
+          _selectedDate.month,
+          _selectedDate.year,
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tidak ada data untuk diexport')),
+      );
+    }
+  }
+
+  Widget _buildFilters() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Expanded(
+            child: DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Kategori Guru',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 0,
+                ),
+              ),
+              value: _selectedCategory,
+              items: const [
+                DropdownMenuItem(value: null, child: Text('Semua Kategori')),
+                DropdownMenuItem(value: 'tetap', child: Text('Guru Tetap')),
+                DropdownMenuItem(value: 'jadwal', child: Text('Guru Jadwal')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value;
+                });
+                _fetchReport();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -39,18 +130,12 @@ class _AdminReportPageState extends State<AdminReportPage> {
     _fetchReport();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildMonthSelector(),
-            Expanded(child: _buildReportContent()),
-          ],
-        ),
+  void _fetchReport() {
+    context.read<AdminReportBloc>().add(
+      AdminReportFetch(
+        month: _selectedDate.month,
+        year: _selectedDate.year,
+        category: _selectedCategory,
       ),
     );
   }
@@ -79,10 +164,6 @@ class _AdminReportPageState extends State<AdminReportPage> {
                 ),
               ),
             ],
-          ),
-          const CircleAvatar(
-            backgroundColor: AppTheme.primaryColor,
-            child: Text('AD', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -152,6 +233,7 @@ class _AdminReportPageState extends State<AdminReportPage> {
             DataColumn(label: Text('Telat')),
             DataColumn(label: Text('Izin/Sakit')),
             DataColumn(label: Text('Alpha')),
+            DataColumn(label: Text('Total')),
           ],
           rows: data.map((row) {
             return DataRow(
@@ -194,6 +276,12 @@ class _AdminReportPageState extends State<AdminReportPage> {
                   Text(
                     row['alpha'].toString(),
                     style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+                DataCell(
+                  Text(
+                    row['totalAttendance'].toString(),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],

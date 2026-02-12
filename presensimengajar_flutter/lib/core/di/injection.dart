@@ -21,6 +21,10 @@ import '../../features/leave/domain/repositories/leave_repository.dart';
 import '../../features/admin/dashboard/domain/repositories/admin_repository.dart';
 import '../../features/settings/domain/repositories/settings_repository.dart';
 import '../../features/notification/domain/repositories/notification_repository.dart';
+import '../../features/schedules/data/repositories/academic_period_repository_impl.dart';
+import '../../features/schedules/domain/repositories/academic_period_repository.dart';
+import '../../features/profile/data/repositories/content_repository_impl.dart';
+import '../../features/profile/domain/repositories/content_repository.dart';
 
 import '../../features/auth/presentation/blocs/auth/auth_bloc.dart';
 import '../../features/profile/presentation/blocs/user/user_bloc.dart';
@@ -34,6 +38,8 @@ import '../../features/admin/teachers/presentation/blocs/admin_teacher/admin_tea
 import '../../features/leave/presentation/blocs/admin_leave/admin_leave_bloc.dart';
 import '../../features/admin/dashboard/presentation/blocs/admin_report/admin_report_bloc.dart';
 import '../../features/schedules/presentation/blocs/admin_schedule/admin_schedule_bloc.dart';
+import '../../features/profile/presentation/blocs/content/content_bloc.dart';
+import '../../features/settings/presentation/blocs/admin_settings/admin_settings_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -65,6 +71,12 @@ Future<void> init() async {
   sl.registerLazySingleton<NotificationRepository>(
     () => NotificationRepositoryImpl(sl()),
   );
+  sl.registerLazySingleton<AcademicPeriodRepository>(
+    () => AcademicPeriodRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<ContentRepository>(
+    () => ContentRepositoryImpl(sl()),
+  );
 
   // Blocs
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
@@ -81,4 +93,7 @@ Future<void> init() async {
   sl.registerFactory(() => AdminLeaveBloc(leaveRepository: sl()));
   sl.registerFactory(() => AdminReportBloc(adminRepository: sl()));
   sl.registerFactory(() => AdminScheduleBloc(scheduleRepository: sl()));
+
+  sl.registerFactory(() => ContentBloc(sl()));
+  sl.registerFactory(() => AdminSettingsBloc(sl()));
 }

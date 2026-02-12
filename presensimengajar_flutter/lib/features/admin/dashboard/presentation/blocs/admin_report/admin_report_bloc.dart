@@ -7,7 +7,7 @@ class AdminReportBloc extends Bloc<AdminReportEvent, AdminReportState> {
   final AdminRepository adminRepository;
 
   AdminReportBloc({required this.adminRepository})
-      : super(AdminReportInitial()) {
+    : super(AdminReportInitial()) {
     on<AdminReportFetch>(_onFetchReport);
   }
 
@@ -20,6 +20,8 @@ class AdminReportBloc extends Bloc<AdminReportEvent, AdminReportState> {
       final data = await adminRepository.getMonthlyAttendanceReport(
         event.month,
         event.year,
+        teacherId: event.teacherId,
+        category: event.category,
       );
       emit(
         AdminReportLoaded(

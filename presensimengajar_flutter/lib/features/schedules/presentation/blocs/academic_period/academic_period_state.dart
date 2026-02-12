@@ -30,3 +30,12 @@ class AcademicPeriodError extends AcademicPeriodState {
   @override
   List<Object> get props => [message];
 }
+
+class AcademicPeriodSuccess extends AcademicPeriodState {
+  final String message;
+
+  const AcademicPeriodSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

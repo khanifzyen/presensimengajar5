@@ -20,6 +20,8 @@ abstract class AdminRepository {
   /// Returns list of maps containing teacher and their stats (present, late, permission, alpha)
   Future<List<Map<String, dynamic>>> getMonthlyAttendanceReport(
     int month,
-    int year,
-  );
+    int year, {
+    String? teacherId,
+    String? category,
+  });
 }

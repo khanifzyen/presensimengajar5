@@ -10,11 +10,18 @@ abstract class AdminReportEvent extends Equatable {
 class AdminReportFetch extends AdminReportEvent {
   final int month;
   final int year;
+  final String? teacherId;
+  final String? category;
 
-  const AdminReportFetch({required this.month, required this.year});
+  const AdminReportFetch({
+    required this.month,
+    required this.year,
+    this.teacherId,
+    this.category,
+  });
 
   @override
-  List<Object> get props => [month, year];
+  List<Object> get props => [month, year, teacherId ?? '', category ?? ''];
 }
 
 class AdminReportExport extends AdminReportEvent {

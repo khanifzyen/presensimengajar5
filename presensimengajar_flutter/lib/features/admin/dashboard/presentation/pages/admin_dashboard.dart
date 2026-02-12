@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../blocs/admin/admin_bloc.dart';
 import '../blocs/admin/admin_event.dart';
 import '../blocs/admin/admin_state.dart';
@@ -9,6 +10,8 @@ import 'package:presensimengajar_flutter/core/theme/app_theme.dart';
 import 'package:presensimengajar_flutter/features/teachers/data/models/teacher_model.dart';
 import 'package:presensimengajar_flutter/features/admin/teachers/presentation/pages/teacher_management_page.dart';
 import 'package:presensimengajar_flutter/features/leave/presentation/pages/admin_leave_approval_page.dart';
+import '../../../../schedules/presentation/pages/admin_period_management_page.dart';
+import '../../../../settings/presentation/pages/admin_settings_page.dart';
 import 'admin_report_page.dart';
 
 import '../widgets/admin_responsive_scaffold.dart';
@@ -50,7 +53,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
         // Navigate to reports (placeholder for now)
         break;
       case 4:
-        // Navigate to settings (placeholder for now)
+        // Navigate to settings
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminSettingsPage()),
+        );
         break;
     }
   }
@@ -134,6 +141,37 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
                       // Teacher Category Statistics
                       _buildCategorySection(context, state),
+
+                      const SizedBox(height: 20),
+
+                      // Curriculum Management Button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const AdminPeriodManagementPage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(FontAwesomeIcons.graduationCap),
+                            label: const Text('Manajemen Kurikulum & Periode'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppTheme.primaryColor,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              side: const BorderSide(
+                                color: AppTheme.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
 
                       const SizedBox(height: 20),
 

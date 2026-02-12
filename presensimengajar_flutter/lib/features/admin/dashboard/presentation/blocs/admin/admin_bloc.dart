@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/repositories/admin_repository.dart';
-import '../../../../leave/data/models/leave_request_model.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/domain/repositories/admin_repository.dart';
+import 'package:presensimengajar_flutter/features/leave/data/models/leave_request_model.dart';
 import 'admin_event.dart';
 import 'admin_state.dart';
 

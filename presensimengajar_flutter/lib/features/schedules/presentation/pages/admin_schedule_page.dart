@@ -11,7 +11,7 @@ import '../../data/models/schedule_model.dart';
 import '../blocs/academic_period/academic_period_bloc.dart';
 import '../blocs/academic_period/academic_period_state.dart';
 import '../blocs/academic_period/academic_period_event.dart';
-import '../../../admin/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
 
 class AdminSchedulePage extends StatefulWidget {
   final TeacherModel teacher;
@@ -116,7 +116,7 @@ class _AdminSchedulePageState extends State<AdminSchedulePage> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: sourceId,
+                  initialValue: sourceId,
                   decoration: const InputDecoration(
                     labelText: 'Dari Periode (Sumber)',
                     border: OutlineInputBorder(),
@@ -128,7 +128,7 @@ class _AdminSchedulePageState extends State<AdminSchedulePage> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: targetId,
+                  initialValue: targetId,
                   decoration: const InputDecoration(
                     labelText: 'Ke Periode (Target)',
                     border: OutlineInputBorder(),
@@ -456,19 +456,16 @@ class _AdminSchedulePageState extends State<AdminSchedulePage> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.edit, color: Colors.grey),
-                  onPressed: () {
-                    context
-                        .push(
-                          '/admin-schedule-form',
-                          extra: {'teacher': widget.teacher, 'schedule': item},
-                        )
-                        .then((_) {
-                          if (mounted) {
-                            context.read<AdminScheduleBloc>().add(
-                              AdminScheduleFetch(widget.teacher.id),
-                            );
-                          }
-                        });
+                  onPressed: () async {
+                    await context.push(
+                      '/admin-schedule-form',
+                      extra: {'teacher': widget.teacher, 'schedule': item},
+                    );
+                    if (mounted) {
+                      context.read<AdminScheduleBloc>().add(
+                        AdminScheduleFetch(widget.teacher.id),
+                      );
+                    }
                   },
                 ),
                 IconButton(

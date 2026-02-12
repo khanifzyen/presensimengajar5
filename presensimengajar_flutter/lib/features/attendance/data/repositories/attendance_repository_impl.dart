@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:http/http.dart' as http;
 import '../../../../core/constants/app_constants.dart';
@@ -322,8 +323,9 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
 
         for (final schedule in schedules) {
           // Basic Check: Is this schedule's day relevant?
-          if (!weekDays.contains(schedule.day.toLowerCase()))
+          if (!weekDays.contains(schedule.day.toLowerCase())) {
             continue; // weekDays contains all 7 days list
+          }
 
           for (int i = 0; i < 7; i++) {
             final date = weekStart.add(Duration(days: i));
@@ -377,7 +379,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
 
       return records.map((r) => AttendanceModel.fromRecord(r)).toList();
     } catch (e) {
-      print('Error fetching ongoing attendance: $e');
+      debugPrint('Error fetching ongoing attendance: $e');
       return [];
     }
   }

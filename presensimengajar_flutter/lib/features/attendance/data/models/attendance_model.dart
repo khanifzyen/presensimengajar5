@@ -38,8 +38,8 @@ class AttendanceModel {
     ScheduleModel? scheduleData;
     try {
       // expand is Map<String, List<RecordModel>>
-      final schedules = record.expand['schedule_id'];
-      if (schedules != null && schedules.isNotEmpty) {
+      final schedules = record.get<List<RecordModel>>('expand.schedule_id');
+      if (schedules.isNotEmpty) {
         scheduleData = ScheduleModel.fromRecord(schedules.first);
       }
     } catch (e) {

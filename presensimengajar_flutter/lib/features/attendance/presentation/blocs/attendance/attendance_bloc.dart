@@ -86,7 +86,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         if (now.isBefore(earliestCheckIn)) {
           emit(
             AttendanceError(
-              'Belum waktunya check-in. Harap tunggu hingga ${toleranceMinutes} menit sebelum jadwal dimulai.',
+              'Belum waktunya check-in. Harap tunggu hingga $toleranceMinutes menit sebelum jadwal dimulai.',
             ),
           );
           return;

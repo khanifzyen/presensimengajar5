@@ -43,10 +43,11 @@ class TeacherModel {
       subjectId: record.getStringValue('subject_id').isEmpty
           ? null
           : record.getStringValue('subject_id'),
-      subjectName: record.expand.containsKey('subject_id')
-          ? (record.expand['subject_id']?.first as RecordModel).getStringValue(
-              'name',
-            )
+      subjectName: record.get<List<RecordModel>>('expand.subject_id').isNotEmpty
+          ? record
+                .get<List<RecordModel>>('expand.subject_id')
+                .first
+                .getStringValue('name')
           : null,
       position: record.getStringValue('position'),
       attendanceCategory: record.getStringValue('attendance_category'),

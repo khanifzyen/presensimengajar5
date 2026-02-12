@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../admin/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
 
 abstract class AcademicPeriodEvent extends Equatable {
   const AcademicPeriodEvent();

@@ -1,4 +1,4 @@
-import 'package:presensimengajar_flutter/features/admin/data/models/misc_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/misc_models.dart';
 
 abstract class NotificationRepository {
   Future<List<NotificationModel>> getNotifications(String userId);

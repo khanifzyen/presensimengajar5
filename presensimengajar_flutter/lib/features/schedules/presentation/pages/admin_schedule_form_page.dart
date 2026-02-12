@@ -9,8 +9,8 @@ import '../blocs/admin_schedule/admin_schedule_event.dart';
 import '../blocs/admin_schedule/admin_schedule_state.dart';
 import '../blocs/academic_period/academic_period_bloc.dart';
 import '../blocs/academic_period/academic_period_state.dart';
-import '../../../teachers/presentation/blocs/admin_teacher/admin_teacher_bloc.dart';
-import '../../../teachers/presentation/blocs/admin_teacher/admin_teacher_state.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/blocs/admin_teacher/admin_teacher_bloc.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/blocs/admin_teacher/admin_teacher_state.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class AdminScheduleFormPage extends StatefulWidget {
@@ -374,7 +374,7 @@ class _AdminScheduleFormPageState extends State<AdminScheduleFormPage> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           isExpanded: true,
           items: items.map((item) {
             return DropdownMenuItem(
@@ -408,7 +408,7 @@ class _AdminScheduleFormPageState extends State<AdminScheduleFormPage> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: _subjectId,
+          initialValue: _subjectId,
           isExpanded: true,
           hint: const Text('Pilih Mapel'),
           items: state.subjects.map((s) {

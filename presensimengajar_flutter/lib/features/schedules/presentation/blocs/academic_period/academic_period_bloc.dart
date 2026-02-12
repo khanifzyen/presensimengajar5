@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
-import '../../../../admin/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
 import 'academic_period_event.dart';
 import 'academic_period_state.dart';
 

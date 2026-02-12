@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import '../../../data/models/teacher_model.dart';
-import '../../../../admin/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/teachers/data/models/teacher_model.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
 
 abstract class AdminTeacherState extends Equatable {
   const AdminTeacherState();

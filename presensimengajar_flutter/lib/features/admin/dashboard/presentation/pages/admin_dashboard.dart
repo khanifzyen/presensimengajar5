@@ -3,13 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/admin/admin_bloc.dart';
 import '../blocs/admin/admin_event.dart';
 import '../blocs/admin/admin_state.dart';
-import '../../../home/presentation/widgets/stat_card_widget.dart';
-import '../../../teachers/presentation/widgets/teacher_monitoring_item.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../teachers/data/models/teacher_model.dart';
-import '../../../teachers/presentation/pages/teacher_management_page.dart';
-import '../../../leave/presentation/pages/admin_leave_approval_page.dart';
+import 'package:presensimengajar_flutter/features/home/presentation/widgets/stat_card_widget.dart';
+import 'package:presensimengajar_flutter/features/teachers/presentation/widgets/teacher_monitoring_item.dart';
+import 'package:presensimengajar_flutter/core/theme/app_theme.dart';
+import 'package:presensimengajar_flutter/features/teachers/data/models/teacher_model.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/pages/teacher_management_page.dart';
+import 'package:presensimengajar_flutter/features/leave/presentation/pages/admin_leave_approval_page.dart';
 import 'admin_report_page.dart';
+
+import '../widgets/admin_responsive_scaffold.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -55,10 +57,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+    return AdminResponsiveScaffold(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: _onNavItemTapped,
       body: SafeArea(child: _buildBody()),
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
@@ -111,36 +113,40 @@ class _AdminDashboardState extends State<AdminDashboard> {
               // Wait a bit for the refresh to complete
               await Future.delayed(const Duration(milliseconds: 500));
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  _buildHeader(context),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1200),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 80),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header
+                      _buildHeader(context),
 
-                  const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                  // Attendance Statistics Section
-                  _buildAttendanceSection(context, state),
+                      // Attendance Statistics Section
+                      _buildAttendanceSection(context, state),
 
-                  const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                  // Teacher Category Statistics
-                  _buildCategorySection(context, state),
+                      // Teacher Category Statistics
+                      _buildCategorySection(context, state),
 
-                  const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                  // Leave Request Alert
-                  _buildLeaveRequestAlert(context, state),
+                      // Leave Request Alert
+                      _buildLeaveRequestAlert(context, state),
 
-                  const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                  // Real-time Monitoring
-                  _buildMonitoringSection(context, state),
-
-                  const SizedBox(height: 80), // Bottom padding for nav bar
-                ],
+                      // Real-time Monitoring
+                      _buildMonitoringSection(context, state),
+                    ],
+                  ),
+                ),
               ),
             ),
           );
@@ -177,7 +183,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               const SizedBox(height: 4),
               const Text(
-                'SMP Negeri 1',
+                'MA Al Kahfi Jepara',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -231,7 +237,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               Row(
                 children: [
-                  // Left arrow (go backward to older date) - positioned on the left
                   IconButton(
                     onPressed: () {
                       context.read<AdminBloc>().add(
@@ -241,7 +246,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     icon: const Icon(Icons.chevron_left),
                     color: AppTheme.primaryColor,
                   ),
-                  // Right arrow (go forward to more recent date) - positioned on the right
                   IconButton(
                     onPressed: state.dateOffset > 0
                         ? () {
@@ -260,35 +264,46 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           const SizedBox(height: 12),
           // Stats cards
-          GridView.count(
-            crossAxisCount: 4,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: 0.75,
-            children: [
-              StatCardWidget(
-                value: state.attendanceStats['total'].toString(),
-                label: 'Total Guru',
-                color: AppTheme.statBlue,
-              ),
-              StatCardWidget(
-                value: state.attendanceStats['present'].toString(),
-                label: 'Hadir',
-                color: AppTheme.statGreen,
-              ),
-              StatCardWidget(
-                value: state.attendanceStats['leave'].toString(),
-                label: 'Izin',
-                color: AppTheme.statYellow,
-              ),
-              StatCardWidget(
-                value: state.attendanceStats['absent'].toString(),
-                label: 'Belum',
-                color: AppTheme.statRed,
-              ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final int crossAxisCount = constraints.maxWidth > 900
+                  ? 4
+                  : constraints.maxWidth > 600
+                  ? 2
+                  : 2; // Keep 2 columns even for mobile for these stats usually
+              final double aspectRatio = constraints.maxWidth > 900 ? 1.5 : 1.3;
+
+              return GridView.count(
+                crossAxisCount: crossAxisCount,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: aspectRatio,
+                children: [
+                  StatCardWidget(
+                    value: state.attendanceStats['total'].toString(),
+                    label: 'Total Guru',
+                    color: AppTheme.statBlue,
+                  ),
+                  StatCardWidget(
+                    value: state.attendanceStats['present'].toString(),
+                    label: 'Hadir',
+                    color: AppTheme.statGreen,
+                  ),
+                  StatCardWidget(
+                    value: state.attendanceStats['leave'].toString(),
+                    label: 'Izin',
+                    color: AppTheme.statYellow,
+                  ),
+                  StatCardWidget(
+                    value: state.attendanceStats['absent'].toString(),
+                    label: 'Belum',
+                    color: AppTheme.statRed,
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -306,35 +321,46 @@ class _AdminDashboardState extends State<AdminDashboard> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          GridView.count(
-            crossAxisCount: 4,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: 0.75,
-            children: [
-              StatCardWidget(
-                value: state.categoryStats['tetap'].toString(),
-                label: 'Guru Tetap',
-                color: AppTheme.statBlue,
-              ),
-              StatCardWidget(
-                value: state.categoryStats['jadwal'].toString(),
-                label: 'Guru Jadwal',
-                color: AppTheme.statGreen,
-              ),
-              StatCardWidget(
-                value: state.categoryStats['presensi_kantor'].toString(),
-                label: 'Presensi Kantor',
-                color: AppTheme.statPurple,
-              ),
-              StatCardWidget(
-                value: state.categoryStats['presensi_mengajar'].toString(),
-                label: 'Presensi Mengajar',
-                color: AppTheme.statOrange,
-              ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final int crossAxisCount = constraints.maxWidth > 900
+                  ? 4
+                  : constraints.maxWidth > 600
+                  ? 2
+                  : 2;
+              final double aspectRatio = constraints.maxWidth > 900 ? 1.5 : 1.3;
+
+              return GridView.count(
+                crossAxisCount: crossAxisCount,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: aspectRatio,
+                children: [
+                  StatCardWidget(
+                    value: state.categoryStats['tetap'].toString(),
+                    label: 'Guru Tetap',
+                    color: AppTheme.statBlue,
+                  ),
+                  StatCardWidget(
+                    value: state.categoryStats['jadwal'].toString(),
+                    label: 'Guru Jadwal',
+                    color: AppTheme.statGreen,
+                  ),
+                  StatCardWidget(
+                    value: state.categoryStats['presensi_kantor'].toString(),
+                    label: 'Presensi Kantor',
+                    color: AppTheme.statPurple,
+                  ),
+                  StatCardWidget(
+                    value: state.categoryStats['presensi_mengajar'].toString(),
+                    label: 'Presensi Mengajar',
+                    color: AppTheme.statOrange,
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -454,40 +480,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 );
               },
             ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onNavItemTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppTheme.primaryColor,
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dash'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Guru'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_turned_in),
-            label: 'Izin',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.assessment), label: 'Rekap'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Set'),
         ],
       ),
     );

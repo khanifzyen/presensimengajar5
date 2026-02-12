@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:http/http.dart' as http;
 import '../../../../core/constants/app_constants.dart';
@@ -162,7 +163,7 @@ class LeaveRepositoryImpl implements LeaveRepository {
                   },
                 );
           } catch (e) {
-            print(
+            debugPrint(
               "Skipping duplicate or error attendance for ${schedule.id}: $e",
             );
           }

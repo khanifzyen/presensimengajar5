@@ -81,7 +81,7 @@ class _TeachingPageState extends State<TeachingPage> {
           circleId: const CircleId('coverageRadius'),
           center: LatLng(_officeLat!, _officeLng!),
           radius: _maxRadius!,
-          fillColor: Colors.green.withOpacity(0.2),
+          fillColor: Colors.green.withValues(alpha: 0.2),
           strokeColor: Colors.green,
           strokeWidth: 2,
         ),
@@ -357,7 +357,7 @@ class _TeachingPageState extends State<TeachingPage> {
             if (mapAttendance != null) {
               attendance = mapAttendance;
               isCheckedIn =
-                  attendance?.checkIn != null && attendance?.checkOut == null;
+                  attendance.checkIn != null && attendance.checkOut == null;
             }
           } else if (state is AttendanceSuccess) {
             if (state.attendance.scheduleId == widget.schedule.id) {

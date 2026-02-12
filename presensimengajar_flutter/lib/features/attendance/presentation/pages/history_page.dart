@@ -10,7 +10,7 @@ import '../../../schedules/presentation/blocs/academic_period/academic_period_bl
 import '../../../schedules/presentation/blocs/academic_period/academic_period_event.dart';
 import '../../../schedules/presentation/blocs/academic_period/academic_period_state.dart';
 import '../../data/models/attendance_model.dart';
-import '../../../admin/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});

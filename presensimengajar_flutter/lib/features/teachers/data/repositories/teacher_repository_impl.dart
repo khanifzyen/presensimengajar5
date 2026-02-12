@@ -3,7 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:http/http.dart' as http;
 import '../../../../core/constants/app_constants.dart';
 import '../../domain/repositories/teacher_repository.dart';
-import '../../../admin/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
 import '../models/teacher_model.dart';
 
 class TeacherRepositoryImpl implements TeacherRepository {

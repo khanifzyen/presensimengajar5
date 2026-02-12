@@ -1,7 +1,7 @@
 import 'package:pocketbase/pocketbase.dart';
 import 'package:presensimengajar_flutter/core/constants/app_constants.dart';
 import 'package:presensimengajar_flutter/features/notification/domain/repositories/notification_repository.dart';
-import 'package:presensimengajar_flutter/features/admin/data/models/misc_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/misc_models.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   final PocketBase pb;

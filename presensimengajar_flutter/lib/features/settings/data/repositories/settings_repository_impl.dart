@@ -1,6 +1,6 @@
 import 'package:pocketbase/pocketbase.dart';
 import '../../domain/repositories/settings_repository.dart';
-import 'package:presensimengajar_flutter/features/admin/data/models/misc_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/misc_models.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
   final PocketBase pb;

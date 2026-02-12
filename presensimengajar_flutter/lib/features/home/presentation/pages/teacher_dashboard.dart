@@ -18,7 +18,7 @@ import '../../../attendance/presentation/blocs/attendance/attendance_event.dart'
 import '../../../attendance/presentation/blocs/attendance/attendance_state.dart';
 import '../../../attendance/data/models/attendance_model.dart';
 import '../../../attendance/data/models/weekly_statistics_model.dart';
-import '../../../admin/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
 import '../../../schedules/presentation/blocs/academic_period/academic_period_bloc.dart';
 import '../../../schedules/presentation/blocs/academic_period/academic_period_state.dart';
 import '../../../schedules/presentation/blocs/academic_period/academic_period_event.dart';
@@ -486,8 +486,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                     strictOngoing = todaySchedules.firstWhere((
                                       s,
                                     ) {
-                                      if (!attendanceMap.containsKey(s.id))
+                                      if (!attendanceMap.containsKey(s.id)) {
                                         return false;
+                                      }
                                       final att =
                                           attendanceMap[s.id]
                                               as AttendanceModel;
@@ -603,26 +604,28 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                                         // Handle statuses like Alpha, Izin, Sakit
                                         // Case: CheckIn/Out null, but status exists
                                         String statusLabel = att.status;
-                                        if (statusLabel == 'alpha')
+                                        if (statusLabel == 'alpha') {
                                           statusLabel = 'Tidak Hadir (Alpha)';
-                                        else if (statusLabel == 'izin')
+                                        } else if (statusLabel == 'izin') {
                                           statusLabel = 'Izin';
-                                        else if (statusLabel == 'sakit')
+                                        } else if (statusLabel == 'sakit') {
                                           statusLabel = 'Sakit';
-                                        else if (statusLabel.isNotEmpty)
+                                        } else if (statusLabel.isNotEmpty) {
                                           statusLabel =
                                               '${statusLabel[0].toUpperCase()}${statusLabel.substring(1)}';
+                                        }
 
                                         statusText = statusLabel;
 
-                                        if (att.status == 'alpha')
+                                        if (att.status == 'alpha') {
                                           statusColor = Colors.red;
-                                        else if (att.status == 'izin' ||
-                                            att.status == 'sakit')
+                                        } else if (att.status == 'izin' ||
+                                            att.status == 'sakit') {
                                           statusColor = Colors.blue;
-                                        else if (att.status == 'hadir')
+                                        } else if (att.status == 'hadir') {
                                           statusColor = Colors
                                               .green; // Rare here if strictOngoing failed (maybe checked out?)
+                                        }
                                         // If checked out (finished), maybe show "Selesai" for this specific class?
                                         // If checked out:
                                         if (att.checkOut != null) {

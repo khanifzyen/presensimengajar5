@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../data/models/teacher_model.dart';
-import '../blocs/admin_teacher/admin_teacher_bloc.dart';
-import '../blocs/admin_teacher/admin_teacher_event.dart';
-import '../blocs/admin_teacher/admin_teacher_state.dart';
-import '../../../home/presentation/widgets/stat_card_widget.dart';
+import '../../../../../../core/theme/app_theme.dart';
+import 'package:presensimengajar_flutter/features/teachers/data/models/teacher_model.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/blocs/admin_teacher/admin_teacher_bloc.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/blocs/admin_teacher/admin_teacher_event.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/blocs/admin_teacher/admin_teacher_state.dart';
+import 'package:presensimengajar_flutter/features/home/presentation/widgets/stat_card_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
@@ -128,6 +128,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             context.pop();
+                            // ignore: deprecated_member_use
                             Share.shareXFiles([
                               XFile(state.path),
                             ], text: 'Data Guru');
@@ -283,7 +284,7 @@ class _TeacherManagementPageState extends State<TeacherManagementPage> {
                       Text(
                         'Panel Admin',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 14,
                         ),
                       ),

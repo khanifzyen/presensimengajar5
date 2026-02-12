@@ -36,13 +36,11 @@ class LeaveRequestModel {
     String? photo;
 
     // Check expansion
-    if (record.expand.containsKey('teacher_id')) {
-      final teacherRecords = record.expand['teacher_id'];
-      if (teacherRecords != null && teacherRecords.isNotEmpty) {
-        final teacher = teacherRecords.first;
-        name = teacher.getStringValue('name');
-        photo = teacher.getStringValue('photo');
-      }
+    final teacherRecords = record.get<List<RecordModel>>('expand.teacher_id');
+    if (teacherRecords.isNotEmpty) {
+      final teacher = teacherRecords.first;
+      name = teacher.getStringValue('name');
+      photo = teacher.getStringValue('photo');
     }
 
     return LeaveRequestModel(

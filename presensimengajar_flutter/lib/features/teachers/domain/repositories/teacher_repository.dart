@@ -1,6 +1,6 @@
 import 'dart:io';
 import '../../data/models/teacher_model.dart';
-import '../../../admin/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
 
 abstract class TeacherRepository {
   Future<TeacherModel?> getTeacherByUserId(String userId);

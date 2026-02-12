@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../data/models/teacher_model.dart';
-import '../../../admin/data/models/master_models.dart';
-import '../blocs/admin_teacher/admin_teacher_bloc.dart';
-import '../blocs/admin_teacher/admin_teacher_event.dart';
-import '../blocs/admin_teacher/admin_teacher_state.dart';
+import '../../../../../../core/theme/app_theme.dart';
+import 'package:presensimengajar_flutter/features/teachers/data/models/teacher_model.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/data/models/master_models.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/blocs/admin_teacher/admin_teacher_bloc.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/blocs/admin_teacher/admin_teacher_event.dart';
+import 'package:presensimengajar_flutter/features/admin/teachers/presentation/blocs/admin_teacher/admin_teacher_state.dart';
 
 class TeacherFormPage extends StatefulWidget {
   final TeacherModel? teacher;
@@ -429,7 +429,7 @@ class _TeacherFormPageState extends State<TeacherFormPage> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: _selectedSubject,
+          initialValue: _selectedSubject,
           isExpanded: true,
           items: subjects.map((s) {
             return DropdownMenuItem(
@@ -467,7 +467,7 @@ class _TeacherFormPageState extends State<TeacherFormPage> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           isExpanded: true,
           items: items,
           onChanged: onChanged,

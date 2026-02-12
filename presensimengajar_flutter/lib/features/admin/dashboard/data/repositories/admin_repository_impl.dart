@@ -1,9 +1,9 @@
 import 'package:pocketbase/pocketbase.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../domain/repositories/admin_repository.dart';
-import '../../../leave/data/models/leave_request_model.dart';
-import '../../../teachers/data/models/teacher_model.dart';
-import '../../../attendance/data/models/attendance_model.dart';
+import 'package:presensimengajar_flutter/core/constants/app_constants.dart';
+import 'package:presensimengajar_flutter/features/admin/dashboard/domain/repositories/admin_repository.dart';
+import 'package:presensimengajar_flutter/features/leave/data/models/leave_request_model.dart';
+import 'package:presensimengajar_flutter/features/teachers/data/models/teacher_model.dart';
+import 'package:presensimengajar_flutter/features/attendance/data/models/attendance_model.dart';
 
 class AdminRepositoryImpl implements AdminRepository {
   final PocketBase pb;
